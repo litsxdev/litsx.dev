@@ -53,6 +53,9 @@ jobs:
       - name: Install dependencies
         run: corepack yarn install --immutable
 
+      - name: Run tests
+        run: corepack yarn test
+
       - name: Build generated docs content
         run: corepack yarn docs:build-content
 
