@@ -1,29 +1,56 @@
 # `litsx.dev`
 
+[![Validate Docs](https://github.com/litsxdev/litsx.dev/actions/workflows/validate-docs.yml/badge.svg)](https://github.com/litsxdev/litsx.dev/actions/workflows/validate-docs.yml)
+[![Deploy Docs](https://github.com/litsxdev/litsx.dev/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/litsxdev/litsx.dev/actions/workflows/deploy-docs.yml)
+[![Docs](https://img.shields.io/badge/docs-litsx.dev-0a7ea4)](https://litsx.dev/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+
 VitePress documentation site for LitSX.
 
-## Source contract
+This repository owns:
+- the documentation site content in `website/docs`
+- the internal docs theme package in `packages/vitepress`
+- the docs playground in `packages/litsx-playground`
+- shared Shiki language definitions in `packages/shiki-languages`
+
+## Source Contract
 
 This repo generates API and transform docs from the LitSX source repository.
 
-The canonical local and CI layout is:
-
+Canonical layout for both local development and CI:
 - docs repo root: `litsx.dev/`
 - LitSX source checkout: `litsx.dev/vendor/litsx`
 
-If `LITSX_SOURCE_DIR` is not set, the docs scripts default to `vendor/litsx`.
+If `LITSX_SOURCE_DIR` is not set, docs generation defaults to `vendor/litsx`.
 
-Local setup:
+## Local Setup
 
 ```sh
 mkdir -p vendor
 git clone https://github.com/litsxdev/litsx.git vendor/litsx
-corepack yarn install
+corepack yarn install --immutable
+corepack yarn docs:build-content
 corepack yarn docs:build
 ```
 
-You can still override the source location explicitly when needed:
+To run the local dev server:
+
+```sh
+corepack yarn docs:dev
+```
+
+## Override Source Location
+
+If you need to point docs generation at another LitSX checkout:
 
 ```sh
 LITSX_SOURCE_DIR=/absolute/path/to/litsx corepack yarn docs:build
 ```
+
+## Pipelines
+
+This repo currently includes:
+- `Validate Docs`: installs, regenerates docs content, and builds the site
+- `Deploy Docs`: builds and deploys GitHub Pages from `main`
+
+Both workflows expect a second checkout of the `litsx` source repo at `vendor/litsx`.
