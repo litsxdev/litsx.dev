@@ -7,7 +7,7 @@ hero:
   tagline: Web components with a sharper authoring experience. Less ceremony. More signal.
   image:
     src: /flame_512.png
-    alt: Litsx flame
+    alt: LitSX flame
   actions:
     - theme: brand
       text: Get started

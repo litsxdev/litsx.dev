@@ -2,7 +2,7 @@
   "name": "@litsx/playground",
   "private": true,
   "version": "0.0.0",
-  "description": "Litsx playground component, preview runtime wiring, and worker integration",
+  "description": "LitSX playground component, preview runtime wiring, and worker integration",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
