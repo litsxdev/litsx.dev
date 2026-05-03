@@ -1,0 +1,7 @@
+node_modules
+.yarn
+website/docs/.vitepress/dist
+website/docs/.vitepress/cache
+website/docs/.vitepress/.temp
+vendor
+packages/litsx-playground/dist

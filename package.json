@@ -1,0 +1,31 @@
+{
+  "name": "litsx.dev",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@4.10.3",
+  "workspaces": [
+    "packages/shiki-languages",
+    "packages/vitepress",
+    "packages/litsx-playground"
+  ],
+  "scripts": {
+    "playground:build": "yarn workspace @litsx/playground build",
+    "docs:framework": "node scripts/docs/build-framework-docs.mjs",
+    "docs:reference": "node scripts/docs/build-reference-docs.mjs",
+    "docs:transforms": "node scripts/docs/build-transform-docs.mjs",
+    "docs:build-content": "node scripts/docs/build-site-content.mjs",
+    "docs:dev": "yarn playground:build && yarn docs:build-content && vitepress dev website/docs",
+    "docs:build": "yarn playground:build && yarn docs:build-content && vitepress build website/docs",
+    "docs:preview": "vitepress preview website/docs"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/standalone": "^7.29.3",
+    "@litsx/babel-parser": "^0.2.1",
+    "rollup": "^4.60.2",
+    "typescript": "^6.0.0",
+    "vitepress": "^1.6.3"
+  },
+  "license": "Apache-2.0"
+}

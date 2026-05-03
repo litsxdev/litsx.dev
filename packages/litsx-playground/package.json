@@ -1,0 +1,85 @@
+{
+  "name": "@litsx/playground",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Litsx playground component, preview runtime wiring, and worker integration",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./playground-runtime": {
+      "import": "./dist/playground-runtime.js",
+      "require": "./dist/playground-runtime.cjs",
+      "default": "./dist/playground-runtime.js"
+    },
+    "./worker": {
+      "import": "./dist/litsx-playground.worker.js",
+      "default": "./dist/litsx-playground.worker.js"
+    },
+    "./editors": {
+      "import": "./src/litsx-playground-editors.js",
+      "default": "./src/litsx-playground-editors.js"
+    },
+    "./hooks": {
+      "import": "./src/litsx-playground-hooks.tsx",
+      "default": "./src/litsx-playground-hooks.tsx"
+    },
+    "./styles": {
+      "import": "./src/litsx-playground-styles.js",
+      "default": "./src/litsx-playground-styles.js"
+    },
+    "./worker-shims": {
+      "import": "./src/litsx-playground.worker-shims.js",
+      "default": "./src/litsx-playground.worker-shims.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/litsxdev/litsx.dev/tree/main/packages/litsx-playground",
+  "bugs": {
+    "url": "https://github.com/litsxdev/litsx.dev/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/litsxdev/litsx.dev.git",
+    "directory": "packages/litsx-playground"
+  },
+  "scripts": {
+    "build": "rollup --config rollup.config.mjs",
+    "prepack": "yarn build"
+  },
+  "dependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/standalone": "^7.29.3",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.41.1",
+    "@litsx/babel-plugin-transform-jsx-html-template": "^0.2.1",
+    "@litsx/babel-preset-litsx": "^0.2.1",
+    "@litsx/babel-preset-react-compat": "^0.2.0",
+    "@litsx/compiler": "^0.2.1",
+    "@litsx/jsx-authoring": "^0.2.1",
+    "@litsx/litsx": "^0.2.1",
+    "codemirror": "^6.0.2",
+    "lit": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-typescript": "^7.28.5",
+    "@rollup/plugin-babel": "^6.1.0",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "magic-string": "^0.30.21",
+    "rollup": "^4.60.2"
+  }
+}
