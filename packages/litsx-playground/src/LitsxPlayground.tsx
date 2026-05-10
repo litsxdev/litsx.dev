@@ -95,8 +95,8 @@ export function LitsxPlayground({
   height,
   panelMaxHeight,
 }: LitsxPlaygroundProps) {
-  // ^styles(...) attaches stylesheet metadata to the component type.
-  ^styles(playgroundStyles);
+  // static styles = ... attaches stylesheet metadata to the component type.
+  static styles = playgroundStyles;
   const host = useHost();
 
   // useHostContent() turns projected light DOM content into reactive component input.
@@ -138,7 +138,7 @@ export function LitsxPlayground({
   const [activeEditorPanel, setActiveEditorPanel] = useState<"source" | "emitted">("source");
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // useStyle() is the dynamic counterpart to ^styles(...).
+  // useStyle() is the dynamic counterpart to static styles = ....
   useStyle("--litsx-playground-preview-height", `${Math.max(previewHeight, 1)}px`);
   useStyle("--litsx-playground-preview-width", `${Math.max(previewWidth, 320)}px`);
   if (resolvedPanelMaxHeight != null) {

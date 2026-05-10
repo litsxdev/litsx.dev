@@ -123,6 +123,7 @@ export function buildPreviewDocument(
           "@litsx/litsx": ${JSON.stringify(previewRuntimeUrls.litsx)},
           "@litsx/litsx/context": ${JSON.stringify(previewRuntimeUrls.litsx)},
           "@litsx/litsx/runtime-infrastructure": ${JSON.stringify(previewRuntimeUrls.litsx)},
+          "@litsx/litsx/internal/runtime-render-context": ${JSON.stringify(previewRuntimeUrls.litsx)},
           "@litsx/light-dom-registry": ${JSON.stringify(previewRuntimeUrls.lightDomRegistry)},
           "@open-wc/scoped-elements/lit-element.js": ${JSON.stringify(previewRuntimeUrls.scopedElements)},
           "@open-wc/scoped-elements/html-element.js": ${JSON.stringify(previewRuntimeUrls.scopedElementsHtmlElement)},

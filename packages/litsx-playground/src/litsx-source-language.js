@@ -11,7 +11,7 @@ import {
 import { linter } from "@codemirror/lint";
 import { highlightTree, classHighlighter } from "@lezer/highlight";
 import { Parser } from "@lezer/common";
-import { createVirtualLitsxJsxSource, mapVirtualPositionToOriginal } from "@litsx/jsx-authoring";
+import { createVirtualLitsxJsxSource } from "@litsx/jsx-authoring";
 
 export const litsxSourceTheme = EditorView.theme({
   ".tok-keyword, .tok-keyword *": {
@@ -54,6 +54,9 @@ export const litsxSourceTheme = EditorView.theme({
   ".cm-litsx-lit-attr-name, .cm-litsx-lit-attr-name *, .tok-propertyName .cm-litsx-lit-attr-name, .tok-propertyName .cm-litsx-lit-attr-name *": {
     color: "var(--litsx-editor-fg)",
   },
+  ".cm-litsx-static-hoist-name, .cm-litsx-static-hoist-name *": {
+    color: "var(--litsx-editor-fg)",
+  },
   ".cm-diagnostic.cm-diagnostic-error": {
     borderBottom: "2px wavy color-mix(in srgb, var(--vp-c-danger-1) 82%, transparent)",
   },
@@ -91,6 +94,8 @@ const EMBEDDED_CSS_CALL_NAMES = new Set([
   "$styles",
 ]);
 
+const STATIC_HOIST_ASSIGNMENT_NAME = "$styles";
+
 const litsxSourceLanguage = new Language(
   javascriptLanguage.data,
   litsxEditorParser,
@@ -98,8 +103,128 @@ const litsxSourceLanguage = new Language(
   "litsx-source"
 );
 
-function isHoistLineStart(text) {
+function isWhitespace(char) {
+  return char === " " || char === "\t" || char === "\n" || char === "\r";
+}
+
+function isLegacyHoistLineStart(text) {
   return /^\s*\^[A-Za-z_$][\w$]*\s*\(/.test(text);
+}
+
+function isStaticHoistLineStart(text) {
+  return /^\s*static\s+[A-Za-z_$][\w$]*\s*=/.test(text);
+}
+
+function isHoistLineStart(text) {
+  return isLegacyHoistLineStart(text) || isStaticHoistLineStart(text);
+}
+
+function scanQuotedString(sourceText, start, quote) {
+  let index = start + 1;
+
+  while (index < sourceText.length) {
+    const char = sourceText[index];
+    if (char === "\\") {
+      index += 2;
+      continue;
+    }
+    if (char === quote) {
+      return index + 1;
+    }
+    index += 1;
+  }
+
+  return index;
+}
+
+function scanLineComment(sourceText, start) {
+  let index = start + 2;
+  while (index < sourceText.length && sourceText[index] !== "\n") {
+    index += 1;
+  }
+  return index;
+}
+
+function scanBlockComment(sourceText, start) {
+  let index = start + 2;
+  while (index < sourceText.length) {
+    if (sourceText[index] === "*" && sourceText[index + 1] === "/") {
+      return index + 2;
+    }
+    index += 1;
+  }
+  return index;
+}
+
+function scanTemplateLiteral(sourceText, start) {
+  let index = start + 1;
+
+  while (index < sourceText.length) {
+    const char = sourceText[index];
+    if (char === "\\") {
+      index += 2;
+      continue;
+    }
+    if (char === "`") {
+      return index + 1;
+    }
+    if (char === "$" && sourceText[index + 1] === "{") {
+      index = scanBalancedBraces(sourceText, index + 1);
+      continue;
+    }
+    index += 1;
+  }
+
+  return index;
+}
+
+function scanBalancedBraces(sourceText, start) {
+  let depth = 0;
+  let index = start;
+
+  while (index < sourceText.length) {
+    const char = sourceText[index];
+    const next = sourceText[index + 1];
+
+    if (char === "'" || char === "\"") {
+      index = scanQuotedString(sourceText, index, char);
+      continue;
+    }
+
+    if (char === "`") {
+      index = scanTemplateLiteral(sourceText, index);
+      continue;
+    }
+
+    if (char === "/" && next === "/") {
+      index = scanLineComment(sourceText, index);
+      continue;
+    }
+
+    if (char === "/" && next === "*") {
+      index = scanBlockComment(sourceText, index);
+      continue;
+    }
+
+    if (char === "{") {
+      depth += 1;
+      index += 1;
+      continue;
+    }
+
+    if (char === "}") {
+      depth -= 1;
+      index += 1;
+      if (depth <= 0) {
+        return index;
+      }
+      continue;
+    }
+
+    index += 1;
+  }
+
+  return index;
 }
 
 function findHoistFoldRange(state, lineStart) {
@@ -109,102 +234,218 @@ function findHoistFoldRange(state, lineStart) {
   }
 
   const docText = state.doc.toString();
-  const caretOffset = line.text.indexOf("^");
-  const openParenOffset = line.text.indexOf("(", caretOffset);
-  if (openParenOffset < 0) {
-    return null;
-  }
-
-  const from = line.from + openParenOffset + 1;
-  let depth = 0;
-  let quote = null;
-  let templateInterpolationDepth = 0;
-  let blockComment = false;
-  let lineComment = false;
-  let escape = false;
-
-  for (let index = line.from + openParenOffset; index < docText.length; index += 1) {
-    const char = docText[index];
-    const next = docText[index + 1];
-
-    if (lineComment) {
-      if (char === "\n") {
-        lineComment = false;
-      }
-      continue;
+  if (isLegacyHoistLineStart(line.text)) {
+    const caretOffset = line.text.indexOf("^");
+    const openParenOffset = line.text.indexOf("(", caretOffset);
+    if (openParenOffset < 0) {
+      return null;
     }
 
-    if (blockComment) {
-      if (char === "*" && next === "/") {
-        blockComment = false;
-        index += 1;
-      }
-      continue;
-    }
+    const from = line.from + openParenOffset + 1;
+    let depth = 0;
+    let quote = null;
+    let templateInterpolationDepth = 0;
+    let blockComment = false;
+    let lineComment = false;
+    let escape = false;
 
-    if (quote) {
-      if (escape) {
-        escape = false;
+    for (let index = line.from + openParenOffset; index < docText.length; index += 1) {
+      const char = docText[index];
+      const next = docText[index + 1];
+
+      if (lineComment) {
+        if (char === "\n") {
+          lineComment = false;
+        }
         continue;
       }
 
-      if (char === "\\") {
-        escape = true;
-        continue;
-      }
-
-      if (quote === "`") {
-        if (char === "$" && next === "{") {
-          templateInterpolationDepth += 1;
+      if (blockComment) {
+        if (char === "*" && next === "/") {
+          blockComment = false;
           index += 1;
+        }
+        continue;
+      }
+
+      if (quote) {
+        if (escape) {
+          escape = false;
           continue;
         }
 
-        if (char === "}" && templateInterpolationDepth > 0) {
-          templateInterpolationDepth -= 1;
+        if (char === "\\") {
+          escape = true;
           continue;
         }
 
-        if (char === "`" && templateInterpolationDepth === 0) {
+        if (quote === "`") {
+          if (char === "$" && next === "{") {
+            templateInterpolationDepth += 1;
+            index += 1;
+            continue;
+          }
+
+          if (char === "}" && templateInterpolationDepth > 0) {
+            templateInterpolationDepth -= 1;
+            continue;
+          }
+
+          if (char === "`" && templateInterpolationDepth === 0) {
+            quote = null;
+          }
+          continue;
+        }
+
+        if (char === quote) {
           quote = null;
         }
         continue;
       }
 
-      if (char === quote) {
-        quote = null;
+      if (char === "/" && next === "/") {
+        lineComment = true;
+        index += 1;
+        continue;
       }
+
+      if (char === "/" && next === "*") {
+        blockComment = true;
+        index += 1;
+        continue;
+      }
+
+      if (char === "'" || char === "\"" || char === "`") {
+        quote = char;
+        continue;
+      }
+
+      if (char === "(") {
+        depth += 1;
+        continue;
+      }
+
+      if (char === ")") {
+        depth -= 1;
+        if (depth === 0) {
+          return index <= from ? null : { from, to: index };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  const equalsOffset = line.text.indexOf("=");
+  if (equalsOffset < 0) {
+    return null;
+  }
+
+  let from = line.from + equalsOffset + 1;
+  while (from < docText.length && isWhitespace(docText[from])) {
+    from += 1;
+  }
+
+  let index = from;
+  let parenDepth = 0;
+  let bracketDepth = 0;
+  let braceDepth = 0;
+
+  while (index < docText.length) {
+    const char = docText[index];
+    const next = docText[index + 1];
+
+    if (char === "'" || char === "\"") {
+      index = scanQuotedString(docText, index, char);
+      continue;
+    }
+
+    if (char === "`") {
+      index = scanTemplateLiteral(docText, index);
       continue;
     }
 
     if (char === "/" && next === "/") {
-      lineComment = true;
-      index += 1;
+      index = scanLineComment(docText, index);
       continue;
     }
 
     if (char === "/" && next === "*") {
-      blockComment = true;
-      index += 1;
-      continue;
-    }
-
-    if (char === "'" || char === "\"" || char === "`") {
-      quote = char;
+      index = scanBlockComment(docText, index);
       continue;
     }
 
     if (char === "(") {
-      depth += 1;
+      parenDepth += 1;
+      index += 1;
       continue;
     }
 
     if (char === ")") {
-      depth -= 1;
-      if (depth === 0) {
-        return index <= from ? null : { from, to: index };
-      }
+      parenDepth = Math.max(0, parenDepth - 1);
+      index += 1;
+      continue;
     }
+
+    if (char === "[") {
+      bracketDepth += 1;
+      index += 1;
+      continue;
+    }
+
+    if (char === "]") {
+      bracketDepth = Math.max(0, bracketDepth - 1);
+      index += 1;
+      continue;
+    }
+
+    if (char === "{") {
+      braceDepth += 1;
+      index += 1;
+      continue;
+    }
+
+    if (char === "}") {
+      if (parenDepth === 0 && bracketDepth === 0 && braceDepth === 0) {
+        if (index <= from) {
+          return null;
+        }
+
+        const startLine = state.doc.lineAt(from).number;
+        const endLine = state.doc.lineAt(index).number;
+        return endLine > startLine ? { from, to: index } : null;
+      }
+      braceDepth = Math.max(0, braceDepth - 1);
+      index += 1;
+      continue;
+    }
+
+    if (
+      char === ";" &&
+      parenDepth === 0 &&
+      bracketDepth === 0 &&
+      braceDepth === 0
+    ) {
+      if (index <= from) {
+        return null;
+      }
+
+      const startLine = state.doc.lineAt(from).number;
+      const endLine = state.doc.lineAt(index).number;
+      return endLine > startLine ? { from, to: index } : null;
+    }
+
+    if (char === "\n") {
+      index += 1;
+      continue;
+    }
+
+    if (char === "\r") {
+      index += 1;
+      continue;
+    }
+
+    index += 1;
   }
 
   return null;
@@ -220,25 +461,43 @@ function createMark(from, to, className) {
   }).range(from, to);
 }
 
-function collectEmbeddedCssRanges(virtualSource) {
+export function collectEmbeddedCssRanges(virtualSource) {
   const tree = litsxEditorParser.parse(virtualSource.code);
   const ranges = [];
 
-  function pushTemplateSegments(templateNode) {
-    // Preserve CSS-only spans inside template literals while skipping JS interpolations.
-    let segmentStart = templateNode.from + 1;
+  function pushTemplateSegments(templateNodeOrStart, templateEnd) {
+    const templateStart = typeof templateNodeOrStart === "number"
+      ? templateNodeOrStart
+      : templateNodeOrStart.from;
+    const end = typeof templateEnd === "number"
+      ? templateEnd
+      : templateNodeOrStart.to;
+    let segmentStart = templateStart + 1;
+    let index = templateStart + 1;
 
-    for (let child = templateNode.firstChild; child; child = child.nextSibling) {
-      if (child.type.name === "Interpolation") {
-        if (child.from > segmentStart) {
-          ranges.push({ from: segmentStart, to: child.from });
-        }
-        segmentStart = child.to;
+    while (index < end - 1) {
+      const char = virtualSource.code[index];
+      const next = virtualSource.code[index + 1];
+
+      if (char === "\\") {
+        index += 2;
+        continue;
       }
+
+      if (char === "$" && next === "{") {
+        if (index > segmentStart) {
+          ranges.push({ from: segmentStart, to: index });
+        }
+        index = scanBalancedBraces(virtualSource.code, index + 1);
+        segmentStart = index;
+        continue;
+      }
+
+      index += 1;
     }
 
-    if (segmentStart < templateNode.to - 1) {
-      ranges.push({ from: segmentStart, to: templateNode.to - 1 });
+    if (segmentStart < end - 1) {
+      ranges.push({ from: segmentStart, to: end - 1 });
     }
   }
 
@@ -279,14 +538,147 @@ function collectEmbeddedCssRanges(virtualSource) {
   }
 
   visit(tree.topNode);
+
+  let index = 0;
+  while (index < virtualSource.code.length) {
+    const matchIndex = virtualSource.code.indexOf(STATIC_HOIST_ASSIGNMENT_NAME, index);
+    if (matchIndex === -1) {
+      break;
+    }
+
+    let cursor = matchIndex + STATIC_HOIST_ASSIGNMENT_NAME.length;
+    while (isWhitespace(virtualSource.code[cursor])) {
+      cursor += 1;
+    }
+
+    if (virtualSource.code[cursor] !== "=") {
+      index = cursor;
+      continue;
+    }
+
+    cursor += 1;
+    while (isWhitespace(virtualSource.code[cursor])) {
+      cursor += 1;
+    }
+
+    if (virtualSource.code[cursor] !== "`") {
+      index = cursor;
+      continue;
+    }
+
+    const templateEnd = scanTemplateLiteral(virtualSource.code, cursor);
+    pushTemplateSegments(cursor, templateEnd);
+    index = templateEnd;
+  }
+
   return ranges;
 }
 
-function collectEmbeddedCssHighlightDecorations(virtualSource, ranges) {
-  const cssRanges = collectEmbeddedCssRanges(virtualSource);
+function collectAuthoredEmbeddedCssRanges(sourceText) {
+  const ranges = [];
+
+  function pushTemplateSegments(templateStart, templateEnd) {
+    let segmentStart = templateStart + 1;
+    let index = templateStart + 1;
+
+    while (index < templateEnd - 1) {
+      const char = sourceText[index];
+      const next = sourceText[index + 1];
+
+      if (char === "\\") {
+        index += 2;
+        continue;
+      }
+
+      if (char === "$" && next === "{") {
+        if (index > segmentStart) {
+          ranges.push({ from: segmentStart, to: index });
+        }
+        index = scanBalancedBraces(sourceText, index + 1);
+        segmentStart = index;
+        continue;
+      }
+
+      index += 1;
+    }
+
+    if (segmentStart < templateEnd - 1) {
+      ranges.push({ from: segmentStart, to: templateEnd - 1 });
+    }
+  }
+
+  let index = 0;
+  while (index < sourceText.length) {
+    const matchIndex = sourceText.indexOf("static styles", index);
+    if (matchIndex === -1) {
+      break;
+    }
+
+    let cursor = matchIndex + "static styles".length;
+    while (isWhitespace(sourceText[cursor])) {
+      cursor += 1;
+    }
+
+    if (sourceText[cursor] !== "=") {
+      index = cursor;
+      continue;
+    }
+
+    cursor += 1;
+    while (isWhitespace(sourceText[cursor])) {
+      cursor += 1;
+    }
+
+    if (sourceText[cursor] !== "`") {
+      index = cursor;
+      continue;
+    }
+
+    const templateEnd = scanTemplateLiteral(sourceText, cursor);
+    pushTemplateSegments(cursor, templateEnd);
+    index = templateEnd;
+  }
+
+  index = 0;
+  while (index < sourceText.length) {
+    const matchIndex = sourceText.indexOf("^styles", index);
+    if (matchIndex === -1) {
+      break;
+    }
+
+    let cursor = matchIndex + "^styles".length;
+    while (isWhitespace(sourceText[cursor])) {
+      cursor += 1;
+    }
+
+    if (sourceText[cursor] !== "(") {
+      index = cursor;
+      continue;
+    }
+
+    cursor += 1;
+    while (isWhitespace(sourceText[cursor])) {
+      cursor += 1;
+    }
+
+    if (sourceText[cursor] !== "`") {
+      index = cursor;
+      continue;
+    }
+
+    const templateEnd = scanTemplateLiteral(sourceText, cursor);
+    pushTemplateSegments(cursor, templateEnd);
+    index = templateEnd;
+  }
+
+  return ranges;
+}
+
+function collectEmbeddedCssHighlightDecorations(sourceText, ranges) {
+  const cssRanges = collectAuthoredEmbeddedCssRanges(sourceText);
 
   for (const range of cssRanges) {
-    const cssText = virtualSource.code.slice(range.from, range.to);
+    const cssText = sourceText.slice(range.from, range.to);
     if (!cssText.trim()) {
       continue;
     }
@@ -294,15 +686,7 @@ function collectEmbeddedCssHighlightDecorations(virtualSource, ranges) {
     const cssTree = cssLanguage.parser.parse(cssText);
 
     highlightTree(cssTree, classHighlighter, (from, to, classes) => {
-      const originalFrom = mapVirtualPositionToOriginal(
-        range.from + from,
-        virtualSource.replacements
-      );
-      const originalTo = mapVirtualPositionToOriginal(
-        range.from + to,
-        virtualSource.replacements
-      );
-      const decoration = createMark(originalFrom, originalTo, classes);
+      const decoration = createMark(range.from + from, range.from + to, classes);
 
       if (decoration) {
         ranges.push(decoration);
@@ -311,7 +695,7 @@ function collectEmbeddedCssHighlightDecorations(virtualSource, ranges) {
   }
 }
 
-function buildLitsxSourceDecorations(view) {
+export function buildLitsxSourceDecorations(view) {
   const source = view.state.doc.toString();
   const virtualSource = createVirtualLitsxJsxSource(source, {
     strategy: "editor",
@@ -319,12 +703,29 @@ function buildLitsxSourceDecorations(view) {
   const ranges = [];
 
   for (const replacement of virtualSource.replacements) {
-    const prefixLength = replacement.originalName[0] ? 1 : 0;
-    const nameLength = replacement.originalName.length - prefixLength;
+    if (replacement.originalName.startsWith("static ")) {
+      const keywordStart = replacement.start;
+      const keywordEnd = keywordStart + "static".length;
+      const nameStart = replacement.start + "static ".length;
+      const nameEnd = replacement.start + replacement.originalName.length;
 
-    if (nameLength <= 0) {
+      ranges.push(
+        Decoration.mark({
+          attributes: { class: "tok-keyword" },
+        }).range(keywordStart, keywordEnd)
+      );
+
+      ranges.push(
+        Decoration.mark({
+          attributes: { class: "cm-litsx-static-hoist-name" },
+        }).range(nameStart, nameEnd)
+      );
+
       continue;
     }
+
+    const prefixLength = 1;
+    const nameLength = replacement.originalName.length - prefixLength;
 
     ranges.push(
       Decoration.mark({
@@ -342,7 +743,7 @@ function buildLitsxSourceDecorations(view) {
     );
   }
 
-  collectEmbeddedCssHighlightDecorations(virtualSource, ranges);
+  collectEmbeddedCssHighlightDecorations(source, ranges);
 
   return Decoration.set(ranges, true);
 }

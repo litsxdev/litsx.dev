@@ -10,6 +10,7 @@ import {
   foldSourceEditorHoists,
   setEditorDocument,
 } from "../packages/litsx-playground/src/litsx-playground-editors.js";
+import { buildLitsxSourceDecorations } from "../packages/litsx-playground/src/litsx-source-language.js";
 
 describe("@litsx/playground editors", () => {
   it("notifies source editor changes only when the document changes", () => {
@@ -40,7 +41,7 @@ describe("@litsx/playground editors", () => {
     }
   });
 
-  it("folds authored hoists only when a view and foldable hoists are present", () => {
+  it("folds multiline authored hoists only when a view and foldable hoists are present", () => {
     const dispatch = vi.fn();
     const noHoistView = {
       state: EditorState.create({
@@ -53,14 +54,95 @@ describe("@litsx/playground editors", () => {
     foldSourceEditorHoists(noHoistView);
     expect(dispatch).not.toHaveBeenCalled();
 
+    const singleLineHoistView = {
+      state: createSourceEditorState("static styles = `:host { display: block; }`;\nreturn <div />;", vi.fn()),
+      dispatch,
+    };
+
+    foldSourceEditorHoists(singleLineHoistView);
+    expect(dispatch).not.toHaveBeenCalled();
+
     const hoistView = {
-      state: createSourceEditorState("^styles(`:host { display: block; }`);\nreturn <div />;", vi.fn()),
+      state: createSourceEditorState(
+        "static properties = {\n  active: { type: Boolean },\n  label: { type: String },\n};\nreturn <div />;",
+        vi.fn(),
+      ),
       dispatch,
     };
 
     foldSourceEditorHoists(hoistView);
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch.mock.calls[0][0].effects.length).toBeGreaterThan(0);
+  });
+
+  it("highlights static hoist keywords and names in the source editor", () => {
+    const view = new EditorView({
+      state: createSourceEditorState(
+        "export const Card = () => { static styles = `:host { display: block; color: red; }`; return <button />; };",
+        vi.fn(),
+      ),
+      parent: document.body.appendChild(document.createElement("div")),
+    });
+
+    try {
+      const keywordTokens = Array.from(view.dom.querySelectorAll(".tok-keyword"))
+        .map((node) => node.textContent)
+        .join(" ");
+      const hoistNames = Array.from(view.dom.querySelectorAll(".cm-litsx-static-hoist-name"))
+        .map((node) => node.textContent)
+        .join(" ");
+
+      expect(keywordTokens).toContain("static");
+      expect(hoistNames).toContain("styles");
+    } finally {
+      view.destroy();
+    }
+  });
+
+  it("preserves CSS token highlighting inside static styles assignments", () => {
+    const state = createSourceEditorState(
+      "export const Card = () => { static styles = `:host { display: block; color: red; }`; return <button />; };",
+      vi.fn(),
+    );
+    const doc = state.doc.toString();
+    const decorations = buildLitsxSourceDecorations({ state });
+    const classesAt = (needle) => {
+      const start = doc.indexOf(needle);
+      const end = start + needle.length;
+      const classes = new Set();
+
+      decorations.between(start, end, (from, to, value) => {
+        if (to <= start || from >= end) {
+          return;
+        }
+
+        classes.add(value.spec.attributes.class);
+      });
+
+      return classes;
+    };
+
+    const displayClasses = classesAt("display");
+    const colorClasses = classesAt("color");
+
+    expect(Array.from(displayClasses).some((value) => value.includes("tok-"))).toBe(true);
+    expect(Array.from(colorClasses).some((value) => value.includes("tok-"))).toBe(true);
+  });
+
+  it("keeps source editor views mountable after static hoist highlighting", () => {
+    const view = new EditorView({
+      state: createSourceEditorState(
+        "export const Card = () => { static styles = `:host { display: block; color: red; }`; return <button />; };",
+        vi.fn(),
+      ),
+      parent: document.body.appendChild(document.createElement("div")),
+    });
+
+    try {
+      expect(view.dom.textContent).toContain("static styles");
+    } finally {
+      view.destroy();
+    }
   });
 
   it("updates emitted editor documents only when content changes", () => {

@@ -1,5 +1,6 @@
 import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
 import fs from "fs";
@@ -57,27 +58,128 @@ function browserExternalBuiltins() {
   return {
     name: "browser-external-builtins",
     resolveId(source) {
-      if (source === "module" || source === "node:module") {
-        return `${browserExternalPrefix}module`;
+      if (
+        source === "module" ||
+        source === "node:module" ||
+        source === "path" ||
+        source === "node:path" ||
+        source === "fs" ||
+        source === "node:fs"
+      ) {
+        const normalizedSource = source.startsWith("node:")
+          ? source.slice("node:".length)
+          : source;
+        return `${browserExternalPrefix}${normalizedSource}`;
       }
 
       return null;
     },
     load(id) {
-      if (id !== `${browserExternalPrefix}module`) {
-        return null;
+      if (id === `${browserExternalPrefix}module`) {
+        return `
+          export const findPnpApi = undefined;
+          export function createRequire() {
+            throw new Error("module.createRequire is not available in browser workers.");
+          }
+          export default {
+            findPnpApi,
+            createRequire,
+          };
+        `;
       }
 
-      return `
-        export const findPnpApi = undefined;
-        export function createRequire() {
-          throw new Error("module.createRequire is not available in browser workers.");
-        }
-        export default {
-          findPnpApi,
-          createRequire,
-        };
-      `;
+      if (id === `${browserExternalPrefix}fs`) {
+        return `
+          export function existsSync() {
+            return false;
+          }
+          export function statSync() {
+            throw new Error("node:fs is not available in browser workers.");
+          }
+          export default {
+            existsSync,
+            statSync,
+          };
+        `;
+      }
+
+      if (id === `${browserExternalPrefix}path`) {
+        return `
+          function normalize(pathname) {
+            const value = String(pathname || "").replace(/\\\\/g, "/");
+            const isAbsolute = value.startsWith("/");
+            const segments = value.split("/");
+            const output = [];
+
+            for (const segment of segments) {
+              if (!segment || segment === ".") continue;
+              if (segment === "..") {
+                if (output.length && output[output.length - 1] !== "..") {
+                  output.pop();
+                } else if (!isAbsolute) {
+                  output.push("..");
+                }
+                continue;
+              }
+              output.push(segment);
+            }
+
+            const joined = output.join("/");
+            if (isAbsolute) return "/" + joined;
+            return joined || ".";
+          }
+
+          function dirname(pathname) {
+            const value = normalize(pathname);
+            if (value === "/" || value === ".") return value;
+            const segments = value.split("/");
+            segments.pop();
+            if (!segments.length) return value.startsWith("/") ? "/" : ".";
+            if (segments.length === 1 && segments[0] === "") return "/";
+            return segments.join("/") || ".";
+          }
+
+          function join(...parts) {
+            return normalize(parts.filter(Boolean).join("/"));
+          }
+
+          function resolve(...parts) {
+            const combined = join(...parts);
+            return combined.startsWith("/") ? combined : "/" + combined.replace(/^\\.\\/?/, "");
+          }
+
+          function isAbsolute(pathname) {
+            return String(pathname || "").startsWith("/");
+          }
+
+          function relative(from, to) {
+            const fromPath = normalize(from).replace(/^\\/+/, "");
+            const toPath = normalize(to).replace(/^\\/+/, "");
+            const fromSegments = fromPath === "." ? [] : fromPath.split("/");
+            const toSegments = toPath === "." ? [] : toPath.split("/");
+
+            while (fromSegments.length && toSegments.length && fromSegments[0] === toSegments[0]) {
+              fromSegments.shift();
+              toSegments.shift();
+            }
+
+            const upward = fromSegments.map(() => "..");
+            const result = [...upward, ...toSegments].join("/");
+            return result || ".";
+          }
+
+          export { dirname, isAbsolute, join, relative, resolve };
+          export default {
+            dirname,
+            isAbsolute,
+            join,
+            relative,
+            resolve,
+          };
+        `;
+      }
+
+      return null;
     },
   };
 }
@@ -143,6 +245,7 @@ function createSharedPlugins() {
       exportConditions: ["browser", "default", "import"],
       extensions: [".mjs", ".js", ".json", ".node", ".ts", ".tsx"],
     }),
+    json(),
     virtualizeLitsxJsxAttributes(),
     commonjs(),
   ];
