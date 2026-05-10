@@ -4,7 +4,6 @@ import DocsVersionBanner from "@litsx/vitepress/theme/DocsVersionBanner";
 import { defaultDocsVersions } from "@litsx/vitepress/versions";
 import "@litsx/vitepress/styles.css";
 import "./custom.css";
-import "./components/LitsxPlayground.tsx";
 import { registerSiteAnalytics } from "./analytics.js";
 import HomeAfterHero from "./components/HomeAfterHero.vue";
 import HomeHeroPills from "./components/HomeHeroPills.js";
@@ -27,5 +26,9 @@ export default {
   enhanceApp({ app, router }) {
     DefaultTheme.enhanceApp?.({ app, router });
     registerSiteAnalytics(router);
+
+    if (!import.meta.env.SSR) {
+      void import("./components/LitsxPlayground.tsx");
+    }
   },
 };
