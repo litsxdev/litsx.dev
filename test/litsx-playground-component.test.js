@@ -304,7 +304,7 @@ describe("LitsxPlayground docs component", () => {
 
   it("treats multi-line hoists as foldable regions in the source editor", () => {
     const state = createSourceEditorState(primitivesExampleSource, () => {});
-    const hoistOffset = primitivesExampleSource.indexOf("^styles(");
+    const hoistOffset = primitivesExampleSource.indexOf("static styles = `");
     assert.ok(hoistOffset >= 0);
 
     const line = state.doc.lineAt(hoistOffset);
@@ -312,11 +312,12 @@ describe("LitsxPlayground docs component", () => {
 
     assert.ok(fold);
     assert.ok(fold.to > fold.from);
-    assert.strictEqual(primitivesExampleSource.slice(fold.from - 1, fold.from), "(");
-    assert.strictEqual(primitivesExampleSource.slice(fold.to, fold.to + 1), ")");
+    assert.strictEqual(primitivesExampleSource.slice(fold.from, fold.from + 1), "`");
+    assert.strictEqual(primitivesExampleSource.slice(fold.to - 1, fold.to), "`");
+    assert.strictEqual(primitivesExampleSource.slice(fold.to, fold.to + 1), ";");
   });
 
-  it("fully parses the ^expose playground example in the source editor", () => {
+  it("fully parses the static expose playground example in the source editor", () => {
     const state = createSourceEditorState(staticExposeExampleSource, () => {});
     const tree = ensureSyntaxTree(state, state.doc.length, 5000);
     const errors = [];
