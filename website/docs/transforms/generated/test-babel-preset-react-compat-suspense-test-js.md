@@ -115,12 +115,13 @@ export const Screen = () => {
 ```js
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/litsx";
 import { LitElement, html } from "lit";
+import { bindRendererContext } from "@litsx/litsx/internal/runtime-render-context";
 import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
 const FancyButton = () => import('./FancyButton.js');
 export class Screen extends ShadowDomElementsMixin(LitElement) {
   render() {
     ensureLazyElement(this, "fancy-button", FancyButton);
-    return html`<suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${() => html`<fancy-button></fancy-button>`}></suspense-boundary>`;
+    return html`<suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<fancy-button></fancy-button>`)}></suspense-boundary>`;
   }
   static elements = {
     "suspense-boundary": SuspenseBoundary
@@ -161,6 +162,7 @@ export const Screen = () => {
 ```js
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/litsx";
 import { LitElement, html } from "lit";
+import { bindRendererContext } from "@litsx/litsx/internal/runtime-render-context";
 import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
 const AlphaPanel = () => import('./AlphaPanel.js');
 const BetaPanel = () => import('./BetaPanel.js');
@@ -168,7 +170,7 @@ export class Screen extends ShadowDomElementsMixin(LitElement) {
   render() {
     ensureLazyElement(this, "alpha-panel", AlphaPanel);
     ensureLazyElement(this, "beta-panel", BetaPanel);
-    return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>One</span>`} .contentRenderer=${() => html`<alpha-panel></alpha-panel>`}></suspense-boundary><suspense-boundary .fallbackRenderer=${() => html`<span>Two</span>`} .contentRenderer=${() => html`<beta-panel></beta-panel>`}></suspense-boundary></suspense-list>`;
+    return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>One</span>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<alpha-panel></alpha-panel>`)}></suspense-boundary><suspense-boundary .fallbackRenderer=${() => html`<span>Two</span>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<beta-panel></beta-panel>`)}></suspense-boundary></suspense-list>`;
   }
   static elements = {
     "suspense-boundary": SuspenseBoundary,
@@ -412,7 +414,9 @@ import { LitElement, html } from "lit";
 import * as UI from 'ui-kit';
 export class Screen extends LitElement {
   render() {
-    return html`<UI.Suspense fallback="loading"><div>ready</div></UI.Suspense>`;
+    return html`${UI.Suspense({
+      fallback: "loading"
+    }, html`<div>ready</div>`)}`;
   }
 }
 ```
@@ -521,16 +525,17 @@ export const Screen = () => {
 ```js
 import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
 import { LitElement, html } from "lit";
+import { bindRendererContext } from "@litsx/litsx/internal/runtime-render-context";
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from '@litsx/litsx';
 const AlphaPanel = () => null;
 const BetaPanel = () => null;
 export class Screen extends ShadowDomElementsMixin(LitElement) {
   render() {
     ensureLazyElement(this, 'beta-panel', BetaPanel);
-    return html`<section><suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${() => {
+    return html`<section><suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => {
       ensureLazyElement(this, 'alpha-panel', AlphaPanel);
       return html`<alpha-panel></alpha-panel>`;
-    }}></suspense-boundary></section>`;
+    })}></suspense-boundary></section>`;
   }
   static elements = {
     "suspense-boundary": SuspenseBoundary
@@ -686,12 +691,13 @@ export const Screen = () => {
 ```js
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/litsx";
 import { LitElement, html } from "lit";
+import { bindRendererContext } from "@litsx/litsx/internal/runtime-render-context";
 import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
 const AlphaPanel = () => import('./AlphaPanel.js');
 export class Screen extends ShadowDomElementsMixin(LitElement) {
   render() {
     ensureLazyElement(this, "alpha-panel", AlphaPanel);
-    return html`<error-boundary .fallbackRenderer=${() => html`<p>outer-fallback</p>`} .contentRenderer=${() => html`<section><suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>alpha-loading</span>`} .contentRenderer=${() => html`<alpha-panel></alpha-panel>`}></suspense-boundary><suspense-boundary .fallbackRenderer=${() => html`<span>beta-loading</span>`} .contentRenderer=${() => html`<article><strong>beta-ready</strong></article>`}></suspense-boundary></suspense-list></section>`}></error-boundary>`;
+    return html`<error-boundary .fallbackRenderer=${() => html`<p>outer-fallback</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<section><suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>alpha-loading</span>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<alpha-panel></alpha-panel>`)}></suspense-boundary><suspense-boundary .fallbackRenderer=${() => html`<span>beta-loading</span>`} .contentRenderer=${() => html`<article><strong>beta-ready</strong></article>`}></suspense-boundary></suspense-list></section>`)}></error-boundary>`;
   }
   static elements = {
     "error-boundary": ErrorBoundary,

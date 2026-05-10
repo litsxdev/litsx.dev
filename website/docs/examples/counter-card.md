@@ -3,7 +3,7 @@
 This example is a compact support demo, not the main sales pitch.
 
 - local state with `useState(...)`
-- component-owned styling with `^styles(...)`
+- component-owned styling with `static styles = ...`
 - dynamic CSS values with `useStyle(...)`
 - Lit-flavored event bindings in authored JSX
 

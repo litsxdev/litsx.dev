@@ -1,18 +1,18 @@
 # Static Hoists
 
-Lit<sup>sx</sup> uses `^name(...)` for static component metadata that belongs to the generated class rather than to render-time execution.
+Lit<sup>sx</sup> uses `static name = ...` for static component metadata that belongs to the generated class rather than to render-time execution.
 
 That means:
 
-- `^styles(...)` attaches static stylesheet metadata
-- `^properties(...)` attaches Lit property metadata
-- any other direct `^name(...)` can attach additional static class metadata when Lit, Lit<sup>sx</sup>, or your own runtime code knows how to consume it
+- `static styles = ...` attaches static stylesheet metadata
+- `static properties = ...` attaches Lit property metadata
+- any other direct `static name = ...` can attach additional static class metadata when Lit, Lit<sup>sx</sup>, or your own runtime code knows how to consume it
 
 This is authored syntax, not a runtime import.
 
 ## Mental Model
 
-Treat `^name(...)` as a compile-time static hoist.
+Treat `static name = ...` as a compile-time static hoist.
 
 The transform lowers each hoist to a memoized static getter on the generated class:
 
@@ -22,11 +22,11 @@ The transform lowers each hoist to a memoized static getter on the generated cla
 In practice, the authored form:
 
 ```tsx
-^styles(`
+static styles = `
   :host {
     display: block;
   }
-`);
+`;
 ```
 
 becomes a generated class getter, not a runtime statement inside `render()`.
@@ -35,55 +35,53 @@ That distinction matters: a hoist is still authored inside the component functio
 
 ## Accepted Shapes
 
-`^name(...)` accepts one argument.
-
-That argument must be a direct static value.
+`static name = ...` accepts one direct static value.
 
 Examples:
 
 ```tsx
-^styles(`
+static styles = `
   :host {
     display: block;
   }
-`);
+`;
 
-^properties({
+static properties = {
   active: { reflect: true },
-});
+};
 
-^shadowRootOptions({
+static shadowRootOptions = {
   delegatesFocus: true,
-});
+};
 
-^lightDom();
+static lightDom = true;
 ```
 
 ## Static Method Exposure
 
-`^expose(...)` is the exception to the getter model. It lowers to real static class methods rather than to a memoized getter.
+`static expose = ...` is the exception to the getter model. It lowers to real static class methods rather than to a memoized getter.
 
-Do not confuse that with [`useExpose`](../reference/generated/useexpose.md). `useExpose(...)` publishes an instance handle through a ref. `^expose(...)` defines class-level static methods that other components can call imperatively.
+Do not confuse that with [`useExpose`](../reference/generated/useexpose.md). `useExpose(...)` publishes an instance handle through a ref. `static expose = ...` defines class-level static methods that other components can call imperatively.
 
-`^expose(...)` keeps the same authored signature shape as other hoists:
+`static expose = ...` keeps the same authored shape as other hoists:
 
 - pass an object literal to define methods directly
 
 For example:
 
 ```tsx
-^expose({
+static expose = {
   canHandle(type) {
     return type === "dialog";
   },
-});
+};
 ```
 
-`^expose(...)` is useful when a child component owns domain logic that a parent wants to call imperatively at the class level.
+`static expose = ...` is useful when a child component owns domain logic that a parent wants to call imperatively at the class level.
 
 ## Light DOM
 
-`^lightDom()` opts a component out of the default shadow root and lowers to:
+`static lightDom = true` opts a component out of the default shadow root and lowers to:
 
 ```js
 createRenderRoot() {
@@ -91,15 +89,15 @@ createRenderRoot() {
 }
 ```
 
-`^lightDom()` is incompatible with:
+`static lightDom = true` is incompatible with:
 
-- `^shadowRootOptions(...)`
+- `static shadowRootOptions = ...`
 
-Imported Lit<sup>SX</sup> components used from a `^lightDom()` component keep their base custom-element tag and resolve through a contextual light DOM registry at runtime.
+Imported Lit<sup>SX</sup> components used from a `static lightDom = true` component keep their base custom-element tag and resolve through a contextual light DOM registry at runtime.
 
 In the example below:
 
-- the component opts into `^lightDom()`
+- the component opts into `static lightDom = true`
 - the demo stays in a single playground file
 - two light DOM hosts both render the same `<profile-chip>` tag
 - each host resolves that tag to a different implementation through `static elements`
@@ -122,13 +120,13 @@ import {
 
 ## Static Expose Example
 
-Use `^expose(...)` when the parent should call static class-level behavior such as registries, presets, classification, or factory methods.
+Use `static expose = ...` when the parent should call static class-level behavior such as registries, presets, classification, or factory methods.
 
 Use [`useExpose`](../reference/generated/useexpose.md) when the parent needs an imperative handle for one rendered instance, such as `focus()`, `open()`, or `reset()`.
 
 In the example below:
 
-- `ProfileChip` exposes static methods with `^expose(...)`
+- `ProfileChip` exposes static methods with `static expose = ...`
 - the parent calls those methods to ask the child for the next preset and tone
 - the rendered child still receives normal props, but the imperative coordination lives on the child class API
 
@@ -149,11 +147,11 @@ Valid:
 
 ```tsx
 export function Card() {
-  ^styles(`
+  static styles = `
     :host {
       display: block;
     }
-  `);
+  `;
 
   return <article>ready</article>;
 }
@@ -164,7 +162,7 @@ Invalid:
 ```tsx
 export function Card({ active }) {
   if (active) {
-    ^styles(`:host { display: block; }`);
+    static styles = `:host { display: block; }`;
   }
 
   return <article>ready</article>;

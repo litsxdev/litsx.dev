@@ -16,7 +16,7 @@ The goal is to keep styling close to the platform instead of inventing a second 
 
 Lit<sup>sx</sup> also exposes one styling hook and participates in the general static-hoist model:
 
-- `^styles(...)` for component-owned static CSS
+- `static styles = ...` for component-owned static CSS
 - `useStyle(...)` for dynamic host-level style properties and CSS custom properties
 
 They mirror the same split that shows up elsewhere in the framework:
@@ -89,7 +89,7 @@ Prefer this pattern over building large inline style objects. Let CSS keep owner
 
 The split between static CSS and dynamic values is easiest to see in a live component. In this example:
 
-- `^styles(...)` owns the layout, selectors, and component skin
+- `static styles = ...` owns the layout, selectors, and component skin
 - `useStyle(...)` pushes the changing accent into `--panel-accent`
 - `?data-active` gives CSS a simple state selector without moving presentation logic into JavaScript
 
@@ -113,7 +113,7 @@ import {
 
 ## Light DOM Styling
 
-`^lightDom()` is also a styling decision.
+`static lightDom = true` is also a styling decision.
 
 Use it when a component should stay in the page's normal styling flow instead of creating a shadow boundary. That is useful when you want:
 
@@ -123,8 +123,8 @@ Use it when a component should stay in the page's normal styling flow instead of
 
 In the example below:
 
-- the host is authored with `^lightDom()`
-- the component still owns static CSS through `^styles(...)`
+- the host is authored with `static lightDom = true`
+- the component still owns static CSS through `static styles = ...`
 - the result stays visually close to the page instead of behaving like an isolated shadow subtree
 
 <ClientOnly>
@@ -136,10 +136,10 @@ In the example below:
   >{{ lightDomStylingExampleSource }}</litsx-playground>
 </ClientOnly>
 
-Use `^styles(...)` when the component should own a stylesheet directly from authored Lit<sup>sx</sup> code.
+Use `static styles = ...` when the component should own a stylesheet directly from authored Lit<sup>sx</sup> code.
 
 ```jsx
-^styles(`
+static styles = `
   :host {
     display: block;
   }
@@ -148,10 +148,10 @@ Use `^styles(...)` when the component should own a stylesheet directly from auth
     border-radius: 1rem;
     background: var(--panel-surface);
   }
-`);
+`;
 ```
 
-`^styles(...)` is not a runtime DOM mutation API. Lit<sup>sx</sup> lowers it to a memoized static getter on the generated class, so the stylesheet is resolved once per component class and still describes CSS owned by the component type rather than values that vary by render.
+`static styles = ...` is not a runtime DOM mutation API. Lit<sup>sx</sup> lowers it to a memoized static getter on the generated class, so the stylesheet is resolved once per component class and still describes CSS owned by the component type rather than values that vary by render.
 Like any other hoist, it must appear as a top-level statement in the component body.
 
 Interpolations are fine when they come from static module-level values:
@@ -159,20 +159,20 @@ Interpolations are fine when they come from static module-level values:
 ```jsx
 const radius = "12px";
 
-^styles(`
+static styles = `
   .panel {
     border-radius: ${radius};
   }
-`);
+`;
 ```
 
-In practice, `^styles(...)` accepts:
+In practice, `static styles = ...` accepts:
 
 - imports
 - module-level constants
 - static compositions built from other module-level constants
 
-That is the same mental model as any `^name(...)` hoist: authored code declares static component metadata, and the transform lowers it into a memoized static getter on the generated class shape.
+That is the same mental model as any `static name = ...` hoist: authored code declares static component metadata, and the transform lowers it into a memoized static getter on the generated class shape.
 
 What it does not accept is component-scope data, even when that data looks locally constant:
 
@@ -180,17 +180,17 @@ What it does not accept is component-scope data, even when that data looks local
 export function Panel({ radius }) {
   const localRadius = `${radius}px`;
 
-  ^styles(`
+  static styles = `
     .panel {
       border-radius: ${localRadius};
     }
-  `);
+  `;
 
   return <section class="panel">panel</section>;
 }
 ```
 
-That is rejected because `localRadius` still belongs to the component scope. If a value depends on props, state, or any render-time calculation, keep the rule in `^styles(...)` and move the changing part to `useStyle(...)` or a CSS custom property.
+That is rejected because `localRadius` still belongs to the component scope. If a value depends on props, state, or any render-time calculation, keep the rule in `static styles = ...` and move the changing part to `useStyle(...)` or a CSS custom property.
 
 What should not go there is anything that depends on props, state, or other component-scope values. Move those cases to `useStyle(...)`, CSS custom properties, or normal JSX style bindings.
 

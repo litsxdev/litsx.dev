@@ -8,9 +8,9 @@ The starting point is the strongest prop information the compiler can resolve. I
 2. destructured prop names in the component signature
 3. direct opaque member access such as `props.title`
 
-If you add `^properties(...)`, Lit<sup>sx</sup> treats it as an override layer on top of whatever descriptor was inferred.
+If you add `static properties = ...`, Lit<sup>sx</sup> treats it as an override layer on top of whatever descriptor was inferred.
 The transform lowers that authored macro to a memoized static getter on the generated class, so object-valued metadata keeps a stable identity per component class.
-`^properties(...)` is just one named use of the general `^name(...)` hoist model, but it is the one that Lit property inference cares about directly.
+`static properties = ...` is just one named use of the general `static name = ...` hoist model, but it is the one that Lit property inference cares about directly.
 
 ## The Mental Model
 
@@ -18,7 +18,7 @@ Think in this order:
 
 1. write the props type
 2. let Lit<sup>sx</sup> infer the Lit property descriptor
-3. use `^properties(...)` only when a property needs explicit Lit options
+3. use `static properties = ...` only when a property needs explicit Lit options
 
 In day-to-day authoring, `Props` should stay as the source of truth. The generated class metadata is an implementation detail, but it is an implementation detail that Lit<sup>sx</sup> needs to derive correctly.
 
@@ -44,19 +44,19 @@ Lit<sup>sx</sup> prefers the strongest available source of truth.
 
 - explicit TypeScript prop types
 - destructured prop names from the component signature
-- explicit `^properties(...)` overrides layered on top
+- explicit `static properties = ...` overrides layered on top
 - fallback inference from direct `props.foo` member access
 
 That means these two inputs are combinable, not exclusive:
 
 - TypeScript gives the base runtime `type`
-- `^properties(...)` enriches Lit-specific behavior such as `reflect`, `attribute`, or `converter`
+- `static properties = ...` enriches Lit-specific behavior such as `reflect`, `attribute`, or `converter`
 
-If both exist, Lit<sup>sx</sup> does not choose one or the other. It starts from the typed descriptor and then merges the authored `^properties(...)` overrides inside that memoized static getter.
+If both exist, Lit<sup>sx</sup> does not choose one or the other. It starts from the typed descriptor and then merges the authored `static properties = ...` overrides inside that memoized static getter.
 
 ## Example
 
-The easiest way to inspect the inference model is to look at the emitted module. In this playground, the authored `Props` type establishes the base descriptor, and `^properties(...)` only enriches Lit-specific behavior.
+The easiest way to inspect the inference model is to look at the emitted module. In this playground, the authored `Props` type establishes the base descriptor, and `static properties = ...` only enriches Lit-specific behavior.
 
 <script setup>
 import { propertyInferenceExampleSource } from "../.vitepress/theme/components/playground-example-source.js";
@@ -105,9 +105,9 @@ This starts from a property descriptor equivalent to:
 }
 ```
 
-## Using `^properties(...)`
+## Using `static properties = ...`
 
-Use `^properties(...)` when the inferred type is correct but the Lit behavior needs more detail.
+Use `static properties = ...` when the inferred type is correct but the Lit behavior needs more detail.
 
 ```tsx
 type CardProps = {
@@ -118,11 +118,11 @@ type CardProps = {
 };
 
 export function Card(props: CardProps) {
-  ^properties<CardProps>({
+  static properties = {
     active: { reflect: true },
     payload: { attribute: false },
     onSelect: { attribute: false },
-  });
+  };
 
   return <article>{props.title}</article>;
 }
@@ -142,9 +142,9 @@ That produces a descriptor shaped like:
 The important distinction is:
 
 - inference decides the base `type`
-- `^properties(...)` refines Lit-specific behavior such as `reflect`, `attribute`, `converter`, or `hasChanged`
+- `static properties = ...` refines Lit-specific behavior such as `reflect`, `attribute`, `converter`, or `hasChanged`
 
-That also means `^properties(...)` is useful even when TypeScript inference is already correct. It is the place to enrich the descriptor, not to replace typing entirely.
+That also means `static properties = ...` is useful even when TypeScript inference is already correct. It is the place to enrich the descriptor, not to replace typing entirely.
 
 ## Untyped Props Fallback
 
@@ -177,7 +177,7 @@ So the fallback rule is intentionally conservative:
 
 - direct `props.foo` access can produce property metadata
 - untyped opaque member access falls back to `String`
-- stronger sources such as TypeScript types or `^properties(...)` still win
+- stronger sources such as TypeScript types or `static properties = ...` still win
 
 ## When Lit<sup>sx</sup> Degrades to `Object`
 
@@ -221,9 +221,9 @@ The warning means:
 - the prop was discovered from `props.foo`
 - Lit<sup>sx</sup> had to fall back to `String`
 - you should prefer one of:
-  - TypeScript prop types
-  - destructuring in the component signature
-  - explicit `^properties(...)`
+- TypeScript prop types
+- destructuring in the component signature
+- explicit `static properties = ...`
 
 That warning is there because the component still compiles, but the inferred property descriptor is weaker than it could be.
 
@@ -233,7 +233,7 @@ That warning is there because the component still compiles, but the inferred pro
 - use destructuring when the component shape is simple
 - let inference do the default work
 - use `function Component(props)` only when you really want an opaque prop object
-- use `^properties(...)` only for Lit-specific behavior
+- use `static properties = ...` only for Lit-specific behavior
 - treat `props.foo` fallback inference as a recovery path, not the ideal authoring style
 - prefer degradation to `Object` over manually duplicating every property unless you need explicit options
 

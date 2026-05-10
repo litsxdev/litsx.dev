@@ -299,8 +299,8 @@ export class App extends ShadowDomElementsMixin(LitElement) {
     return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}><toolbar></toolbar></litsx-context-provider>`;
   }
   static elements = {
-    "litsx-context-provider": LitsxContextProvider,
-    "toolbar": Toolbar
+    "toolbar": Toolbar,
+    "litsx-context-provider": LitsxContextProvider
   };
 }
 ```
@@ -511,12 +511,13 @@ import { ErrorBoundary } from "react-error-boundary";
 ```js
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/litsx";
 import { LitElement, html } from "lit";
+import { bindRendererContext } from "@litsx/litsx/internal/runtime-render-context";
 import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
 const ResultsPanel = () => import("./ResultsPanel.js");
 export class SearchCard extends ShadowDomElementsMixin(LitElement) {
   render() {
     ensureLazyElement(this, "results-panel", ResultsPanel);
-    return html`<error-boundary .fallbackRenderer=${() => html`<p>Oops</p>`} .contentRenderer=${() => html`<suspense-boundary .fallbackRenderer=${() => html`<p>Loading</p>`} .contentRenderer=${() => html`<results-panel value="ready"></results-panel>`}></suspense-boundary>`}></error-boundary>`;
+    return html`<error-boundary .fallbackRenderer=${() => html`<p>Oops</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<suspense-boundary .fallbackRenderer=${() => html`<p>Loading</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<results-panel value="ready"></results-panel>`)}></suspense-boundary>`)}></error-boundary>`;
   }
   static elements = {
     "error-boundary": ErrorBoundary,
@@ -608,13 +609,13 @@ import React, { createContext } from "react";
 
 ```txt
 unknown file: React class contextType is not supported by @litsx/babel-preset-react-compat.
-  4 |
-  5 |       export class LegacyPanel extends React.Component {
-> 6 |         static contextType = ThemeContext;
-    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  7 |
-  8 |         render() {
-  9 |           return <div>{this.context}</div>;
+[0m [90m 4 |[39m
+ [90m 5 |[39m       [36mexport[39m [36mclass[39m [33mLegacyPanel[39m [36mextends[39m [33mReact[39m[33m.[39m[33mComponent[39m {
+[31m[1m>[22m[39m[90m 6 |[39m         [36mstatic[39m contextType [33m=[39m [33mThemeContext[39m[33m;[39m
+ [90m   |[39m         [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 7 |[39m
+ [90m 8 |[39m         render() {
+ [90m 9 |[39m           [36mreturn[39m [33m<[39m[33mdiv[39m[33m>[39m{[36mthis[39m[33m.[39mcontext}[33m<[39m[33m/[39m[33mdiv[39m[33m>[39m[33m;[39m[0m
 ```
 
 ### Errors when Context.Consumer does not receive exactly one function child
@@ -643,11 +644,35 @@ import { createContext } from "react";
 
 ```txt
 unknown file: React context Consumer requires a function child.
-   5 |       export function BrokenConsumer() {
-   6 |         return (
->  7 |           <ThemeContext.Consumer>
-     |           ^
-   8 |             <span>broken</span>
-   9 |           </ThemeContext.Consumer>
-  10 |         );
+[0m [90m  5 |[39m       [36mexport[39m [36mfunction[39m [33mBrokenConsumer[39m() {
+ [90m  6 |[39m         [36mreturn[39m (
+[31m[1m>[22m[39m[90m  7 |[39m           [33m<[39m[33mThemeContext[39m[33m.[39m[33mConsumer[39m[33m>[39m
+ [90m    |[39m           [31m[1m^[22m[39m
+ [90m  8 |[39m             [33m<[39m[33mspan[39m[33m>[39mbroken[33m<[39m[33m/[39m[33mspan[39m[33m>[39m
+ [90m  9 |[39m           [33m<[39m[33m/[39m[33mThemeContext[39m[33m.[39m[33mConsumer[39m[33m>[39m
+ [90m 10 |[39m         )[33m;[39m[0m
+```
+
+### Errors on truly undeclared PascalCase JSX
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+export function BrokenPanel() {
+        return <MissingThing />;
+      }
+```
+
+#### Generated Error
+
+```txt
+unknown file: Unknown LitSX component "MissingThing". Add an import or declare it in this module before using it in JSX.
+[0m [90m 1 |[39m [36mexport[39m [36mfunction[39m [33mBrokenPanel[39m() {
+[31m[1m>[22m[39m[90m 2 |[39m         [36mreturn[39m [33m<[39m[33mMissingThing[39m [33m/[39m[33m>[39m[33m;[39m
+ [90m   |[39m                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 3 |[39m       }[0m
 ```

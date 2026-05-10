@@ -22,7 +22,7 @@ That scaffold keeps the first contact intentionally small:
 - one authored Lit<sup>sx</sup> component
 - one `@click` binding
 - one `useState(...)`
-- one `^styles(...)`
+- one `static styles = ...`
 - one `eslint.config.js` already wired to the official Lit<sup>sx</sup> preset
 
 For the editor story, Lit<sup>sx</sup> treats its own authored source format as the primary path:
@@ -39,9 +39,9 @@ By default, think in native Lit<sup>sx</sup> terms:
 - Lit powers rendering
 - the deployed unit is a web component
 - prop types are the source of truth for generated property metadata
-- static hoists such as `^name(...)` belong to the component type
+- static hoists such as `static name = ...` belong to the component type
 
-In practice, a static hoist such as `^styles(...)` or `^properties(...)`:
+In practice, a static hoist such as `static styles = ...` or `static properties = ...`:
 
 - is authored syntax, not a runtime import
 - must appear as a top-level statement in the component body

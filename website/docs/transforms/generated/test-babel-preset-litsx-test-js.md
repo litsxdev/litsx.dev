@@ -177,6 +177,60 @@ export class Greeting extends LitElement {
 }
 ```
 
+### Keeps top-level lowercase helpers as plain functions and only lowers their JSX
+
+#### Interpretation
+
+This case highlights syntax that should survive the transform unchanged or be preserved semantically.
+
+#### Authored Input
+
+```jsx
+function renderHelperWithArgs(alpha, beta, gamma) {
+  return <p>{alpha}{beta}{gamma}</p>;
+}
+export const Demo = () => {
+  return <section>{renderHelperWithArgs('a', 'b', 'c')}</section>;
+};
+```
+
+#### Generated Output
+
+```js
+import { LitElement, html } from "lit";
+function renderHelperWithArgs(alpha, beta, gamma) {
+  return html`<p>${alpha}${beta}${gamma}</p>`;
+}
+export class Demo extends LitElement {
+  render() {
+    return html`<section>${renderHelperWithArgs('a', 'b', 'c')}</section>`;
+  }
+}
+```
+
+### Does not promote named lowercase exports to authored components
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+export function renderHelper() {
+  return <p>ok</p>;
+}
+```
+
+#### Generated Output
+
+```js
+import { html } from "lit";
+export function renderHelper() {
+  return html`<p>ok</p>`;
+}
+```
+
 ### Can be consumed through createLitsxPresetPlugins directly
 
 #### Interpretation
@@ -333,8 +387,8 @@ type Props = { label: string; active: boolean };
 export function ActionCard({ label, active }: Props) {
   const buttonRef = useRef(null);
   const [count, setCount] = useState(0);
-  ^styles(`:host { display: block; }`);
-  ^properties<Props>({ active: { reflect: true } });
+  static styles = `:host { display: block; }`;
+  static properties = { active: { reflect: true } };
   return <FancyButton ref={buttonRef} .label={label} @click={() => setCount(count + 1)}>{active ? count : 0}</FancyButton>;
 }
 ```

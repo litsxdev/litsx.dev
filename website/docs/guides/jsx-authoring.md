@@ -124,18 +124,18 @@ This example shows that split directly:
 
 ## Static Hoists
 
-Lit<sup>sx</sup> also supports authored static hoists with `^name(...)`.
+Lit<sup>sx</sup> also supports authored static hoists with `static name = ...`.
 
 This is a compile-time macro, not a runtime import:
 
-- `^styles(...)` is the obvious fit for component-owned CSS
-- `^properties(...)` is the obvious fit for Lit property metadata
-- `^shadowRootOptions(...)` or any other `^name(...)` can attach additional static class metadata when Lit, Lit<sup>sx</sup>, or your own runtime code consumes it
+- `static styles = ...` is the obvious fit for component-owned CSS
+- `static properties = ...` is the obvious fit for Lit property metadata
+- `static shadowRootOptions = ...` or any other `static name = ...` can attach additional static class metadata when Lit, Lit<sup>sx</sup>, or your own runtime code consumes it
 
 Every static hoist lowers to a memoized static getter on the generated class.
 Static hoists also have one placement rule: they must appear as top-level statements in the component body.
 
-The one special case is `^expose(...)`, which lowers to static class methods instead of to a getter. That keeps class-level imperative APIs separate from [`useExpose`](../reference/generated/useexpose.md), which is still the instance-level ref primitive.
+The one special case is `static expose = ...`, which lowers to static class methods instead of to a getter. That keeps class-level imperative APIs separate from [`useExpose`](../reference/generated/useexpose.md), which is still the instance-level ref primitive.
 
 ## Where To Look Next
 

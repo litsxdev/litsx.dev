@@ -14,7 +14,7 @@ export function Counter({
   const tone = count >= 8 ? "#0f766e" : count >= 4 ? "#b45309" : "#7c2d12";
   const level = count >= 8 ? "High" : count >= 4 ? "Medium" : "Low";
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -72,7 +72,7 @@ export function Counter({
       cursor: pointer;
       font-weight: 600;
     }
-  \`);
+  \`;
 
   useStyle("--accent", tone);
 
@@ -115,14 +115,14 @@ export function ProfileCard({
   createdAt = new Date("1843-07-01"),
   onSelect = (id) => alert(\`Selected profile: \${id}\`),
 }: ProfileCardProps) {
-  ^properties<ProfileCardProps>({
+  static properties = {
     active: { reflect: true },
     tags: { attribute: false },
     createdAt: { attribute: false },
     onSelect: { attribute: false },
-  });
+  };
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -202,7 +202,7 @@ export function ProfileCard({
       cursor: pointer;
       font-weight: 600;
     }
-  \`);
+  \`;
 
   return (
     <article class="card" data-tone={tone}>
@@ -236,7 +236,7 @@ type ComposerProps = {
 export function Composer({ name = "world" }: ComposerProps) {
   const [count, setCount] = useState(0);
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -303,7 +303,7 @@ export function Composer({ name = "world" }: ComposerProps) {
       line-height: 1.45;
       color: rgba(226, 232, 240, 0.9);
     }
-  \`);
+  \`;
 
   return (
     <section class="card">
@@ -344,7 +344,7 @@ export function DirectiveInbox() {
   const [cycle, setCycle] = useState(1);
   const [messages, setMessages] = useState(initialMessages);
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       color: #f5efe5;
@@ -441,7 +441,7 @@ export function DirectiveInbox() {
       background: rgba(255, 255, 255, 0.06);
       color: rgba(245, 239, 229, 0.72);
     }
-  \`);
+  \`;
 
   const visibleMessages = showUnreadOnly
     ? messages.filter((message) => !message.read)
@@ -529,7 +529,7 @@ export function AccentPanel({ title = "System Accent" }: AccentPanelProps) {
   const [active, setActive] = useState(true);
   const accent = accents[accentIndex];
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -631,7 +631,7 @@ export function AccentPanel({ title = "System Accent" }: AccentPanelProps) {
       background: rgba(255, 255, 255, 0.08);
       color: rgba(226, 232, 240, 0.92);
     }
-  \`);
+  \`;
 
   useStyle("--panel-accent", accent);
 
@@ -640,7 +640,7 @@ export function AccentPanel({ title = "System Accent" }: AccentPanelProps) {
       <div class="eyebrow">Styling split</div>
       <h2 class="title">{title}</h2>
       <p class="body">
-        The layout and selectors stay in ^styles(...). The accent color is driven at runtime
+        The layout and selectors stay in static styles = .... The accent color is driven at runtime
         through a CSS custom property.
       </p>
 
@@ -700,7 +700,7 @@ export function RuntimeCard({ label = "Runtime surface" }: RuntimeCardProps) {
     return () => clearTimeout(timer);
   }, [count]);
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -781,7 +781,7 @@ export function RuntimeCard({ label = "Runtime surface" }: RuntimeCardProps) {
       font-size: 0.9rem;
       line-height: 1.45;
     }
-  \`);
+  \`;
 
   return (
     <article class="card">
@@ -821,11 +821,11 @@ export function Disclosure({
   defaultOpen = true,
   onOpenChange,
 }: DisclosureProps) {
-  ^properties<DisclosureProps>({
+  static properties = {
     open: { attribute: false },
     defaultOpen: { attribute: false },
     onOpenChange: { attribute: false },
-  });
+  };
 
   const [isOpen, setIsOpen] = useControlledState({
     value: open,
@@ -833,7 +833,7 @@ export function Disclosure({
     onChange: onOpenChange,
   });
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -888,7 +888,7 @@ export function Disclosure({
       background: #0f172a;
       border: 1px solid #1e3a8a;
     }
-  \`);
+  \`;
 
   return (
     <section class="card">
@@ -926,7 +926,7 @@ export function BoundaryDemo({ title = "Recoverable render failure" }: BoundaryD
   const [cycle, setCycle] = useState(0);
   const [shouldCrash, setShouldCrash] = useState(false);
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -1013,7 +1013,7 @@ export function BoundaryDemo({ title = "Recoverable render failure" }: BoundaryD
       background: #fb7185;
       color: white;
     }
-  \`);
+  \`;
 
   return (
     <section class="card">
@@ -1089,11 +1089,11 @@ export function ProfileChip({
   tone = "ocean",
   note = "Ready for review",
 }: ProfileChipProps) {
-  ^properties<ProfileChipProps>({
+  static properties = {
     tone: { attribute: false },
-  });
+  };
 
-  ^expose({
+  static expose = {
     nextTone(current: Tone): Tone {
       const tones: Tone[] = ["ocean", "amber", "rose"];
       const index = tones.indexOf(current);
@@ -1113,9 +1113,9 @@ export function ProfileChip({
     createNote(name: string, tone: Tone) {
       return \`\${name} is currently in \${tone} mode.\`;
     },
-  });
+  };
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -1170,7 +1170,7 @@ export function ProfileChip({
       background: var(--tone-color);
       box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
     }
-  \`);
+  \`;
 
   const toneColor = tone === "ocean" ? "#38bdf8" : tone === "amber" ? "#f59e0b" : "#fb7185";
 
@@ -1188,7 +1188,7 @@ export function StaticExposeDemo() {
   const [seed, setSeed] = useState(0);
   const [profile, setProfile] = useState(() => ProfileChip.createPreset(0));
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -1261,7 +1261,7 @@ export function StaticExposeDemo() {
       font-size: 0.88rem;
       color: rgba(226, 232, 240, 0.72);
     }
-  \`);
+  \`;
 
   return (
     <section class="stack">
@@ -1269,7 +1269,7 @@ export function StaticExposeDemo() {
         <div class="eyebrow">Parent component</div>
         <h2 class="title">Imperative child class API</h2>
         <p class="body">
-          The parent drives the child by calling static methods generated from <code>^expose(...)</code>.
+          The parent drives the child by calling static methods generated from <code>static expose = ...</code>.
         </p>
         <div class="controls">
           <button
@@ -1485,7 +1485,7 @@ class GuestPanel extends LightDomElementsMixin(LightDomMixin(LitElement)) {
 // automatically from the sibling classes above. No manual customElements.define(...)
 // is needed for those tags in the demo.
 export function LightDomPalette() {
-  ^lightDom();
+  static lightDom = true;
 
   return (
     <section
@@ -1549,12 +1549,12 @@ type LightDomPaletteProps = {
 export function LightDomPalette({
   title = "Light DOM surface",
 }: LightDomPaletteProps) {
-  ^lightDom();
+  static lightDom = true;
 
   const [accent, setAccent] = useState("#0f766e");
   const [tone, setTone] = useState("Forest");
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -1644,7 +1644,7 @@ export function LightDomPalette({
       font-size: 0.88rem;
       color: color-mix(in srgb, var(--text, #0f172a) 70%, white);
     }
-  \`);
+  \`;
 
   return (
     <section
@@ -1754,7 +1754,7 @@ export function ScopedElementsBaseline({
 }: ScopedElementsBaselineProps) {
   const [active, setActive] = useState(true);
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -1812,7 +1812,7 @@ export function ScopedElementsBaseline({
       cursor: pointer;
       font-weight: 600;
     }
-  \`);
+  \`;
 
   return (
     <section class="card">
@@ -1891,7 +1891,7 @@ export function AsyncShowcase({ title = "Async reveal order" }: AsyncShowcasePro
 
   const resources = resourcesRef.current.resources;
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -1989,7 +1989,7 @@ export function AsyncShowcase({ title = "Async reveal order" }: AsyncShowcasePro
       cursor: pointer;
       font-weight: 600;
     }
-  \`);
+  \`;
 
   return (
     <section class="card">
@@ -2241,7 +2241,7 @@ type InputApi = {
 type RefProp<T> = { current: T | null };
 
 function HostRefCard({ ref }: { ref?: RefProp<HTMLElement> }) {
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       color: #f4efe8;
@@ -2262,7 +2262,7 @@ function HostRefCard({ ref }: { ref?: RefProp<HTMLElement> }) {
       font-size: 0.82rem;
       color: #93c5fd;
     }
-  \`);
+  \`;
 
   return (
     <section class="ref-card">
@@ -2273,7 +2273,7 @@ function HostRefCard({ ref }: { ref?: RefProp<HTMLElement> }) {
 }
 
 function ForwardedDomInput({ ref }: { ref?: RefProp<HTMLInputElement> }) {
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       color: #f4efe8;
@@ -2313,7 +2313,7 @@ function ForwardedDomInput({ ref }: { ref?: RefProp<HTMLInputElement> }) {
     .ref-card input::placeholder {
       color: #64748b;
     }
-  \`);
+  \`;
 
   return (
     <label class="ref-card">
@@ -2326,7 +2326,7 @@ function ForwardedDomInput({ ref }: { ref?: RefProp<HTMLInputElement> }) {
 function ImperativeHandleInput({ ref }: { ref?: RefProp<InputApi> }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       color: #f4efe8;
@@ -2366,7 +2366,7 @@ function ImperativeHandleInput({ ref }: { ref?: RefProp<InputApi> }) {
     .ref-card input::placeholder {
       color: #64748b;
     }
-  \`);
+  \`;
 
   useExpose(ref, () => ({
     focus() {
@@ -2396,7 +2396,7 @@ export function NativeRefResolutionDemo() {
   const apiRef = useRef<InputApi | null>(null);
   const [status, setStatus] = useState("Idle");
 
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       color: #f4efe8;
@@ -2441,7 +2441,7 @@ export function NativeRefResolutionDemo() {
       border: 1px solid #1e293b;
       font-size: 0.95rem;
     }
-  \`);
+  \`;
 
   return (
     <div class="ref-stack">
@@ -2453,7 +2453,7 @@ export function NativeRefResolutionDemo() {
           class="ref-button"
           @click={() => {
             const tag = hostRef.current?.tagName?.toLowerCase?.() ?? "missing";
-            setStatus(\`Host ref -> \${tag}\`);
+            setStatus(\`Host ref -> \${tag}\`;
           }}
         >
           Read host ref
@@ -2488,7 +2488,7 @@ export const useEmitExampleSource = `
 import { useEmit, useState } from "@litsx/litsx";
 
 function EventEmitterButton() {
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -2562,7 +2562,7 @@ function EventEmitterButton() {
       font-size: 0.9rem;
     }
 
-  \`);
+  \`;
 
   const emit = useEmit();
   const [index, setIndex] = useState(0);
@@ -2617,7 +2617,7 @@ function wait(ms) {
 }
 
 export function UseAsyncStateDemo() {
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -2672,7 +2672,7 @@ export function UseAsyncStateDemo() {
     .error {
       color: #fda4af;
     }
-  \`);
+  \`;
 
   const [count, saveCount, meta] = useAsyncState(1, async (_current, nextCount) => {
     await wait(450);
@@ -2720,7 +2720,7 @@ export const useOptimisticExampleSource = `
 import { useOptimistic, useState } from "@litsx/litsx";
 
 export function UseOptimisticDemo() {
-  ^styles(\`
+  static styles = \`
     :host {
       display: block;
       font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -2806,7 +2806,7 @@ export function UseOptimisticDemo() {
       color: #f5f3ff;
       font-size: 0.9rem;
     }
-  \`);
+  \`;
 
   const [baseTodos, setBaseTodos] = useState(["Ship docs"]);
   const [optimisticTodos, addOptimisticTodo, resetOptimisticTodos] = useOptimistic(

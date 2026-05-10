@@ -207,7 +207,7 @@ This case records the authored input and the generated output as a living transf
 import FancyButton from './FancyButton.js';
 
       function LightScreen() {
-        ^lightDom();
+        static lightDom = true;
         return <FancyButton />;
       }
 ```
@@ -217,7 +217,7 @@ import FancyButton from './FancyButton.js';
 ```js
 import FancyButton from './FancyButton.js';
 function LightScreen() {
-  __litsx_static_lightDom();
+  __litsx_static_lightDom(true);
   return <FancyButton />;
 }
 ```
@@ -232,7 +232,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 function LightCard() {
-        ^lightDom();
+        static lightDom = true;
         return <div>ready</div>;
       }
 ```
@@ -241,7 +241,7 @@ function LightCard() {
 
 ```js
 function LightCard() {
-  __litsx_static_lightDom();
+  __litsx_static_lightDom(true);
   return <div>ready</div>;
 }
 ```
@@ -519,12 +519,12 @@ This case highlights syntax that should survive the transform unchanged or be pr
 import ProfileChip from './profile/ProfileChip.js';
 
       export function FirstScreen() {
-        ^lightDom();
+        static lightDom = true;
         return <ProfileChip />;
       }
 
       export function SecondScreen() {
-        ^lightDom();
+        static lightDom = true;
         return <ProfileChip />;
       }
 ```
@@ -534,11 +534,11 @@ import ProfileChip from './profile/ProfileChip.js';
 ```js
 import ProfileChip from './profile/ProfileChip.js';
 export function FirstScreen() {
-  __litsx_static_lightDom();
+  __litsx_static_lightDom(true);
   return <ProfileChip />;
 }
 export function SecondScreen() {
-  __litsx_static_lightDom();
+  __litsx_static_lightDom(true);
   return <ProfileChip />;
 }
 ```

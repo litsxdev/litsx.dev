@@ -29,7 +29,7 @@ Recreate the boundary with a new identity when you want to retry after a latched
 - The boundary catches synchronous render errors from its content renderer and switches to fallback mode.
 - Once it has failed, the boundary stays latched on fallback until the instance is replaced.
 - Thenables are not treated as errors. They are rethrown so SuspenseBoundary can continue to own asynchronous reveal.
-- ErrorBoundary works in light DOM, so surrounding layout and typography styles can continue to flow through the boundary naturally.
+- ErrorBoundary renders fallback and content in light DOM wrappers so authored subtrees keep the render context of the host that declared them.
 
 ## Mental Model
 

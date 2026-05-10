@@ -6,7 +6,7 @@ It covers the APIs you author directly in Lit<sup>sx</sup> code:
 
 - primitives such as `SuspenseBoundary` and `SuspenseList`
 - hooks for state, effects, transitions, refs, and external stores
-- static hoists such as `^name(...)`, documented in the authoring guides rather than exposed as runtime imports
+- static hoists such as `static name = ...`, documented in the authoring guides rather than exposed as runtime imports
 - styling helpers for dynamic host style values
 - the authored surface of the framework, not the lower-level runtime helpers behind compilation
 
@@ -64,7 +64,7 @@ If you want the shortest path through the native surface, start here:
 
 Some Lit<sup>sx</sup> features are authored natively but are not runtime imports.
 
-The most important examples are static hoists such as `^styles(...)`, `^properties(...)`, and other `^name(...)` forms. They are part of the authoring model, but they belong in the guides because they are compile-time syntax, not ordinary importable APIs.
+The most important examples are static hoists such as `static styles = ...`, `static properties = ...`, and other `static name = ...` forms. They are part of the authoring model, but they belong in the guides because they are compile-time syntax, not ordinary importable APIs.
 
 Start here for that layer:
 

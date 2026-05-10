@@ -30,7 +30,7 @@ Prefer several small boundaries over one large catch-all boundary when different
 
 - The boundary renders fallback content while the wrapped subtree is pending.
 - Once the subtree resolves, the boundary can coordinate its reveal with a parent SuspenseList.
-- SuspenseBoundary works in light DOM, so surrounding layout and typography styles can continue to flow through the boundary naturally.
+- SuspenseBoundary renders fallback and content in light DOM wrappers so authored subtrees keep the render context of the host that declared them.
 - The fallback is part of the authored component tree, so it can use the same JSX patterns and styling approach as the rest of the component.
 
 ## Mental Model

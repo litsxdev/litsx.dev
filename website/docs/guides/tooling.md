@@ -54,7 +54,7 @@ For CLI type-checking, use the virtualized entrypoint instead of plain `tsc` whe
 - `@event`
 - `.prop`
 - `?attr`
-- `^name(...)`
+- `static name = ...`
 
 Typical scaffolded usage:
 
@@ -78,9 +78,9 @@ That split is deliberate:
 The important thing is that tooling is not just parsing JSX. It also understands the authored contract of the framework:
 
 - prop types drive generated Lit property descriptors
-- `^properties(...)` refines those descriptors
-- `^styles(...)` is treated as static component CSS
-- `^name(...)` hoists are validated as top-level-only component statements
+- `static properties = ...` refines those descriptors
+- `static styles = ...` is treated as static component CSS
+- `static name = ...` hoists are validated as top-level-only component statements
 - `useStyle(...)` stays in the dynamic runtime surface
 
 Type declarations also carry the native styling helpers, so editor tooling can distinguish:
@@ -90,7 +90,7 @@ Type declarations also carry the native styling helpers, so editor tooling can d
 
 That means the editor can catch the computed form when the dependency array is missing.
 
-The TypeScript-aware transform also uses prop types as the source of truth for generated Lit property descriptors. That is what lets Lit<sup>sx</sup> infer class property metadata from authored props and then merge `^properties(...)` on top when needed.
+The TypeScript-aware transform also uses prop types as the source of truth for generated Lit property descriptors. That is what lets Lit<sup>sx</sup> infer class property metadata from authored props and then merge `static properties = ...` on top when needed.
 
 When the compiler has to recover property metadata from opaque member access like `props.title`, it still emits a usable descriptor, but it also records a warning in transform metadata (`metadata.litsxWarnings`) so tooling can surface that the fallback inference was weaker than a typed or destructured signature.
 
@@ -121,7 +121,7 @@ The plugin covers authored forms such as:
 - `@event`
 - `.prop`
 - `?attr`
-- `^name(...)`
+- `static name = ...`
 
 and includes rules such as:
 
@@ -172,7 +172,7 @@ The v1 surface is intentionally narrow:
 - `*.litsx.jsx`
 
 It preserves Lit<sup>sx</sup>-authored syntax directly and formats static
-`^styles(\`...\`)` templates as CSS. Plain `tsx/jsx` compatibility formatting remains
+`static styles = \`...\`;` templates as CSS. Plain `tsx/jsx` compatibility formatting remains
 intentionally out of scope in this first pass.
 
 So the authoritative story today is:
