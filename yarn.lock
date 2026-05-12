@@ -1205,17 +1205,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@litsx/compiler@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "@litsx/compiler@npm:0.5.0"
+"@litsx/compiler@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@litsx/compiler@npm:0.5.1"
   dependencies:
     "@babel/core": "npm:^7.29.0"
     "@babel/parser": "npm:^7.29.3"
+    "@babel/plugin-transform-typescript": "npm:^7.28.5"
     "@litsx/babel-plugin-transform-jsx-html-template": "npm:^0.3.0"
     "@litsx/babel-preset-litsx": "npm:^0.5.0"
     "@litsx/jsx-authoring": "npm:^0.3.0"
     "@litsx/typescript-session": "npm:^0.2.1"
-  checksum: 10c0/d9a5c1b45532c8d07824a3ab91ff5a74b4bf35a5ada288ed84a69e595c2c7f2f0f4dd995a1810ba483bb90018eef12bbe5a31639155582b2ef54213cf087d0b5
+  checksum: 10c0/11d2f97cb4837e043c4192b8b89a0d7592bab04d10dd510c10ee9f8c11bf6fadeddfd175fb16a0981b8ebe786d4ec4f2888b62d467e7ceee19edc111bd8898ba
   languageName: node
   linkType: hard
 
@@ -1262,7 +1263,7 @@ __metadata:
     "@litsx/babel-plugin-transform-jsx-html-template": "npm:^0.3.0"
     "@litsx/babel-preset-litsx": "npm:^0.5.0"
     "@litsx/babel-preset-react-compat": "npm:^0.2.3"
-    "@litsx/compiler": "npm:^0.5.0"
+    "@litsx/compiler": "npm:^0.5.1"
     "@litsx/jsx-authoring": "npm:^0.3.0"
     "@litsx/litsx": "npm:^0.3.0"
     "@rollup/plugin-babel": "npm:^6.1.0"
@@ -1292,16 +1293,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@litsx/typescript-plugin@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@litsx/typescript-plugin@npm:0.3.0"
+"@litsx/typescript-plugin@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "@litsx/typescript-plugin@npm:0.3.2"
   dependencies:
     "@babel/parser": "npm:^7.29.3"
   peerDependencies:
     typescript: ">=5"
   bin:
     litsx-tsc: dist/litsx-tsc.js
-  checksum: 10c0/c2bc9fa1264446615336e5d584a8bf714c46a40e2e12dff81ba3d88197e967526ccf54aeb0ff4b0d795d3125fe9566ac79260876372718e92d952b3f47041c33
+  checksum: 10c0/28ef16e1f4bf67d8debec033a5a7fc56072a05353a8ebb5ff1816843c8e59d78117fa0a25fba327ea4b326f2c446de4277838db8b8e3e4edc076a0711261e0aa
   languageName: node
   linkType: hard
 
@@ -1318,9 +1319,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@litsx/vitepress@workspace:packages/vitepress"
   dependencies:
-    "@litsx/compiler": "npm:^0.5.0"
+    "@litsx/compiler": "npm:^0.5.1"
     "@litsx/shiki-languages": "workspace:^"
-    "@litsx/typescript-plugin": "npm:^0.3.0"
+    "@litsx/typescript-plugin": "npm:^0.3.2"
   peerDependencies:
     vitepress: ">=1"
     vue: ">=3"
