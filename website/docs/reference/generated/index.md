@@ -13,6 +13,7 @@ It documents the APIs that developers write in Lit<sup>sx</sup> code, not the lo
 ## Hooks
 
 - [`useState`](./usestate.md)
+- [`startTransition`](./starttransition.md)
 - [`useOnConnect`](./useonconnect.md)
 - [`useAfterUpdate`](./useafterupdate.md)
 - [`useOnCommit`](./useoncommit.md)

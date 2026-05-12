@@ -441,6 +441,55 @@ import { LitElement, svg } from "lit";
 const view = svg`<div>${label}</div>`;
 ```
 
+### Does not duplicate an existing custom tagged import from lit
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { LitElement, svg } from "lit";
+const view = <div>{label}</div>;
+```
+
+#### Generated Output
+
+```js
+import { LitElement, svg } from "lit";
+const view = svg`<div>${label}</div>`;
+```
+
+### Adds a separate tagged import when lit is imported as a namespace
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import * as lit from "lit";
+const view = <div>{label}</div>;
+```
+
+#### Generated Output
+
+```js
+import { svg } from "lit";
+import * as lit from "lit";
+const view = svg`<div>${label}</div>`;
+```
+
+### Ignores lit attribute sourcemap metadata whose generated needle is missing
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
 ### Creates component calls for namespaced components and spread props
 
 #### Interpretation

@@ -11,7 +11,7 @@ import { useTransition } from "@litsx/litsx";
 ```
 
 ```ts
-useTransition(): [ boolean, (callback: () => void) => void ]
+useTransition(): [ boolean, <T>(callback: () => T) => T ]
 ```
 
 ## Usage
@@ -48,11 +48,12 @@ startTransition(() => {
 
 ## Returns
 
-Type: `[boolean, (callback: () => void) => void]`
+Type: `[boolean, <T>(callback: () => T) => T]`
 
 A pending flag and a function that schedules non-urgent work.
 
 ## Related
 
+- [startTransition](./starttransition.md)
 - [useDeferredValue](./usedeferredvalue.md)
 - [useState](./usestate.md)

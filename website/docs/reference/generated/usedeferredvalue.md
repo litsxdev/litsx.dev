@@ -66,5 +66,6 @@ The deferred value currently exposed to render logic.
 
 ## Related
 
+- [startTransition](./starttransition.md)
 - [useTransition](./usetransition.md)
 - [useMemoValue](./usememovalue.md)

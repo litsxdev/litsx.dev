@@ -262,6 +262,7 @@ function getReturnsDoc(item) {
 
 function classify(name) {
   if (name === "useStyle") return "Styling";
+  if (name === "startTransition") return "Hook";
   if (name.startsWith("use")) return "Hook";
   return "Primitive";
 }
@@ -375,13 +376,22 @@ function getRelatedLinks(name) {
 
   if (name === "useTransition") {
     return [
+      "- [startTransition](./starttransition.md)",
       "- [useDeferredValue](./usedeferredvalue.md)",
       "- [useState](./usestate.md)",
     ];
   }
 
+  if (name === "startTransition") {
+    return [
+      "- [useTransition](./usetransition.md)",
+      "- [useDeferredValue](./usedeferredvalue.md)",
+    ];
+  }
+
   if (name === "useDeferredValue") {
     return [
+      "- [startTransition](./starttransition.md)",
       "- [useTransition](./usetransition.md)",
       "- [useMemoValue](./usememovalue.md)",
     ];
@@ -548,6 +558,7 @@ const suspenseBoundarySource = readSourceFile(suspenseBoundaryJsPath, ts.ScriptK
 const suspenseListSource = readSourceFile(suspenseListJsPath, ts.ScriptKind.JS);
 const authorHookNames = [...new Set([
   "useState",
+  "startTransition",
   ...getAuthorHookNames(),
 ].filter((name) => !["useEffect", "useLayoutEffect"].includes(name)))];
 const primitives = ["ErrorBoundary", "SuspenseBoundary", "SuspenseList"];

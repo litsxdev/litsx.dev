@@ -332,11 +332,11 @@ Detailed reference: [`useEmit`](../../reference/generated/useemit.md)
 /**
  * Emit a CustomEvent from the current host.
  */
-export declare function useEmit<T = undefined>(type: string, detail?: T, options?: {
+export declare function useEmit(): <T = undefined>(type: string, detail?: T, options?: {
     bubbles?: boolean;
     composed?: boolean;
     cancelable?: boolean;
-}): boolean;
+}) => boolean;
 ```
 
 ## State And Concurrency
@@ -441,8 +441,21 @@ Detailed reference: [`useTransition`](../../reference/generated/usetransition.md
  */
 export declare function useTransition(): [
     boolean,
-    (callback: () => void) => void
+    <T>(callback: () => T) => T
 ];
+```
+
+### `startTransition`
+
+Schedule non-urgent updates using the same transition machinery as useTransition.
+
+Detailed reference: [`startTransition`](../../reference/generated/starttransition.md)
+
+```ts
+/**
+ * Schedule non-urgent updates using the same transition machinery as useTransition.
+ */
+export declare function startTransition<T>(callback: () => T): T;
 ```
 
 ### `useDeferredValue`
@@ -708,12 +721,13 @@ export namespace JSX {
     interface IntrinsicClassAttributes<T> {
         ref?: LitsxRef<T>;
     }
-    type LibraryManagedAttributes<Component, Props> = Component extends typeof ErrorBoundary ? ErrorBoundaryProps : Component extends typeof SuspenseBoundary ? SuspenseBoundaryProps : Component extends typeof SuspenseList ? SuspenseListProps : Component extends LitsxComponent<infer InferredProps> ? InferredProps : Props;
+    type LitsxBoundaryElementProps<TElement, TProps> = LitsxElementProps<TElement> & TProps;
+    type LibraryManagedAttributes<Component, Props> = Component extends typeof ErrorBoundary ? LitsxBoundaryElementProps<ErrorBoundary, ErrorBoundaryProps> : Component extends typeof SuspenseBoundary ? LitsxBoundaryElementProps<SuspenseBoundary, SuspenseBoundaryProps> : Component extends typeof SuspenseList ? LitsxBoundaryElementProps<SuspenseList, SuspenseListProps> : Component extends LitsxComponent<infer InferredProps> ? InferredProps : Props;
 }
 ```
 
 ### `LitsxComponentProps`
 
 ```ts
-export type LitsxComponentProps<T> = T extends typeof ErrorBoundary ? ErrorBoundaryProps : T extends typeof SuspenseBoundary ? SuspenseBoundaryProps : T extends typeof SuspenseList ? SuspenseListProps : Record<string, unknown>;
+export type LitsxComponentProps<T> = T extends typeof ErrorBoundary ? JSX.LitsxBoundaryElementProps<ErrorBoundary, ErrorBoundaryProps> : T extends typeof SuspenseBoundary ? JSX.LitsxBoundaryElementProps<SuspenseBoundary, SuspenseBoundaryProps> : T extends typeof SuspenseList ? JSX.LitsxBoundaryElementProps<SuspenseList, SuspenseListProps> : Record<string, unknown>;
 ```

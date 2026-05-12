@@ -11,7 +11,7 @@ import { useEmit } from "@litsx/litsx";
 ```
 
 ```ts
-useEmit<T = undefined>(type: string, detail?: T, options?: { bubbles?: boolean; composed?: boolean; cancelable?: boolean; }): boolean
+useEmit(): <T = undefined>(type: string, detail?: T, options?: { bubbles?: boolean; composed?: boolean; cancelable?: boolean; }) => boolean
 ```
 
 ## Usage
@@ -43,27 +43,17 @@ emit("submit", value, { cancelable: true });
 
 - useEmit publishes events; it does not make internal values reactive for parents by itself.
 
-## Parameters
+## Returns
 
-### `type`
-
-Type: `string`
-
-### `detail`
-
-Type: `T`
-
-### `options`
-
-Type: `{
+Type: `<T = undefined>(
+  type: string,
+  detail?: T,
+  options?: {
     bubbles?: boolean;
     composed?: boolean;
     cancelable?: boolean;
-  }`
-
-## Returns
-
-Type: `boolean`
+  }
+) => boolean`
 
 ## Related
 
