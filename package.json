@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "@babel/standalone": "^7.29.3",
+    "@babel/standalone": "^7.29.4",
     "@litsx/babel-parser": "^0.2.2",
     "jsdom": "^29.1.1",
     "rollup": "^4.60.2",
