@@ -2,7 +2,7 @@ import {
   ensureLitsxParserPlugins,
   prepareLitsxAuthoredInput,
 } from "@litsx/compiler/authored-input";
-import { createVirtualLitsxJsxSource } from "@litsx/jsx-authoring";
+import { createVirtualLitsxJsxSource } from "@litsx/authoring";
 import { PLAYGROUND_TYPE_FILES } from "./virtual-types.js";
 const BABEL_STANDALONE_CDN_URL = "https://esm.sh/@babel/standalone@7.26.5?bundle";
 const TYPESCRIPT_CDN_URL = "https://esm.sh/typescript@5.8.3?bundle";

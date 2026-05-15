@@ -173,7 +173,7 @@ The second form is rejected because hoists belong to the component type, not to 
 
 ## Relationship To Runtime
 
-The generated getters rely on runtime support from `@litsx/litsx/runtime-infrastructure`.
+The generated getters rely on runtime support from `@litsx/core/elements`.
 
 That module exists to support compiler output. It is runtime support code, not part of the normal authored surface you import in application code.
 

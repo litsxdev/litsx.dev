@@ -10,7 +10,7 @@ import { fileURLToPath } from "url";
 import {
   applyVirtualAttributeReplacements,
   createVirtualLitsxJsxSource,
-} from "@litsx/jsx-authoring";
+} from "@litsx/authoring";
 import nativePreset from "@litsx/babel-preset-litsx";
 import transformJsxHtmlTemplate from "@litsx/babel-plugin-transform-jsx-html-template";
 import { PLAYGROUND_TYPE_FILES } from "./src/virtual-types.js";
@@ -187,7 +187,7 @@ function browserExternalBuiltins() {
 function inlinePlaygroundRuntimeSource() {
   return {
     name: "inline-playground-runtime-source",
-    generateBundle(outputOptions, bundle) {
+    writeBundle(outputOptions) {
       const outputDir = outputOptions.dir ?? path.dirname(outputOptions.file);
       const runtimePath = path.join(outputDir, "playground-runtime.js");
 
@@ -197,16 +197,35 @@ function inlinePlaygroundRuntimeSource() {
 
       const runtimeSource = JSON.stringify(fs.readFileSync(runtimePath, "utf8"));
 
-      for (const entry of Object.values(bundle)) {
-        if (entry.type !== "chunk") continue;
-        if (!entry.code.includes("__PLAYGROUND_RUNTIME_SOURCE__")) continue;
-        entry.code = entry.code.replaceAll(
-          '"__PLAYGROUND_RUNTIME_SOURCE__"',
-          runtimeSource
+      for (const outputPath of listOutputFiles(outputDir)) {
+        if (!outputPath.endsWith(".js") && !outputPath.endsWith(".cjs")) continue;
+
+        const code = fs.readFileSync(outputPath, "utf8");
+        if (!code.includes("__PLAYGROUND_RUNTIME_SOURCE__")) continue;
+
+        fs.writeFileSync(
+          outputPath,
+          code.replaceAll('"__PLAYGROUND_RUNTIME_SOURCE__"', runtimeSource),
         );
       }
     },
   };
+}
+
+function listOutputFiles(outputDir) {
+  const entries = fs.readdirSync(outputDir, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    const outputPath = path.join(outputDir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...listOutputFiles(outputPath));
+    } else if (entry.isFile()) {
+      files.push(outputPath);
+    }
+  }
+
+  return files;
 }
 
 function copyPreviewRuntimeModules() {

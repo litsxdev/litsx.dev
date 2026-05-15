@@ -4,20 +4,20 @@ Lit<sup>sx</sup> has its own tooling stack for authoring JSX that targets Lit an
 
 - `@litsx/vite-plugin`
 - `@litsx/compiler`
-- `@litsx/litsx/jsx-runtime` and `@litsx/litsx/jsx-dev-runtime`
+- `@litsx/core/jsx-runtime` and `@litsx/core/jsx-dev-runtime`
 - `vscode-litsx`
-- `@litsx/typescript-plugin`
+- `@litsx/typescript`
 - `create-litsx-app`
 
 ## Tooling Setup
 
 The baseline setup for a project is:
 
-- `litsx` runtime
+- `@litsx/core` runtime
 - `@litsx/vite-plugin` for Vite-based compilation
 - `vscode-litsx` for editor highlighting and workspace defaults
-- `@litsx/typescript-plugin`
-- `jsxImportSource: "@litsx/litsx"`
+- `@litsx/typescript`
+- `jsxImportSource: "@litsx/core"`
 - `litsx-tsc` for CLI type-checking of authored Lit<sup>sx</sup> syntax
 - the scaffold from `create-litsx-app`
 
@@ -36,7 +36,7 @@ That stack is enough to treat Lit<sup>sx</sup> as its own framework in the edito
 For editor DX, the stack is split intentionally:
 
 - `vscode-litsx` for syntax highlighting and VS Code defaults
-- `@litsx/typescript-plugin` for hover, completions, diagnostics, and rename
+- `@litsx/typescript` for hover, completions, diagnostics, and rename
 
 For `tsx` and `jsx` files, `vscode-litsx` does not hijack the standard VS Code
 language mode globally. Instead, it allows the LitSX language modes to be
@@ -70,7 +70,7 @@ Plain `tsc --noEmit` is still fine for standard TS/JSX, but it will not parse Li
 
 That split is deliberate:
 
-- editor DX comes from `@litsx/typescript-plugin`
+- editor DX comes from `@litsx/typescript`
 - CLI type-checking for authored Lit<sup>sx</sup> syntax comes from `litsx-tsc`
 - Vite compilation comes from `@litsx/vite-plugin`
 - lower-level compilation comes from `@litsx/compiler`
@@ -111,7 +111,7 @@ The current shape is intentionally processor-first:
 The recommended linting baseline is:
 
 - `vscode-litsx` for syntax highlighting and workspace defaults
-- `@litsx/typescript-plugin` for editor understanding
+- `@litsx/typescript` for editor understanding
 - `litsx-tsc` for authored type-checking
 - `@litsx/vite-plugin` for compilation
 - `@litsx/eslint-plugin` for linting
@@ -149,7 +149,7 @@ The intended split is:
 
 - `recommended`
   - editor-friendly baseline
-  - avoids duplicating inline feedback already provided by `@litsx/typescript-plugin`
+  - avoids duplicating inline feedback already provided by `@litsx/typescript`
 - `recommended-lint`
   - enables Lit<sup>sx</sup> semantic lint rules directly in ESLint
   - useful for CI or teams that want the same checks enforced by lint
@@ -157,7 +157,7 @@ The intended split is:
 ## What Comes From Where
 
 - Syntax highlighting and VS Code defaults: `vscode-litsx`
-- Hover, completion, diagnostics, rename, definition: `@litsx/typescript-plugin`
+- Hover, completion, diagnostics, rename, definition: `@litsx/typescript`
 - Lint and policy enforcement: `@litsx/eslint-plugin`
 - Authored CLI type-checking: `litsx-tsc`
 - Compilation: `@litsx/vite-plugin`
@@ -187,7 +187,7 @@ Most users only need these public entrypoints:
 
 - `@litsx/vite-plugin` for Vite and Storybook-with-Vite setups
 - `@litsx/compiler` for custom programmatic compilation
-- `@litsx/typescript-plugin` for editor support
+- `@litsx/typescript` for editor support
 - `create-litsx-app` for the recommended starting point
 
 Treat parser internals and individual transform packages as advanced building blocks, not as the default setup to wire by hand.

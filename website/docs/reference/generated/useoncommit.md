@@ -7,7 +7,7 @@ Run synchronous commit-phase work before the browser paints the next frame. Use 
 ## Reference
 
 ```ts
-import { useOnCommit } from "@litsx/litsx";
+import { useOnCommit } from "@litsx/core";
 ```
 
 ```ts

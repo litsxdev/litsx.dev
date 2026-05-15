@@ -7,7 +7,7 @@ Subscribe to external state and read its current snapshot. Think of useExternalS
 ## Reference
 
 ```ts
-import { useExternalStore } from "@litsx/litsx";
+import { useExternalStore } from "@litsx/core";
 ```
 
 ```ts

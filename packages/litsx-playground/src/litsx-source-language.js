@@ -11,7 +11,7 @@ import {
 import { linter } from "@codemirror/lint";
 import { highlightTree, classHighlighter } from "@lezer/highlight";
 import { Parser } from "@lezer/common";
-import { createVirtualLitsxJsxSource } from "@litsx/jsx-authoring";
+import { createVirtualLitsxJsxSource } from "@litsx/authoring";
 
 export const litsxSourceTheme = EditorView.theme({
   ".tok-keyword, .tok-keyword *": {
@@ -107,16 +107,12 @@ function isWhitespace(char) {
   return char === " " || char === "\t" || char === "\n" || char === "\r";
 }
 
-function isLegacyHoistLineStart(text) {
-  return /^\s*\^[A-Za-z_$][\w$]*\s*\(/.test(text);
-}
-
 function isStaticHoistLineStart(text) {
   return /^\s*static\s+[A-Za-z_$][\w$]*\s*=/.test(text);
 }
 
 function isHoistLineStart(text) {
-  return isLegacyHoistLineStart(text) || isStaticHoistLineStart(text);
+  return isStaticHoistLineStart(text);
 }
 
 function scanQuotedString(sourceText, start, quote) {
@@ -234,108 +230,6 @@ function findHoistFoldRange(state, lineStart) {
   }
 
   const docText = state.doc.toString();
-  if (isLegacyHoistLineStart(line.text)) {
-    const caretOffset = line.text.indexOf("^");
-    const openParenOffset = line.text.indexOf("(", caretOffset);
-    if (openParenOffset < 0) {
-      return null;
-    }
-
-    const from = line.from + openParenOffset + 1;
-    let depth = 0;
-    let quote = null;
-    let templateInterpolationDepth = 0;
-    let blockComment = false;
-    let lineComment = false;
-    let escape = false;
-
-    for (let index = line.from + openParenOffset; index < docText.length; index += 1) {
-      const char = docText[index];
-      const next = docText[index + 1];
-
-      if (lineComment) {
-        if (char === "\n") {
-          lineComment = false;
-        }
-        continue;
-      }
-
-      if (blockComment) {
-        if (char === "*" && next === "/") {
-          blockComment = false;
-          index += 1;
-        }
-        continue;
-      }
-
-      if (quote) {
-        if (escape) {
-          escape = false;
-          continue;
-        }
-
-        if (char === "\\") {
-          escape = true;
-          continue;
-        }
-
-        if (quote === "`") {
-          if (char === "$" && next === "{") {
-            templateInterpolationDepth += 1;
-            index += 1;
-            continue;
-          }
-
-          if (char === "}" && templateInterpolationDepth > 0) {
-            templateInterpolationDepth -= 1;
-            continue;
-          }
-
-          if (char === "`" && templateInterpolationDepth === 0) {
-            quote = null;
-          }
-          continue;
-        }
-
-        if (char === quote) {
-          quote = null;
-        }
-        continue;
-      }
-
-      if (char === "/" && next === "/") {
-        lineComment = true;
-        index += 1;
-        continue;
-      }
-
-      if (char === "/" && next === "*") {
-        blockComment = true;
-        index += 1;
-        continue;
-      }
-
-      if (char === "'" || char === "\"" || char === "`") {
-        quote = char;
-        continue;
-      }
-
-      if (char === "(") {
-        depth += 1;
-        continue;
-      }
-
-      if (char === ")") {
-        depth -= 1;
-        if (depth === 0) {
-          return index <= from ? null : { from, to: index };
-        }
-      }
-    }
-
-    return null;
-  }
-
   const equalsOffset = line.text.indexOf("=");
   if (equalsOffset < 0) {
     return null;
@@ -620,38 +514,6 @@ function collectAuthoredEmbeddedCssRanges(sourceText) {
     }
 
     if (sourceText[cursor] !== "=") {
-      index = cursor;
-      continue;
-    }
-
-    cursor += 1;
-    while (isWhitespace(sourceText[cursor])) {
-      cursor += 1;
-    }
-
-    if (sourceText[cursor] !== "`") {
-      index = cursor;
-      continue;
-    }
-
-    const templateEnd = scanTemplateLiteral(sourceText, cursor);
-    pushTemplateSegments(cursor, templateEnd);
-    index = templateEnd;
-  }
-
-  index = 0;
-  while (index < sourceText.length) {
-    const matchIndex = sourceText.indexOf("^styles", index);
-    if (matchIndex === -1) {
-      break;
-    }
-
-    let cursor = matchIndex + "^styles".length;
-    while (isWhitespace(sourceText[cursor])) {
-      cursor += 1;
-    }
-
-    if (sourceText[cursor] !== "(") {
       index = cursor;
       continue;
     }

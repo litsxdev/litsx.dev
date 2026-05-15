@@ -6,8 +6,8 @@ import { docsRepoRoot, litsxSourceRoot } from "./shared/source-roots.mjs";
 import { fence } from "./shared/markdown-utils.mjs";
 
 const outputDir = path.join(docsRepoRoot, "website/docs/framework/generated");
-const indexDtsPath = path.join(litsxSourceRoot, "packages/litsx/src/index.d.ts");
-const jsxRuntimeDtsPath = path.join(litsxSourceRoot, "packages/litsx/src/jsx-runtime.d.ts");
+const indexDtsPath = path.join(litsxSourceRoot, "packages/core/src/index.d.ts");
+const jsxRuntimeDtsPath = path.join(litsxSourceRoot, "packages/core/src/jsx-runtime.d.ts");
 
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
@@ -274,7 +274,7 @@ cleanDir(outputDir);
 const frameworkLines = [
   "# Framework Reference",
   "",
-  "This reference is generated from the public Lit<sup>sx</sup> type surface in `packages/litsx/src/*.d.ts`.",
+  "This reference is generated from the public Lit<sup>sx</sup> type surface in `packages/core/src/*.d.ts`.",
   "",
   "It documents the framework API that authors write against. Internal helpers and transform-only support APIs are intentionally left out.",
   "",

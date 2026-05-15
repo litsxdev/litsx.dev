@@ -45,8 +45,8 @@ import { useRef, useEffect } from 'react';
 #### Generated Output
 
 ```js
-import { prepareEffects, useAfterUpdate, useRef, ErrorBoundary } from "@litsx/litsx";
-import { LitsxStaticHoistsMixin, ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
+import { prepareEffects, useAfterUpdate, useRef, ErrorBoundary } from "@litsx/core";
+import { LitsxStaticHoistsMixin, ShadowDomElementsMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 const _litsx_static_properties = Symbol("litsx.static.properties");
 import FancyButton from './FancyButton.js';
@@ -99,7 +99,7 @@ export const FilterForm = ({ query, enabled, onQueryChange, onEnabledChange }) =
 #### Generated Output
 
 ```js
-import { ErrorBoundary } from "@litsx/litsx";
+import { ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class FilterForm extends LitElement {
   static properties = {
@@ -144,7 +144,7 @@ export const AliasedEvents = ({ onFocus, onBlur, onDoubleClick }) => {
 #### Generated Output
 
 ```js
-import { ErrorBoundary } from "@litsx/litsx";
+import { ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class AliasedEvents extends LitElement {
   static properties = {
@@ -187,7 +187,7 @@ export const FilterForm = ({ query, onQueryChange }) => {
 #### Generated Output
 
 ```js
-import { ErrorBoundary } from "@litsx/litsx";
+import { ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class FilterForm extends LitElement {
   static properties = {
@@ -226,7 +226,7 @@ export const AliasedEvents = ({ onFocus, onBlur, onDoubleClick }) => {
 #### Generated Output
 
 ```js
-import { ErrorBoundary } from "@litsx/litsx";
+import { ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class AliasedEvents extends LitElement {
   static properties = {
@@ -282,10 +282,10 @@ import React, { createContext, useContext } from "react";
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
-import { prepareEffects, ErrorBoundary } from "@litsx/litsx";
+import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { prepareEffects, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-import { createContext, useContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/litsx/context";
+import { createContext, useContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/core/context";
 const ThemeContext = createContext("light");
 export class Toolbar extends LitElement {
   render() {
@@ -332,10 +332,10 @@ import { createContext } from "react";
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
-import { ErrorBoundary } from "@litsx/litsx";
+import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-import { createContext, renderContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/litsx/context";
+import { createContext, renderContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/core/context";
 const ThemeContext = createContext("light");
 export class App extends ShadowDomElementsMixin(LitElement) {
   render() {
@@ -374,9 +374,9 @@ import { createContext, useContext } from "react";
 #### Generated Output
 
 ```js
-import { prepareEffects, ErrorBoundary } from "@litsx/litsx";
+import { prepareEffects, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-import { createContext, useContext } from "@litsx/litsx/context";
+import { createContext, useContext } from "@litsx/core/context";
 const ThemeContext = createContext("light");
 function useThemeLabel(_host, prefix) {
   const theme = useContext(_host, ThemeContext);
@@ -412,7 +412,7 @@ import React, { forwardRef, memo } from "react";
 #### Generated Output
 
 ```js
-import { useCallbackRef, prepareEffects, ErrorBoundary } from "@litsx/litsx";
+import { useCallbackRef, prepareEffects, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class CardShell extends LitElement {
   static properties = {
@@ -462,8 +462,8 @@ import FancyButton from './FancyButton.js';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
-import { ErrorBoundary } from "@litsx/litsx";
+import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
 export class LightForm extends ShadowDomElementsMixin(LitElement) {
@@ -509,15 +509,19 @@ import { ErrorBoundary } from "react-error-boundary";
 #### Generated Output
 
 ```js
-import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/litsx";
+import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-import { bindRendererContext } from "@litsx/litsx/internal/runtime-render-context";
-import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
+import { bindRendererContext } from "@litsx/core/rendering";
+import { ShadowDomElementsMixin } from "@litsx/core/elements";
 const ResultsPanel = () => import("./ResultsPanel.js");
 export class SearchCard extends ShadowDomElementsMixin(LitElement) {
   render() {
     ensureLazyElement(this, "results-panel", ResultsPanel);
-    return html`<error-boundary .fallbackRenderer=${() => html`<p>Oops</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<suspense-boundary .fallbackRenderer=${() => html`<p>Loading</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<results-panel value="ready"></results-panel>`)}></suspense-boundary>`)}></error-boundary>`;
+    return html`<error-boundary .fallbackRenderer=${() => html`<p>Oops</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<suspense-boundary .fallbackRenderer=${() => html`<p>Loading</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<results-panel value="ready"></results-panel>`, {
+      projected: true
+    })}></suspense-boundary>`, {
+      projected: true
+    })}></error-boundary>`;
   }
   static elements = {
     "error-boundary": ErrorBoundary,
@@ -546,7 +550,7 @@ import { useState } from "react";
 #### Generated Output
 
 ```js
-import { useState, prepareEffects, ErrorBoundary } from "@litsx/litsx";
+import { useState, prepareEffects, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class Counter extends LitElement {
   render() {
@@ -571,7 +575,7 @@ import React, { useState } from "react";
 #### Generated Output
 
 ```js
-import { useState, prepareEffects, ErrorBoundary } from "@litsx/litsx";
+import { useState, prepareEffects, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import React from "react";
 export class Counter extends LitElement {
@@ -609,13 +613,13 @@ import React, { createContext } from "react";
 
 ```txt
 unknown file: React class contextType is not supported by @litsx/babel-preset-react-compat.
-[0m [90m 4 |[39m
- [90m 5 |[39m       [36mexport[39m [36mclass[39m [33mLegacyPanel[39m [36mextends[39m [33mReact[39m[33m.[39m[33mComponent[39m {
-[31m[1m>[22m[39m[90m 6 |[39m         [36mstatic[39m contextType [33m=[39m [33mThemeContext[39m[33m;[39m
- [90m   |[39m         [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
- [90m 7 |[39m
- [90m 8 |[39m         render() {
- [90m 9 |[39m           [36mreturn[39m [33m<[39m[33mdiv[39m[33m>[39m{[36mthis[39m[33m.[39mcontext}[33m<[39m[33m/[39m[33mdiv[39m[33m>[39m[33m;[39m[0m
+  4 |
+  5 |       export class LegacyPanel extends React.Component {
+> 6 |         static contextType = ThemeContext;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 |         render() {
+  9 |           return <div>{this.context}</div>;
 ```
 
 ### Errors when Context.Consumer does not receive exactly one function child
@@ -644,13 +648,13 @@ import { createContext } from "react";
 
 ```txt
 unknown file: React context Consumer requires a function child.
-[0m [90m  5 |[39m       [36mexport[39m [36mfunction[39m [33mBrokenConsumer[39m() {
- [90m  6 |[39m         [36mreturn[39m (
-[31m[1m>[22m[39m[90m  7 |[39m           [33m<[39m[33mThemeContext[39m[33m.[39m[33mConsumer[39m[33m>[39m
- [90m    |[39m           [31m[1m^[22m[39m
- [90m  8 |[39m             [33m<[39m[33mspan[39m[33m>[39mbroken[33m<[39m[33m/[39m[33mspan[39m[33m>[39m
- [90m  9 |[39m           [33m<[39m[33m/[39m[33mThemeContext[39m[33m.[39m[33mConsumer[39m[33m>[39m
- [90m 10 |[39m         )[33m;[39m[0m
+   5 |       export function BrokenConsumer() {
+   6 |         return (
+>  7 |           <ThemeContext.Consumer>
+     |           ^
+   8 |             <span>broken</span>
+   9 |           </ThemeContext.Consumer>
+  10 |         );
 ```
 
 ### Errors on truly undeclared PascalCase JSX
@@ -671,8 +675,8 @@ export function BrokenPanel() {
 
 ```txt
 unknown file: Unknown LitSX component "MissingThing". Add an import or declare it in this module before using it in JSX.
-[0m [90m 1 |[39m [36mexport[39m [36mfunction[39m [33mBrokenPanel[39m() {
-[31m[1m>[22m[39m[90m 2 |[39m         [36mreturn[39m [33m<[39m[33mMissingThing[39m [33m/[39m[33m>[39m[33m;[39m
- [90m   |[39m                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
- [90m 3 |[39m       }[0m
+  1 | export function BrokenPanel() {
+> 2 |         return <MissingThing />;
+    |                ^^^^^^^^^^^^^^^^
+  3 |       }
 ```

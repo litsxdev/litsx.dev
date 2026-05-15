@@ -10,7 +10,7 @@ const hookRuntime = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("@litsx/litsx", () => ({
+vi.mock("@litsx/core", () => ({
   useRef(initialValue) {
     return { current: initialValue };
   },

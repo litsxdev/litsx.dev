@@ -64,8 +64,9 @@ import { jsxAuthoringExampleSource } from "./playground-example-source.js";
               <li>typed props</li>
               <li>JSX bindings</li>
               <li>
-                static hoists such as <code>^properties(...)</code>,
-                <code>^styles(...)</code>, and other <code>^name(...)</code> declarations
+                static hoists such as <code>static properties = ...</code>,
+                <code>static styles = ...</code>, and other <code>static name = ...</code>
+                declarations
               </li>
               <li>runtime hooks such as <code>useStyle(...)</code></li>
             </ul>

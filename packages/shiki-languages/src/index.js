@@ -101,9 +101,9 @@ function createLitsxAwareLanguage(registration) {
     "litsx-hoists": {
       patterns: [
         {
-          match: "(\\^)([A-Za-z_$][\\w$]*)(?=\\s*\\()",
+          match: "\\b(static)\\s+([A-Za-z_$][\\w$]*)(?=\\s*=)",
           captures: {
-            1: { name: "markup.italic.litsx keyword.operator.litsx" },
+            1: { name: "storage.modifier.litsx keyword.other.litsx" },
             2: { name: "markup.italic.litsx entity.name.hoist.litsx" },
           },
         },
@@ -160,11 +160,11 @@ function createLitsxAwareLanguage(registration) {
     "litsx-styles-css": {
       patterns: [
         {
-          begin: "(\\^)(styles)(\\s*\\()\\s*(`)",
+          begin: "\\b(static)(\\s+)(styles)(\\s*=\\s*)(`)",
           beginCaptures: {
-            1: { name: "markup.italic.litsx keyword.operator.litsx" },
-            2: { name: "markup.italic.litsx entity.name.hoist.litsx" },
-            4: {
+            1: { name: "storage.modifier.litsx keyword.other.litsx" },
+            3: { name: "markup.italic.litsx entity.name.hoist.litsx" },
+            5: {
               name: registration.name === "tsx"
                 ? "string.template.ts punctuation.definition.string.begin.ts"
                 : "string.template.js punctuation.definition.string.begin.js",

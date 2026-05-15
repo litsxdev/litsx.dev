@@ -7,7 +7,7 @@ import parser from "@litsx/babel-parser";
 import { PLAYGROUND_TYPE_FILES } from "../packages/litsx-playground/src/virtual-types.js";
 import { createSourceEditorState } from "../packages/litsx-playground/src/litsx-playground-editors.js";
 import { createFallbackPreviewDocument } from "../packages/litsx-playground/src/litsx-playground-preview.js";
-import { createVirtualLitsxJsxSource } from "@litsx/jsx-authoring";
+import { createVirtualLitsxJsxSource } from "@litsx/authoring";
 import {
   litDirectivesExampleSource,
   primitivesExampleSource,
@@ -65,7 +65,7 @@ describe("LitsxPlayground docs component", () => {
     const source = fs.readFileSync(playgroundPath, "utf8");
     const code = transformDocsComponent(source, playgroundPath);
 
-    assert.match(code, /import \{ LitsxStaticHoistsMixin \} from "@litsx\/litsx\/runtime-infrastructure";/);
+    assert.match(code, /import \{ LitsxStaticHoistsMixin \} from "@litsx\/core\/elements";/);
     assert.match(code, /export class LitsxPlayground extends LitsxStaticHoistsMixin\(LitElement\)/);
     assert.match(code, /customElements\.define\("litsx-playground", LitsxPlayground\)/);
     assert.match(code, /prepareEffects\(this\);/);
@@ -153,7 +153,7 @@ describe("LitsxPlayground docs component", () => {
   it("keeps preview height measurement inside the iframe runtime", () => {
     const source = fs.readFileSync(playgroundPreviewPath, "utf8");
 
-    assert.match(source, /"@litsx\/litsx\/runtime-infrastructure":/);
+    assert.match(source, /"@litsx\/core\/elements":/);
     assert.match(source, /"@litsx\/light-dom-registry":/);
     assert.match(source, /"lit\/directives\/keyed\.js":/);
     assert.match(source, /"lit\/directives\/repeat\.js":/);

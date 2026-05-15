@@ -7,7 +7,7 @@ Coordinate reveal order across several sibling suspense boundaries. SuspenseList
 ## Reference
 
 ```ts
-import { SuspenseList } from "@litsx/litsx";
+import { SuspenseList } from "@litsx/core";
 ```
 
 ```tsx

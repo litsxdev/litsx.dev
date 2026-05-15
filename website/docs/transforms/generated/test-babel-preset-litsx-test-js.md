@@ -58,7 +58,7 @@ export const Greeting = ({ label = 'Save' }) => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
+import { ShadowDomElementsMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
 export class Greeting extends ShadowDomElementsMixin(LitElement) {
@@ -114,7 +114,7 @@ export class Greeting extends LitElement {
 
 ```jsx
 import FancyButton from './FancyButton.js';
-import { useRef, useState } from '@litsx/litsx';
+import { useRef, useState } from '@litsx/core';
 export function Greeting({ label }) {
   const ref = useRef(null);
   const [count] = useState(0);
@@ -125,10 +125,10 @@ export function Greeting({ label }) {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
+import { ShadowDomElementsMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
-import { useRef, useState, prepareEffects } from '@litsx/litsx';
+import { useRef, useState, prepareEffects } from '@litsx/core';
 export class Greeting extends ShadowDomElementsMixin(LitElement) {
   static properties = {
     label: {
@@ -280,7 +280,7 @@ export const TypedForm = ({ label, count }: Props) => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
+import { ShadowDomElementsMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
 type Props = {
@@ -382,7 +382,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import FancyButton from './FancyButton.js';
-import { useRef, useState } from '@litsx/litsx';
+import { useRef, useState } from '@litsx/core';
 type Props = { label: string; active: boolean };
 export function ActionCard({ label, active }: Props) {
   const buttonRef = useRef(null);
@@ -396,12 +396,12 @@ export function ActionCard({ label, active }: Props) {
 #### Generated Output
 
 ```js
-import { LitsxStaticHoistsMixin, ShadowDomElementsMixin } from "@litsx/litsx/runtime-infrastructure";
+import { LitsxStaticHoistsMixin, ShadowDomElementsMixin } from "@litsx/core/elements";
 import { LitElement, css, html } from "lit";
 const _litsx_static_styles = Symbol("litsx.static.styles");
 const _litsx_static_properties = Symbol("litsx.static.properties");
 import FancyButton from './FancyButton.js';
-import { useRef, useState, prepareEffects } from '@litsx/litsx';
+import { useRef, useState, prepareEffects } from '@litsx/core';
 type Props = {
   label: string;
   active: boolean;
@@ -499,7 +499,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-import { useState } from '@litsx/litsx';
+import { useState } from '@litsx/core';
 export function Counter() {
   const [count, setCount] = useState(1);
   return <button @click={() => setCount(count + 1)}>{count}</button>;
@@ -510,7 +510,7 @@ export function Counter() {
 
 ```js
 import { LitElement, html } from "lit";
-import { useState, prepareEffects } from '@litsx/litsx';
+import { useState, prepareEffects } from '@litsx/core';
 export class Counter extends LitElement {
   render() {
     prepareEffects(this);
@@ -529,7 +529,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-import { useState } from '@litsx/litsx';
+import { useState } from '@litsx/core';
 export function Counter() {
   const label = 'ok', [count, setCount] = useState(0);
   setCount(count + 1);
@@ -541,7 +541,7 @@ export function Counter() {
 
 ```js
 import { LitElement, html } from "lit";
-import { useState, prepareEffects } from '@litsx/litsx';
+import { useState, prepareEffects } from '@litsx/core';
 export class Counter extends LitElement {
   render() {
     prepareEffects(this);
@@ -562,7 +562,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-import { useState } from '@litsx/litsx';
+import { useState } from '@litsx/core';
 function useCounter(initial) {
   const [value, setValue] = useState(initial);
   return [value, setValue];
@@ -577,7 +577,7 @@ export function Counter() {
 
 ```js
 import { LitElement, html } from "lit";
-import { useState, prepareEffects } from '@litsx/litsx';
+import { useState, prepareEffects } from '@litsx/core';
 function useCounter(_host, initial) {
   const [value, setValue] = useState(_host, initial);
   return [value, setValue];
@@ -600,7 +600,7 @@ This case documents code that is synthesized by the transform, not written direc
 #### Authored Input
 
 ```jsx
-import { useAfterUpdate } from '@litsx/litsx';
+import { useAfterUpdate } from '@litsx/core';
 export function Counter() {
   useAfterUpdate(() => {
     this.flag = true;
@@ -613,7 +613,7 @@ export function Counter() {
 
 ```js
 import { LitElement, html } from "lit";
-import { useAfterUpdate, prepareEffects } from '@litsx/litsx';
+import { useAfterUpdate, prepareEffects } from '@litsx/core';
 export class Counter extends LitElement {
   render() {
     prepareEffects(this);
@@ -634,7 +634,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-import { useStableCallback, useAfterUpdate } from '@litsx/litsx';
+import { useStableCallback, useAfterUpdate } from '@litsx/core';
 function useCustom(flag) {
   const callback = useStableCallback(() => flag, [flag]);
   useAfterUpdate(() => flag && callback(), [flag, callback]);
@@ -650,7 +650,7 @@ export function Counter() {
 
 ```js
 import { LitElement, html } from "lit";
-import { useStableCallback, useAfterUpdate, prepareEffects } from '@litsx/litsx';
+import { useStableCallback, useAfterUpdate, prepareEffects } from '@litsx/core';
 function useCustom(_host, flag) {
   const callback = useStableCallback(_host, () => flag, [flag]);
   useAfterUpdate(_host, () => flag && callback(), [flag, callback]);
@@ -674,7 +674,7 @@ This case documents code that is synthesized by the transform, not written direc
 #### Authored Input
 
 ```jsx
-import { useEmit } from '@litsx/litsx';
+import { useEmit } from '@litsx/core';
 export function Counter() {
   const emit = useEmit();
   emit('change', this.value, { cancelable: true });
@@ -686,7 +686,7 @@ export function Counter() {
 
 ```js
 import { LitElement, html } from "lit";
-import { useEmit, prepareEffects } from '@litsx/litsx';
+import { useEmit, prepareEffects } from '@litsx/core';
 export class Counter extends LitElement {
   render() {
     prepareEffects(this);
@@ -708,7 +708,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-import { useRef } from '@litsx/litsx';
+import { useRef } from '@litsx/core';
 export function Counter() {
   const buttonRef = useRef(null);
   return <button ref={buttonRef}>Click</button>;
@@ -719,7 +719,7 @@ export function Counter() {
 
 ```js
 import { LitElement, html } from "lit";
-import { prepareEffects, useRef, useCallbackRef } from '@litsx/litsx';
+import { prepareEffects, useRef, useCallbackRef } from '@litsx/core';
 export class Counter extends LitElement {
   get _buttonRefElement() {
     return this.renderRoot?.querySelector("[data-ref=\"_buttonRefElement\"]") ?? this.querySelector("[data-ref=\"_buttonRefElement\"]");
@@ -742,7 +742,7 @@ This case highlights syntax that should survive the transform unchanged or be pr
 #### Authored Input
 
 ```jsx
-import { useRef } from '@litsx/litsx';
+import { useRef } from '@litsx/core';
 export function Counter() {
   const workerRef = useRef(null);
   workerRef.current = 'ok';
@@ -754,7 +754,7 @@ export function Counter() {
 
 ```js
 import { LitElement, html } from "lit";
-import { useRef, prepareEffects } from '@litsx/litsx';
+import { useRef, prepareEffects } from '@litsx/core';
 export class Counter extends LitElement {
   render() {
     prepareEffects(this);

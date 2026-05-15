@@ -138,9 +138,9 @@ describe("@litsx/playground compiler", () => {
       };
 
       export function Counter(props: CounterProps) {
-        ^styles(\`
+        static styles = \`
           :host { display: block; }
-        \`);
+        \`;
 
         return <button>{props.label} {props.count}</button>;
       }
@@ -149,7 +149,7 @@ describe("@litsx/playground compiler", () => {
     const { code } = await compileLitsxPlayground(source);
 
     assert.match(code, /import \{ LitElement, css, html \} from "lit";/);
-    assert.match(code, /import \{ LitsxStaticHoistsMixin \} from "@litsx\/litsx\/runtime-infrastructure";/);
+    assert.match(code, /import \{ LitsxStaticHoistsMixin \} from "@litsx\/core\/elements";/);
     assert.match(code, /export class Counter extends LitsxStaticHoistsMixin\(LitElement\)/);
     assert.match(code, /label: \{\s*type: String\s*\}/);
     assert.match(code, /count: \{\s*type: Number\s*\}/);
@@ -196,7 +196,7 @@ describe("@litsx/playground compiler", () => {
 
   it("supports litsx authoring hooks in the playground compiler", async () => {
     const source = `
-      import { useAfterUpdate, useStyle } from "@litsx\/litsx";
+      import { useAfterUpdate, useStyle } from "@litsx\/core";
 
       type CounterProps = {
         accent: string;
@@ -217,7 +217,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{[^}]*prepareEffects[^}]*useAfterUpdate[^}]*useStyle[^}]*\} from "@litsx\/litsx";|import \{[^}]*useAfterUpdate[^}]*useStyle[^}]*prepareEffects[^}]*\} from "@litsx\/litsx";|import \{[^}]*useStyle[^}]*prepareEffects[^}]*useAfterUpdate[^}]*\} from "@litsx\/litsx";/
+      /import \{[^}]*prepareEffects[^}]*useAfterUpdate[^}]*useStyle[^}]*\} from "@litsx\/core";|import \{[^}]*useAfterUpdate[^}]*useStyle[^}]*prepareEffects[^}]*\} from "@litsx\/core";|import \{[^}]*useStyle[^}]*prepareEffects[^}]*useAfterUpdate[^}]*\} from "@litsx\/core";/
     );
     assert.match(code, /prepareEffects\(this\);/);
     assert.match(
@@ -229,7 +229,7 @@ describe("@litsx/playground compiler", () => {
 
   it("supports native useState and useRef authoring for DOM refs in the playground compiler", async () => {
     const source = `
-      import { useRef, useState } from "@litsx\/litsx";
+      import { useRef, useState } from "@litsx\/core";
 
       export function Counter() {
         const buttonRef = useRef(null);
@@ -241,7 +241,7 @@ describe("@litsx/playground compiler", () => {
 
     const { code } = await compileLitsxPlayground(source);
 
-    assert.match(code, /import \{[^}]*prepareEffects[^}]*useState[^}]*\} from "@litsx\/litsx";|import \{[^}]*useState[^}]*prepareEffects[^}]*\} from "@litsx\/litsx";/);
+    assert.match(code, /import \{[^}]*prepareEffects[^}]*useState[^}]*\} from "@litsx\/core";|import \{[^}]*useState[^}]*prepareEffects[^}]*\} from "@litsx\/core";/);
     assert.match(code, /get _buttonRefElement\(\)/);
     assert.match(code, /data-ref="_buttonRefElement"/);
     assert.match(code, /const buttonRef = useRef\(this, null\);/);
@@ -257,7 +257,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{[^}]*useEmit[^}]*useState[^}]*prepareEffects[^}]*\} from "@litsx\/litsx";|import \{[^}]*useState[^}]*useEmit[^}]*prepareEffects[^}]*\} from "@litsx\/litsx";|import \{[^}]*prepareEffects[^}]*useEmit[^}]*useState[^}]*\} from "@litsx\/litsx";/
+      /import \{[^}]*useEmit[^}]*useState[^}]*prepareEffects[^}]*\} from "@litsx\/core";|import \{[^}]*useState[^}]*useEmit[^}]*prepareEffects[^}]*\} from "@litsx\/core";|import \{[^}]*prepareEffects[^}]*useEmit[^}]*useState[^}]*\} from "@litsx\/core";/
     );
     assert.match(code, /const emit = useEmit\(this\);/);
     assert.match(code, /emit\("change", current\);/);
@@ -271,7 +271,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{[^}]*useAsyncState[^}]*prepareEffects[^}]*\} from "@litsx\/litsx";|import \{[^}]*prepareEffects[^}]*useAsyncState[^}]*\} from "@litsx\/litsx";/
+      /import \{[^}]*useAsyncState[^}]*prepareEffects[^}]*\} from "@litsx\/core";|import \{[^}]*prepareEffects[^}]*useAsyncState[^}]*\} from "@litsx\/core";/
     );
     assert.match(code, /const \[count, saveCount, meta\] = useAsyncState\(this, 1, async \(_current, nextCount\) => {/);
     assert.match(code, /@click=\$\{\(\) => saveCount\(count \+ 1\)\}/);
@@ -284,7 +284,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{[^}]*useOptimistic[^}]*useState[^}]*prepareEffects[^}]*\} from "@litsx\/litsx";|import \{[^}]*prepareEffects[^}]*useOptimistic[^}]*useState[^}]*\} from "@litsx\/litsx";|import \{[^}]*useState[^}]*prepareEffects[^}]*useOptimistic[^}]*\} from "@litsx\/litsx";/
+      /import \{[^}]*useOptimistic[^}]*useState[^}]*prepareEffects[^}]*\} from "@litsx\/core";|import \{[^}]*prepareEffects[^}]*useOptimistic[^}]*useState[^}]*\} from "@litsx\/core";|import \{[^}]*useState[^}]*prepareEffects[^}]*useOptimistic[^}]*\} from "@litsx\/core";/
     );
     assert.match(code, /const \[optimisticTodos, addOptimisticTodo, resetOptimisticTodos\] = useOptimistic\(this, baseTodos, \(currentTodos, optimisticTodo\) => \[\.\.\.currentTodos, optimisticTodo\]\);/);
     assert.match(code, /@click=\$\{\(\) => addOptimisticTodo/);
@@ -305,7 +305,7 @@ describe("@litsx/playground compiler", () => {
 
   it("supports native useRef and useCallbackRef authoring in the playground compiler", async () => {
     const source = `
-      import { useCallbackRef, useRef } from "@litsx\/litsx";
+      import { useCallbackRef, useRef } from "@litsx\/core";
 
       export function Counter() {
         const buttonRef = useRef(null);
@@ -323,7 +323,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{[^}]*useCallbackRef[^}]*useRef[^}]*prepareEffects[^}]*\} from "@litsx\/litsx";|import \{[^}]*useRef[^}]*useCallbackRef[^}]*prepareEffects[^}]*\} from "@litsx\/litsx";|import \{[^}]*prepareEffects[^}]*useRef[^}]*useCallbackRef[^}]*\} from "@litsx\/litsx";/
+      /import \{[^}]*useCallbackRef[^}]*useRef[^}]*prepareEffects[^}]*\} from "@litsx\/core";|import \{[^}]*useRef[^}]*useCallbackRef[^}]*prepareEffects[^}]*\} from "@litsx\/core";|import \{[^}]*prepareEffects[^}]*useRef[^}]*useCallbackRef[^}]*\} from "@litsx\/core";/
     );
     assert.match(code, /const latestNode = useRef\(this, null\);/);
     assert.match(
@@ -334,7 +334,7 @@ describe("@litsx/playground compiler", () => {
 
   it("supports scoped elements and suspense primitives in the playground compiler", async () => {
     const source = `
-      import { SuspenseBoundary } from "@litsx\/litsx";
+      import { SuspenseBoundary } from "@litsx\/core";
 
       export function Counter() {
         return (
@@ -351,7 +351,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{ ShadowDomElementsMixin \} from "@litsx\/litsx\/runtime-infrastructure";/
+      /import \{ ShadowDomElementsMixin \} from "@litsx\/core\/elements";/
     );
     assert.match(code, /export class Counter extends ShadowDomElementsMixin\(LitElement\)/);
     assert.match(code, /static elements = \{\s*"suspense-boundary": SuspenseBoundary\s*\};/);
@@ -360,10 +360,10 @@ describe("@litsx/playground compiler", () => {
 
   it("uses the light DOM elements mixin for light DOM component dependencies in the playground compiler", async () => {
     const source = `
-      import { SuspenseBoundary } from "@litsx\/litsx";
+      import { SuspenseBoundary } from "@litsx\/core";
 
       export function Counter() {
-        ^lightDom();
+        static lightDom = true;
 
         return (
           <section>
@@ -379,7 +379,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{ LightDomElementsMixin, LightDomMixin \} from "@litsx\/litsx\/runtime-infrastructure";|import \{ LightDomMixin, LightDomElementsMixin \} from "@litsx\/litsx\/runtime-infrastructure";/
+      /import \{ LightDomElementsMixin, LightDomMixin \} from "@litsx\/core\/elements";|import \{ LightDomMixin, LightDomElementsMixin \} from "@litsx\/core\/elements";/
     );
     assert.doesNotMatch(code, /ShadowDomElementsMixin/);
     assert.match(code, /export class Counter extends LightDomElementsMixin\(LightDomMixin\(LitElement\)\)/);
@@ -389,12 +389,12 @@ describe("@litsx/playground compiler", () => {
 
   it("composes static hoists with scoped elements mixins in the emitted superclass", async () => {
     const source = `
-      import { SuspenseBoundary } from "@litsx\/litsx";
+      import { SuspenseBoundary } from "@litsx\/core";
 
       export function Counter() {
-        ^styles(\`
+        static styles = \`
           :host { display: block; }
-        \`);
+        \`;
 
         return (
           <section>
@@ -408,7 +408,7 @@ describe("@litsx/playground compiler", () => {
 
     const { code } = await compileLitsxPlayground(source);
 
-    assert.match(code, /import \{[^}]*LitsxStaticHoistsMixin[^}]*ShadowDomElementsMixin[^}]*\} from "@litsx\/litsx\/runtime-infrastructure";|import \{[^}]*ShadowDomElementsMixin[^}]*LitsxStaticHoistsMixin[^}]*\} from "@litsx\/litsx\/runtime-infrastructure";/);
+    assert.match(code, /import \{[^}]*LitsxStaticHoistsMixin[^}]*ShadowDomElementsMixin[^}]*\} from "@litsx\/core\/elements";|import \{[^}]*ShadowDomElementsMixin[^}]*LitsxStaticHoistsMixin[^}]*\} from "@litsx\/core\/elements";/);
     assert.match(code, /export class Counter extends ShadowDomElementsMixin\(LitsxStaticHoistsMixin\(LitElement\)\)/);
     assert.match(code, /static get styles\(\)/);
   });
@@ -416,7 +416,7 @@ describe("@litsx/playground compiler", () => {
   it("keeps scoped suspense primitives registered when nested inside keyed(...)", async () => {
     const source = `
       import { keyed } from "lit/directives/keyed.js";
-      import { SuspenseBoundary } from "@litsx\/litsx";
+      import { SuspenseBoundary } from "@litsx\/core";
 
       export function Counter({ cycle }) {
         return (
@@ -435,7 +435,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{ ShadowDomElementsMixin \} from "@litsx\/litsx\/runtime-infrastructure";/
+      /import \{ ShadowDomElementsMixin \} from "@litsx\/core\/elements";/
     );
     assert.match(code, /export class Counter extends ShadowDomElementsMixin\(LitElement\)/);
     assert.match(code, /static elements = \{\s*"suspense-boundary": SuspenseBoundary\s*\};/);
@@ -445,7 +445,7 @@ describe("@litsx/playground compiler", () => {
   it("compiles error boundaries whose render props contain nested lit-flavoured JSX bindings", async () => {
     const source = `
       import { keyed } from "lit/directives/keyed.js";
-      import { ErrorBoundary, useState } from "@litsx\/litsx";
+      import { ErrorBoundary, useState } from "@litsx\/core";
 
       export function BoundaryDemo() {
         const [cycle, setCycle] = useState(0);
@@ -486,7 +486,7 @@ describe("@litsx/playground compiler", () => {
     assert.match(code, /html`<button @click=\$\{\(\) => setShouldCrash\(true\)\}>Trip<\/button>`/);
   });
 
-  it("supports ^properties and ^styles in authored playground source", async () => {
+  it("supports static properties and static styles in authored playground source", async () => {
     const source = `
       type CardProps = {
         title: string;
@@ -494,15 +494,15 @@ describe("@litsx/playground compiler", () => {
       };
 
       export function Card(props: CardProps) {
-        ^properties({
+        static properties = {
           active: { reflect: true },
-        });
+        };
 
-        ^styles(\`
+        static styles = \`
           :host {
             display: block;
           }
-        \`);
+        \`;
 
         return <article>{props.title}</article>;
       }
@@ -514,7 +514,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(code, /const _litsx_static_properties = Symbol\("litsx\.static\.properties"\);/);
     assert.match(code, /const _litsx_static_styles = Symbol\("litsx\.static\.styles"\);/);
-    assert.match(code, /import \{ LitsxStaticHoistsMixin \} from "@litsx\/litsx\/runtime-infrastructure";/);
+    assert.match(code, /import \{ LitsxStaticHoistsMixin \} from "@litsx\/core\/elements";/);
     assert.match(code, /extends LitsxStaticHoistsMixin\(LitElement\)/);
     assert.match(code, /static get properties\(\)/);
     assert.match(code, /static get styles\(\)/);
@@ -522,14 +522,14 @@ describe("@litsx/playground compiler", () => {
     assert.match(code, /display: block;/);
   });
 
-  it("compiles the static ^expose demo source used in docs", async () => {
+  it("compiles the static expose demo source used in docs", async () => {
     const { code } = await compileLitsxPlayground(staticExposeExampleSource, {
       filename: "/playground/StaticExposeDemo.tsx",
     });
 
     assert.match(
       code,
-      /import \{[^}]*ShadowDomElementsMixin[^}]*\} from "@litsx\/litsx\/runtime-infrastructure";/
+      /import \{[^}]*ShadowDomElementsMixin[^}]*\} from "@litsx\/core\/elements";/
     );
     assert.match(code, /export class ProfileChip extends LitsxStaticHoistsMixin\(LitElement\)/);
     assert.match(code, /static nextTone\(current\)/);
@@ -648,7 +648,7 @@ describe("@litsx/playground compiler", () => {
       mode: "react-compat",
     });
 
-    assert.match(code, /import \{[^}]*useCallbackRef[^}]*ensureLazyElement[^}]*SuspenseBoundary[^}]*ErrorBoundary[^}]*\} from "@litsx\/litsx";|import \{[^}]*useCallbackRef[^}]*ensureLazyElement[^}]*ErrorBoundary[^}]*SuspenseBoundary[^}]*\} from "@litsx\/litsx";|import \{[^}]*ensureLazyElement[^}]*useCallbackRef[^}]*SuspenseBoundary[^}]*ErrorBoundary[^}]*\} from "@litsx\/litsx";/);
+    assert.match(code, /import \{[^}]*useCallbackRef[^}]*ensureLazyElement[^}]*SuspenseBoundary[^}]*ErrorBoundary[^}]*\} from "@litsx\/core";|import \{[^}]*useCallbackRef[^}]*ensureLazyElement[^}]*ErrorBoundary[^}]*SuspenseBoundary[^}]*\} from "@litsx\/core";|import \{[^}]*ensureLazyElement[^}]*useCallbackRef[^}]*SuspenseBoundary[^}]*ErrorBoundary[^}]*\} from "@litsx\/core";/);
     assert.match(code, /const ResultsPanel = \(\) => import\("\.\/ResultsPanel\.js"\);/);
     assert.match(code, /export class Demo extends ShadowDomElementsMixin\(LitElement\)/);
     assert.match(code, /<error-boundary \.fallbackRenderer=/);
@@ -722,7 +722,7 @@ describe("@litsx/playground compiler", () => {
 
     assert.match(
       code,
-      /import \{ createContext, useContext, renderContext, LitsxContextProviderElement as LitsxContextProvider \} from "@litsx\/litsx\/context";|import \{ createContext, renderContext, useContext, LitsxContextProviderElement as LitsxContextProvider \} from "@litsx\/litsx\/context";|import \{ createContext, useContext, LitsxContextProviderElement as LitsxContextProvider, renderContext \} from "@litsx\/litsx\/context";/
+      /import \{ createContext, useContext, renderContext, LitsxContextProviderElement as LitsxContextProvider \} from "@litsx\/core\/context";|import \{ createContext, renderContext, useContext, LitsxContextProviderElement as LitsxContextProvider \} from "@litsx\/core\/context";|import \{ createContext, useContext, LitsxContextProviderElement as LitsxContextProvider, renderContext \} from "@litsx\/core\/context";/
     );
     assert.match(code, /const ThemeContext = createContext\("light"\);/);
     assert.match(code, /const theme = useContext\(this, ThemeContext\);/);

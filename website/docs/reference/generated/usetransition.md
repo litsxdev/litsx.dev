@@ -7,7 +7,7 @@ Schedule non-urgent updates and track whether they are pending. Think of useTran
 ## Reference
 
 ```ts
-import { useTransition } from "@litsx/litsx";
+import { useTransition } from "@litsx/core";
 ```
 
 ```ts

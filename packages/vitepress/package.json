@@ -41,9 +41,10 @@
     "vue": ">=3"
   },
   "dependencies": {
-    "@litsx/compiler": "^0.5.1",
+    "@litsx/compiler": "^0.6.0",
     "@litsx/shiki-languages": "workspace:^",
-    "@litsx/typescript-plugin": "^0.3.2"
+    "@litsx/typescript": "^0.6.0",
+    "typescript": "^6.0.0"
   },
   "scripts": {
     "build": "node -e 'process.exit(0)'"

@@ -6,16 +6,16 @@ import { docsRepoRoot, litsxSourceRoot } from "./shared/source-roots.mjs";
 import { fence, slugify } from "./shared/markdown-utils.mjs";
 
 const outputDir = path.join(docsRepoRoot, "website/docs/reference/generated");
-const indexDtsPath = path.join(litsxSourceRoot, "packages/litsx/src/index.d.ts");
+const indexDtsPath = path.join(litsxSourceRoot, "packages/core/src/index.d.ts");
 const hooksPluginPath = path.join(litsxSourceRoot, "packages/babel-preset-litsx/src/internal/transform-litsx-hooks.js");
 const runtimeDocSourcePaths = [
-  path.join(litsxSourceRoot, "packages/litsx/src/effect-hooks.js"),
-  path.join(litsxSourceRoot, "packages/litsx/src/host-hooks.js"),
-  path.join(litsxSourceRoot, "packages/litsx/src/state-hooks.js"),
+  path.join(litsxSourceRoot, "packages/core/src/effect-hooks.js"),
+  path.join(litsxSourceRoot, "packages/core/src/host-hooks.js"),
+  path.join(litsxSourceRoot, "packages/core/src/state-hooks.js"),
 ];
-const errorBoundaryJsPath = path.join(litsxSourceRoot, "packages/litsx/src/error-boundary.js");
-const suspenseBoundaryJsPath = path.join(litsxSourceRoot, "packages/litsx/src/suspense-boundary.js");
-const suspenseListJsPath = path.join(litsxSourceRoot, "packages/litsx/src/suspense-list.js");
+const errorBoundaryJsPath = path.join(litsxSourceRoot, "packages/core/src/error-boundary.js");
+const suspenseBoundaryJsPath = path.join(litsxSourceRoot, "packages/core/src/suspense-boundary.js");
+const suspenseListJsPath = path.join(litsxSourceRoot, "packages/core/src/suspense-list.js");
 const staticApis = [];
 const stylingApis = ["useStyle"];
 
@@ -169,7 +169,7 @@ function findInterface(sourceFile, name) {
 }
 
 function authoredImport(name) {
-  return `import { ${name} } from "@litsx/litsx";`;
+  return `import { ${name} } from "@litsx/core";`;
 }
 
 function inferUsage(item) {

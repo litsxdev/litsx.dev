@@ -223,7 +223,7 @@ describe("@litsx/vitepress", () => {
       const html = highlighter.codeToHtml(
         [
           "export function Card() {",
-          "  ^styles(`:host { display: block; }`);",
+          "  static styles = `:host { display: block; }`;",
           "  return <button .value={count} ?disabled={busy} @click={save}>Save</button>;",
           "}",
         ].join("\\n"),
@@ -234,13 +234,13 @@ describe("@litsx/vitepress", () => {
       assert.match(html, /@(?:<\/span><span[^>]*>)?click/);
       assert.match(html, /\.(?:<\/span><span[^>]*>)?value/);
       assert.match(html, /\?(?:<\/span><span[^>]*>)?disabled/);
-      assert.match(html, /\^(?:<\/span><span[^>]*>)?styles/);
+      assert.match(html, /static(?:<\/span><span[^>]*>)?\s*(?:<\/span><span[^>]*>)?styles/);
     } finally {
       highlighter.dispose();
     }
   });
 
-  it("tokenizes CSS inside ^styles template hoists", async () => {
+  it("tokenizes CSS inside static styles template hoists", async () => {
     const markdown = litsxVitePressMarkdown();
     const highlighter = await createHighlighter({
       themes: ["github-dark"],
@@ -250,12 +250,12 @@ describe("@litsx/vitepress", () => {
     try {
       const html = highlighter.codeToHtml(
         [
-          "^styles(`",
+          "static styles = `",
           "  :host {",
           "    display: block;",
           "    color: red;",
           "  }",
-          "`);",
+          "`;",
         ].join("\n"),
         { lang: "tsx", theme: "github-dark" }
       );
@@ -264,7 +264,7 @@ describe("@litsx/vitepress", () => {
       assert.match(html, /color/);
       assert.match(html, /block/);
       assert.match(html, /red/);
-      assert.doesNotMatch(html, /\^styles\(\)/);
+      assert.doesNotMatch(html, /static styles\(\)/);
     } finally {
       highlighter.dispose();
     }

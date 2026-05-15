@@ -7,7 +7,7 @@ Store a mutable value across renders without causing updates.
 ## Reference
 
 ```ts
-import { useRef } from "@litsx/litsx";
+import { useRef } from "@litsx/core";
 ```
 
 ```ts

@@ -7,7 +7,7 @@ Store local component state. Think of useState as the default way to keep compon
 ## Reference
 
 ```ts
-import { useState } from "@litsx/litsx";
+import { useState } from "@litsx/core";
 ```
 
 ```ts

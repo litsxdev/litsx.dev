@@ -48,8 +48,8 @@ export const PLAYGROUND_TYPE_FILES = {
     type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
     type Record<K extends keyof any, T> = { [P in K]: T };
   `,
-  "/__litsx_virtual__/litsx.playground.d.ts": String.raw`
-    declare module "@litsx/litsx" {
+  "/__litsx_virtual__/core.playground.d.ts": String.raw`
+    declare module "@litsx/core" {
       export type LitsxRenderable =
         | string
         | number

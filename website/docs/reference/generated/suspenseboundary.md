@@ -7,7 +7,7 @@ Define a fallback boundary around a subtree that may suspend. SuspenseBoundary i
 ## Reference
 
 ```ts
-import { SuspenseBoundary } from "@litsx/litsx";
+import { SuspenseBoundary } from "@litsx/core";
 ```
 
 ```tsx

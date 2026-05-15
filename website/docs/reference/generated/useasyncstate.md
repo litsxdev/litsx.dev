@@ -7,7 +7,7 @@ Manage async state transitions behind a single run function. Think of useAsyncSt
 ## Reference
 
 ```ts
-import { useAsyncState } from "@litsx/litsx";
+import { useAsyncState } from "@litsx/core";
 ```
 
 ```ts

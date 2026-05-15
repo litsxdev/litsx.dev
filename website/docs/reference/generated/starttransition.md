@@ -7,7 +7,7 @@ Schedule non-urgent updates using the same transition machinery as useTransition
 ## Reference
 
 ```ts
-import { startTransition } from "@litsx/litsx";
+import { startTransition } from "@litsx/core";
 ```
 
 ```ts

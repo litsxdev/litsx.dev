@@ -49,7 +49,7 @@ In practice, a static hoist such as `static styles = ...` or `static properties 
 
 ## Workspace Expectations
 
-- `litsx` is the runtime package
+- `@litsx/core` is the runtime package
 - Babel transforms handle native Lit<sup>sx</sup> JSX
 - the TypeScript plugin improves authored JSX tooling
 - the VS Code extension handles Lit<sup>sx</sup>-specific highlighting

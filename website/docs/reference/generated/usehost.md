@@ -7,7 +7,7 @@ Return the current component instance. Use this when a component or custom hook 
 ## Reference
 
 ```ts
-import { useHost } from "@litsx/litsx";
+import { useHost } from "@litsx/core";
 ```
 
 ```ts

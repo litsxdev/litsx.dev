@@ -7,7 +7,7 @@ Memoize a derived value until its dependencies change. Think of useMemoValue as 
 ## Reference
 
 ```ts
-import { useMemoValue } from "@litsx/litsx";
+import { useMemoValue } from "@litsx/core";
 ```
 
 ```ts
