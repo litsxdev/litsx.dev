@@ -33,7 +33,7 @@
     "README.md"
   ],
   "dependencies": {
-    "shiki": "^2.1.0"
+    "shiki": "^4.1.0"
   },
   "scripts": {
     "build": "node -e 'process.exit(0)'"

@@ -41,9 +41,9 @@
     "vue": ">=3"
   },
   "dependencies": {
-    "@litsx/compiler": "^0.6.0",
+    "@litsx/compiler": "^0.8.0",
     "@litsx/shiki-languages": "workspace:^",
-    "@litsx/typescript": "^0.6.0",
+    "@litsx/typescript": "^0.7.0",
     "typescript": "^6.0.0"
   },
   "scripts": {
