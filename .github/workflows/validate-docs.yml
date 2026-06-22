@@ -21,10 +21,10 @@ jobs:
       LITSX_SOURCE_DIR: vendor/litsx
     steps:
       - name: Checkout docs repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Checkout LitSX source repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: litsxdev/litsx
           path: vendor/litsx
