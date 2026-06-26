@@ -21,6 +21,7 @@ Use this reference when you already know the feature you need and want the nativ
 - events and lifecycle hooks
 - refs and imperative escape hatches
 - host-level dynamic styling
+- resource identity that must remain stable across authored server output and browser hydration
 
 If you are still learning the authoring model itself, start with the guides first and then come back here as the API map.
 
@@ -54,6 +55,7 @@ If you want the shortest path through the native surface, start here:
 - [useState](./generated/usestate.md) for local component state
 - [useAsyncState](./generated/useasyncstate.md) for authoritative async mutations and pending/error state
 - [useRef](./generated/useref.md) for mutable refs and imperative coordination
+- [useStableId](./generated/usestableid.md) for authored callsite-stable resource identity
 - [useEvent](./generated/useevent.md) for stable event handlers tied to component lifecycle
 - [useEmit](./generated/useemit.md) for custom DOM events as part of the public component API
 - [SuspenseBoundary](./generated/suspenseboundary.md) for async subtrees
@@ -120,6 +122,7 @@ The rough mental model is:
 - [useExpose](./generated/useexpose.md)
 - [useHost](./generated/usehost.md)
 - [useHostContent](./generated/usehostcontent.md)
+- [useStableId](./generated/usestableid.md)
 - [usePrevious](./generated/useprevious.md)
 - [useSlot](./generated/useslot.md)
 - [useStableCallback](./generated/usestablecallback.md)

@@ -43,7 +43,7 @@ return <pre>{source}</pre>;
 
 ## Pitfalls
 
-- This reads projected host content, not children as an abstract virtual data structure.
+- This reads projected host content, not `children` as an abstract virtual data structure or general-purpose render value.
 
 ## Parameters
 

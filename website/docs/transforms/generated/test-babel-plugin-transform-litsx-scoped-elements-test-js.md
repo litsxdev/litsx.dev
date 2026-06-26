@@ -10,7 +10,7 @@ Generated from transform tests.
 
 ## Covered Cases
 
-### Wraps LitElement with ShadowDomElementsMixin and registers tags
+### Wraps LitElement with ShadowDomMixin and registers tags
 
 #### Interpretation
 
@@ -32,10 +32,10 @@ import { LitElement, html } from 'lit';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, html } from 'lit';
 import FancyButton from './FancyButton.js';
-class MyElement extends ShadowDomElementsMixin(LitElement) {
+class MyElement extends ShadowDomMixin(LitElement) {
   render() {
     return <fancy-button>Click me</fancy-button>;
   }
@@ -129,6 +129,34 @@ import { LitElement, html } from 'lit';
 Expecting Unicode escape sequence \uXXXX. (6:22)
 ```
 
+### Registers scoped element aliases created from namespace imports cast as any
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import * as VdsIcon from './icons.js';
+
+      const MyComponent = (VdsIcon as any).VdsIcon;
+
+      function IconButton() {
+        return <MyComponent size="sm" />;
+      }
+```
+
+#### Generated Output
+
+```js
+import * as VdsIcon from './icons.js';
+const MyComponent = (VdsIcon as any).VdsIcon;
+function IconButton() {
+  return <MyComponent size="sm" />;
+}
+```
+
 ### Inserts elements after existing properties
 
 #### Interpretation
@@ -155,10 +183,10 @@ import { LitElement, html } from 'lit';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, html } from 'lit';
 import FancyButton from './FancyButton.js';
-class WithProperties extends ShadowDomElementsMixin(LitElement) {
+class WithProperties extends ShadowDomMixin(LitElement) {
   static properties = {
     label: {
       type: String
@@ -195,7 +223,7 @@ import { LitElement, html } from 'lit';
 Expecting Unicode escape sequence \uXXXX. (5:22)
 ```
 
-### Uses LightDomElementsMixin for light DOM dependencies
+### Uses LightDomMixin for light DOM dependencies
 
 #### Interpretation
 
@@ -246,7 +274,7 @@ function LightCard() {
 }
 ```
 
-### Reuses an existing ShadowDomElementsMixin import
+### Reuses an existing ShadowDomMixin import
 
 #### Interpretation
 
@@ -256,7 +284,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { LitElement } from 'lit';
-      import { ShadowDomElementsMixin } from '@litsx/core/elements';
+      import { ShadowDomMixin } from '@litsx/core/elements';
       import FancyButton from './FancyButton.js';
 
       class ReadyElement extends LitElement {
@@ -270,9 +298,9 @@ import { LitElement } from 'lit';
 
 ```js
 import { LitElement } from 'lit';
-import { ShadowDomElementsMixin } from '@litsx/core/elements';
+import { ShadowDomMixin } from '@litsx/core/elements';
 import FancyButton from './FancyButton.js';
-class ReadyElement extends ShadowDomElementsMixin(LitElement) {
+class ReadyElement extends ShadowDomMixin(LitElement) {
   render() {
     return <fancy-button />;
   }
@@ -303,9 +331,9 @@ import FancyButton from './FancyButton.js';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import FancyButton from './FancyButton.js';
-class MixedElement extends ShadowDomElementsMixin(withTheme(LitElement)) {
+class MixedElement extends ShadowDomMixin(withTheme(LitElement)) {
   render() {
     return <fancy-button></fancy-button>;
   }
@@ -315,7 +343,7 @@ class MixedElement extends ShadowDomElementsMixin(withTheme(LitElement)) {
 }
 ```
 
-### Does not duplicate ShadowDomElementsMixin when it is nested inside another mixin
+### Does not duplicate ShadowDomMixin when it is nested inside another mixin
 
 #### Interpretation
 
@@ -324,10 +352,10 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-import { ShadowDomElementsMixin } from '@litsx/core/elements';
+import { ShadowDomMixin } from '@litsx/core/elements';
       import FancyButton from './FancyButton.js';
 
-      class MixedElement extends withTheme(ShadowDomElementsMixin(LitElement)) {
+      class MixedElement extends withTheme(ShadowDomMixin(LitElement)) {
         render() {
           return <FancyButton />;
         }
@@ -337,9 +365,9 @@ import { ShadowDomElementsMixin } from '@litsx/core/elements';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from '@litsx/core/elements';
+import { ShadowDomMixin } from '@litsx/core/elements';
 import FancyButton from './FancyButton.js';
-class MixedElement extends withTheme(ShadowDomElementsMixin(LitElement)) {
+class MixedElement extends withTheme(ShadowDomMixin(LitElement)) {
   render() {
     return <fancy-button />;
   }
@@ -403,10 +431,10 @@ import { LitElement } from 'lit';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement } from 'lit';
 import FancyButton from './FancyButton.js';
-class AttributedElement extends ShadowDomElementsMixin(LitElement) {
+class AttributedElement extends ShadowDomMixin(LitElement) {
   render() {
     return <fancy-button label={this.label}>Click</fancy-button>;
   }
@@ -443,14 +471,14 @@ import { LitElement } from 'lit';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement } from 'lit';
 export class ProfileChip extends LitElement {
   render() {
     return <article>chip</article>;
   }
 }
-export class ProfileScreen extends ShadowDomElementsMixin(LitElement) {
+export class ProfileScreen extends ShadowDomMixin(LitElement) {
   render() {
     return <profile-chip />;
   }
@@ -485,9 +513,9 @@ import { LitElement } from 'lit';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement } from 'lit';
-export class TreeNode extends ShadowDomElementsMixin(LitElement) {
+export class TreeNode extends ShadowDomMixin(LitElement) {
   render() {
     return <section>
               <tree-node />

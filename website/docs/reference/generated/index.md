@@ -36,6 +36,7 @@ It documents the APIs that developers write in Lit<sup>sx</sup> code, not the lo
 - [`useDeferredValue`](./usedeferredvalue.md)
 - [`useRef`](./useref.md)
 - [`useCallbackRef`](./usecallbackref.md)
+- [`useStableId`](./usestableid.md)
 
 ## Styling
 

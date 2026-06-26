@@ -70,6 +70,14 @@ export interface LitsxBaseAttributes {
     class?: string;
     part?: string;
     style?: string | Partial<CSSStyleDeclaration>;
+    /**
+     * Authored child content passed between component tags.
+     * LitSX treats this as projected content for the default slot.
+     * In authored component bodies, implicit `children` projection is only supported as
+     * a single direct JSX child expression such as `{children}` or `{props.children}`.
+     * For named slots, repeated distribution, or other composition patterns, use explicit
+     * `<slot>` markup or host-content hooks instead of treating `children` as ordinary data.
+     */
     children?: LitsxRenderable;
     ref?: LitsxRef<unknown>;
     [attributeName: `data-${string}`]: unknown;
@@ -122,11 +130,10 @@ export type LitsxElementProps<TElement = HTMLElement> = LitsxBaseAttributes & Li
 ```ts
 export type LitsxIntrinsicElements = {
     [TagName in keyof HTMLElementTagNameMap]: LitsxElementProps<HTMLElementTagNameMap[TagName]>;
-} & {
+} & LitsxCustomIntrinsicElements & {
     "error-boundary": LitsxElementProps<ErrorBoundary> & ErrorBoundaryProps;
     "suspense-boundary": LitsxElementProps<SuspenseBoundary> & SuspenseBoundaryProps;
     "suspense-list": LitsxElementProps<SuspenseList> & SuspenseListProps;
-    [customElementName: `${string}-${string}`]: LitsxElementProps<HTMLElement>;
 };
 ```
 
@@ -218,7 +225,7 @@ These interfaces describe the public authored props of the native primitives.
 ```ts
 export interface ErrorBoundaryProps {
     /**
-     * Content rendered inside the boundary while no error has been captured.
+     * Content projected into the boundary while no error has been captured.
      */
     children?: LitsxRenderable;
     /**
@@ -237,7 +244,7 @@ export interface ErrorBoundaryProps {
 ```ts
 export interface SuspenseBoundaryProps {
     /**
-     * Content rendered inside the boundary when it is ready to reveal.
+     * Content projected into the boundary when it is ready to reveal.
      */
     children?: LitsxRenderable;
     /**
@@ -252,7 +259,7 @@ export interface SuspenseBoundaryProps {
 ```ts
 export interface SuspenseListProps {
     /**
-     * Suspense boundaries coordinated by the list.
+     * Suspense boundary content coordinated by the list.
      */
     children?: LitsxRenderable;
     /**
@@ -598,6 +605,25 @@ Generate a stable id for the current component instance.
 export declare function useId(): string;
 ```
 
+### `useStableId`
+
+Return a stable identifier for this authored callsite.
+
+LitSX tooling injects callsite metadata so this value is stable across SSR
+and client hydration and does not depend on render order or instance order.
+Use it for resource/cache/preload identity, not for unique DOM ids.
+
+```ts
+/**
+ * Return a stable identifier for this authored callsite.
+ *
+ * LitSX tooling injects callsite metadata so this value is stable across SSR
+ * and client hydration and does not depend on render order or instance order.
+ * Use it for resource/cache/preload identity, not for unique DOM ids.
+ */
+export declare function useStableId(): string;
+```
+
 ### `useCallbackRef`
 
 Run a callback ref through the component lifecycle.
@@ -716,13 +742,15 @@ export namespace JSX {
     interface IntrinsicAttributes {
         key?: string | number;
     }
-    interface IntrinsicElements extends LitsxIntrinsicElements {
-    }
+    type IntrinsicElements = LitsxIntrinsicElements;
     interface IntrinsicClassAttributes<T> {
         ref?: LitsxRef<T>;
     }
     type LitsxBoundaryElementProps<TElement, TProps> = LitsxElementProps<TElement> & TProps;
-    type LibraryManagedAttributes<Component, Props> = Component extends typeof ErrorBoundary ? LitsxBoundaryElementProps<ErrorBoundary, ErrorBoundaryProps> : Component extends typeof SuspenseBoundary ? LitsxBoundaryElementProps<SuspenseBoundary, SuspenseBoundaryProps> : Component extends typeof SuspenseList ? LitsxBoundaryElementProps<SuspenseList, SuspenseListProps> : Component extends LitsxComponent<infer InferredProps> ? InferredProps : Props;
+    type LitsxComponentElementProps<TProps> = TProps & {
+        children?: LitsxRenderable;
+    };
+    type LibraryManagedAttributes<Component, Props> = Component extends typeof ErrorBoundary ? LitsxBoundaryElementProps<ErrorBoundary, ErrorBoundaryProps> : Component extends typeof SuspenseBoundary ? LitsxBoundaryElementProps<SuspenseBoundary, SuspenseBoundaryProps> : Component extends typeof SuspenseList ? LitsxBoundaryElementProps<SuspenseList, SuspenseListProps> : Component extends LitsxComponent<infer InferredProps> ? LitsxComponentElementProps<InferredProps> : LitsxComponentElementProps<Props>;
 }
 ```
 

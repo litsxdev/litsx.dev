@@ -54,7 +54,7 @@ An ErrorBoundary says: if this part of the tree throws, show this fallback inste
 
 Type: `LitsxRenderable`
 
-Content rendered inside the boundary while no error has been captured.
+Content projected into the boundary while no error has been captured.
 
 ### `fallback?`
 

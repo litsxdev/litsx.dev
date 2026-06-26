@@ -204,6 +204,7 @@ const categories = [
       "useSlot",
       "useRef",
       "useId",
+      "useStableId",
       "useCallbackRef",
       "useExpose",
       "useStableCallback",
@@ -242,6 +243,9 @@ const explicitlyExcludedNames = new Set([
   "SuspenseBoundaryElement",
   "SuspenseListElement",
   "ensureLazyElement",
+  "LitsxCustomElementProps",
+  "LitsxReservedIntrinsicElementName",
+  "LitsxCustomIntrinsicElements",
 ]);
 
 for (const name of explicitlyExcludedNames) {

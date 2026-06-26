@@ -132,7 +132,7 @@ const view = <FancyButton foo="bar" baz={value} />;
 
 ```js
 import { html } from "lit";
-const view = html`<fancy-button foo="bar" baz="${value}"></fancy-button>`;
+const view = html`<fancy-button foo="bar" .baz=${value}></fancy-button>`;
 ```
 
 ### Supports bare boolean attributes without values

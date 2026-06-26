@@ -38,7 +38,7 @@ const actions = useSlot("actions");
 
 ## Pitfalls
 
-- useSlot reads host-projected content, not JSX children as an abstract data structure.
+- useSlot reads host-projected content, not JSX `children` as a manipulable abstract data structure.
 
 ## Parameters
 

@@ -75,7 +75,7 @@ SuspenseList does not fetch or render content by itself. It only decides when si
 
 Type: `LitsxRenderable`
 
-Suspense boundaries coordinated by the list.
+Suspense boundary content coordinated by the list.
 
 ### `revealOrder?`
 

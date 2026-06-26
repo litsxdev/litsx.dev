@@ -33,10 +33,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${() => html`<div>ready</div>`}></suspense-boundary>`;
   }
@@ -74,10 +74,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>One</span>`} .contentRenderer=${() => html`<div>alpha</div>`}></suspense-boundary><suspense-boundary .fallbackRenderer=${() => html`<span>Two</span>`} .contentRenderer=${() => html`<div>beta</div>`}></suspense-boundary></suspense-list>`;
   }
@@ -116,9 +116,9 @@ export const Screen = () => {
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { bindRendererContext } from "@litsx/core/rendering";
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 const FancyButton = () => import('./FancyButton.js');
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     ensureLazyElement(this, "fancy-button", FancyButton);
     return html`<suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<fancy-button></fancy-button>`, {
@@ -165,10 +165,10 @@ export const Screen = () => {
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { bindRendererContext } from "@litsx/core/rendering";
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 const AlphaPanel = () => import('./AlphaPanel.js');
 const BetaPanel = () => import('./BetaPanel.js');
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     ensureLazyElement(this, "alpha-panel", AlphaPanel);
     ensureLazyElement(this, "beta-panel", BetaPanel);
@@ -210,10 +210,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${() => html`<div>ready</div>`}></suspense-boundary></suspense-list>`;
   }
@@ -243,10 +243,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-boundary .fallbackRenderer=${() => null} .contentRenderer=${() => null}></suspense-boundary>`;
   }
@@ -282,10 +282,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${() => html`<div>alpha</div><div>beta</div>`}></suspense-boundary>`;
   }
@@ -314,10 +314,10 @@ export const Screen = ({ readyView }) => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   static properties = {
     readyView: {
       type: String
@@ -351,10 +351,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-boundary .fallbackRenderer=${() => "loading"} .contentRenderer=${() => "ready"}></suspense-boundary>`;
   }
@@ -383,10 +383,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-boundary .fallbackRenderer=${() => true} .contentRenderer=${() => html`<div>ready</div>`}></suspense-boundary>`;
   }
@@ -452,10 +452,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>One</span>`} .contentRenderer=${() => html`<div>alpha</div>`}></suspense-boundary></suspense-list>`;
   }
@@ -485,10 +485,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-boundary .fallbackRenderer=${() => 404} .contentRenderer=${() => null}></suspense-boundary>`;
   }
@@ -529,13 +529,13 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 import { bindRendererContext } from "@litsx/core/rendering";
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from '@litsx/core';
 const AlphaPanel = () => null;
 const BetaPanel = () => null;
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     ensureLazyElement(this, 'beta-panel', BetaPanel);
     return html`<section><suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => {
@@ -576,10 +576,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>One</span>`} .contentRenderer=${() => html`<div>alpha</div>`}></suspense-boundary></suspense-list>`;
   }
@@ -613,10 +613,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${() => html`<div>ready</div>`}></suspense-boundary>`;
   }
@@ -649,10 +649,10 @@ export const Screen = () => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     return html`<suspense-boundary .fallbackRenderer=${() => html`<span>loading</span>`} .contentRenderer=${() => html`<div>ready</div>`}></suspense-boundary>`;
   }
@@ -700,9 +700,9 @@ export const Screen = () => {
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { bindRendererContext } from "@litsx/core/rendering";
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 const AlphaPanel = () => import('./AlphaPanel.js');
-export class Screen extends ShadowDomElementsMixin(LitElement) {
+export class Screen extends ShadowDomMixin(LitElement) {
   render() {
     ensureLazyElement(this, "alpha-panel", AlphaPanel);
     return html`<error-boundary .fallbackRenderer=${() => html`<p>outer-fallback</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<section><suspense-list revealOrder="forwards"><suspense-boundary .fallbackRenderer=${() => html`<span>alpha-loading</span>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<alpha-panel></alpha-panel>`, {

@@ -56,7 +56,7 @@ A SuspenseBoundary says: this part of the tree may pause, and this is the UI tha
 
 Type: `LitsxRenderable`
 
-Content rendered inside the boundary when it is ready to reveal.
+Content projected into the boundary when it is ready to reveal.
 
 ### `fallback?`
 

@@ -46,11 +46,11 @@ import { useRef, useEffect } from 'react';
 
 ```js
 import { prepareEffects, useAfterUpdate, useRef, ErrorBoundary } from "@litsx/core";
-import { LitsxStaticHoistsMixin, ShadowDomElementsMixin } from "@litsx/core/elements";
+import { LitsxStaticHoistsMixin, ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 const _litsx_static_properties = Symbol("litsx.static.properties");
 import FancyButton from './FancyButton.js';
-class FancyForm extends ShadowDomElementsMixin(LitsxStaticHoistsMixin(LitElement)) {
+class FancyForm extends ShadowDomMixin(LitsxStaticHoistsMixin(LitElement)) {
   static get properties() {
     return this.__litsxStatic(_litsx_static_properties, () => this.__litsxMergeProperties({
       label: {
@@ -282,7 +282,7 @@ import React, { createContext, useContext } from "react";
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { prepareEffects, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { createContext, useContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/core/context";
@@ -294,7 +294,7 @@ export class Toolbar extends LitElement {
     return html`<button class="${theme}">${theme}</button>`;
   }
 }
-export class App extends ShadowDomElementsMixin(LitElement) {
+export class App extends ShadowDomMixin(LitElement) {
   render() {
     return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}><toolbar></toolbar></litsx-context-provider>`;
   }
@@ -332,12 +332,12 @@ import { createContext } from "react";
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { createContext, renderContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/core/context";
 const ThemeContext = createContext("light");
-export class App extends ShadowDomElementsMixin(LitElement) {
+export class App extends ShadowDomMixin(LitElement) {
   render() {
     return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}>${renderContext(this, ThemeContext, theme => html`<span class="${theme}">${theme}</span>`)}</litsx-context-provider>`;
   }
@@ -462,11 +462,11 @@ import FancyButton from './FancyButton.js';
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
-export class LightForm extends ShadowDomElementsMixin(LitElement) {
+export class LightForm extends ShadowDomMixin(LitElement) {
   static properties = {
     label: {
       type: String
@@ -512,9 +512,9 @@ import { ErrorBoundary } from "react-error-boundary";
 import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { bindRendererContext } from "@litsx/core/rendering";
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 const ResultsPanel = () => import("./ResultsPanel.js");
-export class SearchCard extends ShadowDomElementsMixin(LitElement) {
+export class SearchCard extends ShadowDomMixin(LitElement) {
   render() {
     ensureLazyElement(this, "results-panel", ResultsPanel);
     return html`<error-boundary .fallbackRenderer=${() => html`<p>Oops</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<suspense-boundary .fallbackRenderer=${() => html`<p>Loading</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<results-panel value="ready"></results-panel>`, {

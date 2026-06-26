@@ -59,6 +59,13 @@ import {
 - `usePrevious(...)` lets render logic compare against the previous frame
 - `useControlledState(...)` supports controlled/uncontrolled library components
 
+`useId(...)` and `useStableId(...)` solve different identity problems:
+
+- `useId(...)` creates instance-local DOM ids for labels, descriptions, and accessibility relationships
+- `useStableId(...)` creates a callsite-stable id that is the same between server output and browser hydration
+
+Use `useStableId(...)` for serializable resource identity such as cache keys, preload records, i18n message slots, and hydration metadata. It is intentionally not unique per component instance; every instance that reaches the same authored callsite receives the same value. The Lit<sup>sx</sup> transform injects stable callsite metadata, so the id does not depend on render order, function names, stack traces, or `Math.random()`.
+
 `useAsyncState(...)` and `useOptimistic(...)` cover two related but separate async jobs:
 
 - `useAsyncState(...)` owns authoritative async mutations, pending, latest error, and reset

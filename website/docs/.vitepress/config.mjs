@@ -182,6 +182,7 @@ export default defineConfig({
               { text: "useReducedState", link: "/reference/generated/usereducedstate" },
               { text: "useRef", link: "/reference/generated/useref" },
               { text: "useSlot", link: "/reference/generated/useslot" },
+              { text: "useStableId", link: "/reference/generated/usestableid" },
               { text: "useStableCallback", link: "/reference/generated/usestablecallback" },
               { text: "useState", link: "/reference/generated/usestate" },
               { text: "useTextContent", link: "/reference/generated/usetextcontent" },

@@ -15,6 +15,8 @@ The intended authored model is Lit-first:
 
 The TypeScript plugin and parser work together so that the IDE can reason about that syntax without forcing you to think in terms of transformed output.
 
+Intrinsic HTML elements remain strict. Arbitrary custom attributes are accepted only on custom elements whose tag names include a dash, such as `<vds-icon size="sm" />`. Native elements such as `<div>` still reject unknown attributes like `foo="bar"`.
+
 ## What You Are Writing
 
 When you write Lit<sup>sx</sup>, you are writing:

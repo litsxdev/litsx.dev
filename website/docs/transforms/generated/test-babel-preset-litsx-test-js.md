@@ -58,10 +58,10 @@ export const Greeting = ({ label = 'Save' }) => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
-export class Greeting extends ShadowDomElementsMixin(LitElement) {
+export class Greeting extends ShadowDomMixin(LitElement) {
   static properties = {
     label: {
       type: String
@@ -76,6 +76,44 @@ export class Greeting extends ShadowDomElementsMixin(LitElement) {
   }
   render() {
     return html`<fancy-button .label=${this.label} @click=${save}></fancy-button>`;
+  }
+}
+```
+
+### Injects stable callsite metadata for useStableId in render and custom hooks
+
+#### Interpretation
+
+This case documents code that is synthesized by the transform, not written directly by the user.
+
+#### Authored Input
+
+```jsx
+import { useStableId } from "@litsx/core";
+function useResourceKey() {
+  return useStableId();
+}
+export function StableIds() {
+  const first = useStableId();
+  const second = useResourceKey();
+  return <div>{first}:{second}</div>;
+}
+```
+
+#### Generated Output
+
+```js
+import { LitElement, html } from "lit";
+import { useStableId, prepareEffects } from "@litsx/core";
+function useResourceKey(_host) {
+  return useStableId(_host, "litsx-stable-maxopf");
+}
+export class StableIds extends LitElement {
+  render() {
+    prepareEffects(this);
+    const first = useStableId(this, "litsx-stable-1vs318a");
+    const second = useResourceKey(this);
+    return html`<div>${first}:${second}</div>`;
   }
 }
 ```
@@ -125,11 +163,11 @@ export function Greeting({ label }) {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
 import { useRef, useState, prepareEffects } from '@litsx/core';
-export class Greeting extends ShadowDomElementsMixin(LitElement) {
+export class Greeting extends ShadowDomMixin(LitElement) {
   static properties = {
     label: {
       type: String
@@ -280,14 +318,14 @@ export const TypedForm = ({ label, count }: Props) => {
 #### Generated Output
 
 ```js
-import { ShadowDomElementsMixin } from "@litsx/core/elements";
+import { ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
 type Props = {
   label: string;
   count: number;
 };
-export class TypedForm extends ShadowDomElementsMixin(LitElement) {
+export class TypedForm extends ShadowDomMixin(LitElement) {
   static properties = {
     label: {
       type: String
@@ -396,7 +434,7 @@ export function ActionCard({ label, active }: Props) {
 #### Generated Output
 
 ```js
-import { LitsxStaticHoistsMixin, ShadowDomElementsMixin } from "@litsx/core/elements";
+import { LitsxStaticHoistsMixin, ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, css, html } from "lit";
 const _litsx_static_styles = Symbol("litsx.static.styles");
 const _litsx_static_properties = Symbol("litsx.static.properties");
@@ -406,7 +444,7 @@ type Props = {
   label: string;
   active: boolean;
 };
-export class ActionCard extends ShadowDomElementsMixin(LitsxStaticHoistsMixin(LitElement)) {
+export class ActionCard extends ShadowDomMixin(LitsxStaticHoistsMixin(LitElement)) {
   static get styles() {
     return this.__litsxStatic(_litsx_static_styles, () => this.__litsxResolveStaticValue(css`:host { display: block; }`));
   }
