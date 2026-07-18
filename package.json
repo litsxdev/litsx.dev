@@ -21,9 +21,9 @@
     "test": "vitest run test/*.test.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^8.0.1",
     "@babel/parser": "^7.29.3",
-    "@babel/standalone": "^7.29.3",
+    "@babel/standalone": "^8.0.4",
     "@litsx/authoring": "^0.5.0",
     "jsdom": "^29.1.1",
     "rollup": "^4.60.2",
