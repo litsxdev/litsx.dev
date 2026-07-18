@@ -1118,16 +1118,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@litsx/babel-parser@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@litsx/babel-parser@npm:0.2.2"
+"@litsx/authoring@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@litsx/authoring@npm:0.5.0"
   dependencies:
-    "@babel/parser": "npm:^7.29.3"
-    "@babel/types": "npm:^7.29.0"
-    "@litsx/jsx-authoring": "npm:^0.3.0"
-  bin:
-    babel-parser: dist/babel-parser.js
-  checksum: 10c0/3477924b0a12cf9ea05c1df9b68bee79036e00160f38b72b6358b9700e65828db98c08736e5b8d5168e97b6411843220e81fb81a106cc618cf59b132724e9dc9
+    magic-string: "npm:^0.30.21"
+  checksum: 10c0/14ce5c813ff3ce385c36a3d6143e7eb098f7bc3ff98cf162c4cc0a62fd45f730b83411ddd182ee43cdfa748f63de9bf3ec6bcc7d2b3d0fbe9985f5cb3a277298
   languageName: node
   linkType: hard
 
@@ -1252,15 +1248,6 @@ __metadata:
   peerDependencies:
     lit: ">=3"
   checksum: 10c0/9012b0ffc7a2a43995f1c47bfbb520163f2f304a70e9914455a8ed2b07692e737ea6c3003f352c2adb0d5817419dd7c6d8ad665ed1fa0ed94f204ef3de53a210
-  languageName: node
-  linkType: hard
-
-"@litsx/jsx-authoring@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@litsx/jsx-authoring@npm:0.3.0"
-  dependencies:
-    magic-string: "npm:^0.30.21"
-  checksum: 10c0/e9fa92b7b4d2790cc4a35f5c9ef1eaf652e1c4d6ee23ea1399b14e0512a65266c3998e1a69f8e3358d2643ebd226d39ef54b20b5c606556de05e441158649ae6
   languageName: node
   linkType: hard
 
@@ -3087,8 +3074,9 @@ __metadata:
   resolution: "litsx.dev@workspace:."
   dependencies:
     "@babel/core": "npm:^7.29.0"
+    "@babel/parser": "npm:^7.29.3"
     "@babel/standalone": "npm:^7.29.3"
-    "@litsx/babel-parser": "npm:^0.2.2"
+    "@litsx/authoring": "npm:^0.5.0"
     jsdom: "npm:^29.1.1"
     rollup: "npm:^4.60.2"
     typescript: "npm:^6.0.0"

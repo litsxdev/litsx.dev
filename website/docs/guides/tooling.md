@@ -47,7 +47,7 @@ For app builds on Vite, the public compilation surface is `@litsx/vite-plugin`.
 
 For lower-level programmatic compilation outside Vite, the public facade is `@litsx/compiler`.
 
-Packages such as `@litsx/babel-parser` and the individual Babel transforms are still available, but they belong to advanced integrations and infrastructure work rather than to the normal baseline setup for applications.
+Packages such as `@litsx/authoring/parser` and the individual Babel transforms are still available, but they belong to advanced integrations and infrastructure work rather than to the normal baseline setup for applications.
 
 For CLI type-checking, use the virtualized entrypoint instead of plain `tsc` when the codebase includes Lit<sup>sx</sup>-specific authored syntax such as:
 

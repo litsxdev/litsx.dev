@@ -2,8 +2,8 @@ import assert from "assert";
 import fs from "fs";
 import path from "path";
 import babelCore from "@babel/core";
+import * as babelParser from "@babel/parser";
 import { ensureSyntaxTree, foldable, syntaxTree } from "@codemirror/language";
-import parser from "@litsx/babel-parser";
 import { PLAYGROUND_TYPE_FILES } from "../packages/litsx-playground/src/virtual-types.js";
 import { createSourceEditorState } from "../packages/litsx-playground/src/litsx-playground-editors.js";
 import { createFallbackPreviewDocument } from "../packages/litsx-playground/src/litsx-playground-preview.js";
@@ -44,9 +44,9 @@ beforeAll(async () => {
 
 function transformDocsComponent(source, filename) {
   const virtualSource = createVirtualLitsxJsxSource(source).code;
-  const ast = parser.parse(virtualSource, {
+  const ast = babelParser.parse(virtualSource, {
     sourceType: "module",
-    plugins: ["typescript"],
+    plugins: ["jsx", "typescript"],
   });
 
   return transformFromAstSync(ast, virtualSource, {
