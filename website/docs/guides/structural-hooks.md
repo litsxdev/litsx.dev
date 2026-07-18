@@ -191,6 +191,64 @@ Middleware can run before `next()`, after `next()`, or both. Calling `next()` mo
 
 Structural middleware is composed in structural entry order. The ordering comes from authored hook expansion order, including nested structural hooks.
 
+## Public Props And Runtime Accessors
+
+Structural hooks can also participate in the host property surface.
+
+Use `props(...)` for public Lit property metadata that should become part of the component contract:
+
+```ts
+const useMessages = defineHook({
+  props(_host, _state, next) {
+    return {
+      ...next(),
+      messages: { attribute: false },
+    };
+  },
+});
+```
+
+Use `accessors(...)` for runtime-only host capabilities that should not become part of the public component API:
+
+```ts
+const useFaceState = defineHook({
+  accessors(_host, state, next) {
+    return {
+      ...next(),
+      validity: {
+        get() {
+          return state.instance.validity;
+        },
+      },
+    };
+  },
+});
+```
+
+The split is intentional:
+
+- `props(...)` defines public component properties
+- `accessors(...)` defines non-public runtime host accessors
+- the same key cannot be declared across both channels
+- overrides inside `props(...)` and inside `accessors(...)` are allowed and compose in structural entry order
+
+That means a reusable system hook can publish a common public property once, and Lit<sup>sx</sup> tooling can surface it everywhere the hook participates.
+
+For example, an i18n hook can publish a typed `messages` property through `props(...)`, let authored components read it through normal Lit property semantics, and still keep internal runtime-only accessors separate.
+
+## Tooling And Surface Inference
+
+Structural `props(...)` are part of the public authored surface, not just runtime wiring.
+
+That affects:
+
+- authored `.litsx` validation
+- PascalCase component prop completions
+- structural prop discovery through local and imported hook graphs
+- generated docs/reference content based on the public type surface
+
+By contrast, `accessors(...)` stays out of the authored public contract. It exists so structural hooks can install runtime host behavior without creating an implicit undocumented component API.
+
 ## Composition
 
 Structural hooks can call other hooks from `use(...)`, including other structural hooks:

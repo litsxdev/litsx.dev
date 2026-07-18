@@ -16,7 +16,35 @@ useId(): string
 
 ## Usage
 
-Call `useId` in authored Lit<sup>sx</sup> code when you want this behavior in a component.
+Use useId when a component needs a unique per-instance id for authored DOM relationships such as `for`, `aria-labelledby`, or `aria-describedby`.
+
+Prefer useStableId when identity should follow one authored hook callsite across SSR and hydration, and useHostTypeId when identity should follow the component type itself.
+
+## Behavior
+
+- Returns one stable id for the lifetime of the current host instance.
+- Different instances of the same component receive different values.
+
+## Mental Model
+
+useId gives each mounted component instance its own local id namespace for DOM wiring.
+
+## Examples
+
+```ts
+const inputId = useId();
+
+return (
+  <>
+    <label for={inputId}>Email</label>
+    <input id={inputId} type="email" />
+  </>
+);
+```
+
+## Pitfalls
+
+- Do not use this for cache keys, preload identity, or SSR-stable structural resources. Its contract is instance-scoped, not callsite-scoped.
 
 ## Returns
 
