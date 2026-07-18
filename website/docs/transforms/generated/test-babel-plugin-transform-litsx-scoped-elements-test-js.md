@@ -223,7 +223,7 @@ import { LitElement, html } from 'lit';
 Expecting Unicode escape sequence \uXXXX. (5:22)
 ```
 
-### Uses LightDomMixin for light DOM dependencies
+### Rejects scoped elements in light DOM components
 
 #### Interpretation
 
@@ -393,8 +393,6 @@ import { LightDomMixin } from '@litsx/core/elements';
           return <div>ready</div>;
         }
       }
-
-      MixedLightCard._litsxLightDom = true;
 ```
 
 #### Generated Output
@@ -406,7 +404,41 @@ class MixedLightCard extends withTheme(LightDomMixin(LitElement)) {
     return <div>ready</div>;
   }
 }
-MixedLightCard._litsxLightDom = true;
+```
+
+### Consumes early static IR for element candidates and light DOM
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { LitElement } from 'lit';
+      import { ChildCard } from './child-card.litsx';
+
+      class HostCard extends LitElement {
+        render() {
+          return <ChildCard />;
+        }
+      }
+```
+
+#### Generated Output
+
+```js
+import { ShadowDomMixin } from "@litsx/core/elements";
+import { LitElement } from 'lit';
+import { ChildCard } from './child-card.litsx';
+class HostCard extends ShadowDomMixin(LitElement) {
+  render() {
+    return <child-card />;
+  }
+  static elements = {
+    "child-card": ChildCard
+  };
+}
 ```
 
 ### Rewrites JSX opening tags with attributes to kebab-case consistently
@@ -535,11 +567,11 @@ This case records the authored input and the generated output as a living transf
 
 - No inline source fixture extracted for this case.
 
-### Keeps the same light DOM tag for the same imported constructor source
+### Rejects repeated light DOM components that require scoped elements from the same source
 
 #### Interpretation
 
-This case highlights syntax that should survive the transform unchanged or be preserved semantically.
+This case records the authored input and the generated output as a living transform contract.
 
 #### Authored Input
 

@@ -1,6 +1,6 @@
 # useExpose
 
-Expose a small imperative API through a ref. Think of useExpose as the way a component publishes a deliberately small imperative API to its parent.
+Publish a small imperative method surface either on the host instance or through a forwarded ref. Think of useExpose as the place where a component declares the public commands it supports.
 
 - Kind: `Hook`
 
@@ -11,31 +11,34 @@ import { useExpose } from "@litsx/core";
 ```
 
 ```ts
-useExpose<T>(ref: { current: T | null; } | ((value: T | null) => void), createHandle: () => T, deps?: unknown[]): void
+useExpose<T extends Record<string, (...args: any[]) => unknown>>(ref: { current: T | null; } | ((value: T | null) => void), createHandle: () => T, deps?: unknown[]): void
 ```
 
 ## Usage
 
-Use useExpose when a component should publish a small imperative API such as focus(), open(), or reset().
+Use useExpose when a component should publish imperative methods such as focus(), open(), reset(), or reportValidity().
 
-Keep the handle narrow and stable so callers depend on explicit capabilities rather than on the whole element instance.
+Keep the exposed surface method-only. Read/write properties such as value, name, disabled, or readonly state such as validity belong on the normal host API.
 
-Pair useExpose with useRef when the handle should forward a few imperative methods to owned DOM nodes.
+Call useExpose(createHandle, deps) to install those methods on the current component instance.
+
+Call useExpose(ref, createHandle, deps) when a wrapper or forwarded-ref component should expose methods through an explicit ref channel instead of the local host instance.
 
 ## Behavior
 
-- Lit<sup>sx</sup> assigns the created handle to the provided ref during the host lifecycle.
-- Recompute the handle only when one of the listed dependencies changes.
-- Prefer exposing a small command surface instead of leaking the underlying element instance.
+- The host-targeted signature installs the returned methods on the host instance itself.
+- The ref-targeted signature assigns the returned method surface to the provided ref during the host lifecycle and clears that ref on disconnect.
+- Recompute the exposed method implementations only when one of the listed dependencies changes.
+- When several useExpose calls publish the same method on the same target, the last publisher wins until it disappears.
 
 ## Mental Model
 
-useExpose draws a boundary between what the component does internally and the few commands it chooses to make public.
+useExpose draws a boundary between the component's full internal implementation and the few imperative commands it chooses to make public.
 
 ## Examples
 
 ```ts
-useExpose(ref, () => ({
+useExpose(() => ({
   focus() {
     inputRef.current?.focus();
   },
@@ -43,12 +46,18 @@ useExpose(ref, () => ({
     setValue("");
   },
 }), [inputRef, setValue]);
+
+useExpose(forwardedRef, () => ({
+  focus() {
+    innerRef.current?.focus();
+  },
+}), [forwardedRef, innerRef]);
 ```
 
 ## Pitfalls
 
-- Do not expose the whole element instance unless that really is the public API you want to support.
-- Keep the handle stable and intention-revealing. A small set of named commands is easier to maintain than a grab-bag of internals.
+- useExpose only supports methods. Expose properties through the normal component surface instead of returning them here.
+- Keep the public command surface narrow and intention-revealing. A small set of named commands is easier to maintain than a grab-bag of internals.
 
 ## Parameters
 
@@ -56,19 +65,19 @@ useExpose(ref, () => ({
 
 Type: `{ current: T | null } | ((value: T | null) => void)`
 
-Ref object or callback ref that should receive the exposed handle.
+Either the target ref that should receive the exposed methods, or the handle factory when targeting the host instance directly.
 
 ### `createHandle`
 
 Type: `() => T`
 
-Function that returns the imperative handle to expose.
+Handle factory for the ref-targeted signature, or dependency list for the host-targeted signature.
 
 ### `deps`
 
 Type: `unknown[]`
 
-Reactive values that control when the handle should be recreated.
+Reactive values that control when the exposed method implementations should be refreshed.
 
 ## Related
 

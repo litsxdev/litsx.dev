@@ -45,7 +45,7 @@ import { useRef, useEffect } from 'react';
 #### Generated Output
 
 ```js
-import { prepareEffects, useAfterUpdate, useRef, ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, useAfterUpdate, useRef, ErrorBoundary } from "@litsx/core";
 import { LitsxStaticHoistsMixin, ShadowDomMixin } from "@litsx/core/elements";
 import { LitElement, html } from "lit";
 const _litsx_static_properties = Symbol("litsx.static.properties");
@@ -62,13 +62,26 @@ class FancyForm extends ShadowDomMixin(LitsxStaticHoistsMixin(LitElement)) {
       }
     })));
   }
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1b33bdn";
+  static [Symbol.for("litsx.component")] = true;
   render() {
     prepareEffects(this);
-    const buttonRef = useRef(this, null);
-    useAfterUpdate(this, () => {
-      buttonRef.current.focus();
-    }, []);
-    return html`<div><fancy-button .ref=${buttonRef} .label=${this.label}></fancy-button></div>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      const buttonRef = useRef(this, null);
+      useAfterUpdate(this, () => {
+        buttonRef.current.focus();
+      }, []);
+      return html`<div><fancy-button .ref=${buttonRef} .label=${this.label}></fancy-button></div>`;
+    });
   }
   static elements = {
     "fancy-button": FancyButton
@@ -99,9 +112,11 @@ export const FilterForm = ({ query, enabled, onQueryChange, onEnabledChange }) =
 #### Generated Output
 
 ```js
-import { ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class FilterForm extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-l1m4gw";
+  static [Symbol.for("litsx.component")] = true;
   static properties = {
     query: {
       type: String
@@ -117,7 +132,18 @@ export class FilterForm extends LitElement {
     }
   };
   render() {
-    return html`<label for="search">Search<input id="search" .value=${this.query} @input=${this.onQueryChange}><input type="checkbox" ?checked=${this.enabled} @change=${this.onEnabledChange}></label>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<label for="search">Search<input id="search" .value=${this.query} @input=${this.onQueryChange}><input type="checkbox" ?checked=${this.enabled} @change=${this.onEnabledChange}></label>`;
+    });
   }
 }
 ```
@@ -144,9 +170,11 @@ export const AliasedEvents = ({ onFocus, onBlur, onDoubleClick }) => {
 #### Generated Output
 
 ```js
-import { ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class AliasedEvents extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-142wgja";
+  static [Symbol.for("litsx.component")] = true;
   static properties = {
     onFocus: {
       type: String
@@ -159,13 +187,24 @@ export class AliasedEvents extends LitElement {
     }
   };
   render() {
-    return html`<section><input @focusin=${{
-      handleEvent: this.onFocus,
-      capture: true
-    }} @focusout=${{
-      handleEvent: this.onBlur,
-      capture: true
-    }}><button @dblclick=${this.onDoubleClick}>Open</button></section>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<section><input @focusin=${{
+        handleEvent: this.onFocus,
+        capture: true
+      }} @focusout=${{
+        handleEvent: this.onBlur,
+        capture: true
+      }}><button @dblclick=${this.onDoubleClick}>Open</button></section>`;
+    });
   }
 }
 ```
@@ -187,9 +226,11 @@ export const FilterForm = ({ query, onQueryChange }) => {
 #### Generated Output
 
 ```js
-import { ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class FilterForm extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-l1m4gw";
+  static [Symbol.for("litsx.component")] = true;
   static properties = {
     query: {
       type: String
@@ -199,7 +240,18 @@ export class FilterForm extends LitElement {
     }
   };
   render() {
-    return html`<input .value=${this.query} @input=${this.onQueryChange}>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<input .value=${this.query} @input=${this.onQueryChange}>`;
+    });
   }
 }
 ```
@@ -226,9 +278,11 @@ export const AliasedEvents = ({ onFocus, onBlur, onDoubleClick }) => {
 #### Generated Output
 
 ```js
-import { ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class AliasedEvents extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-142wgja";
+  static [Symbol.for("litsx.component")] = true;
   static properties = {
     onFocus: {
       type: String
@@ -241,13 +295,24 @@ export class AliasedEvents extends LitElement {
     }
   };
   render() {
-    return html`<section><input @focusin=${{
-      handleEvent: this.onFocus,
-      capture: true
-    }} @focusout=${{
-      handleEvent: this.onBlur,
-      capture: true
-    }}><button @dblclick=${this.onDoubleClick}>Open</button></section>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<section><input @focusin=${{
+        handleEvent: this.onFocus,
+        capture: true
+      }} @focusout=${{
+        handleEvent: this.onBlur,
+        capture: true
+      }}><button @dblclick=${this.onDoubleClick}>Open</button></section>`;
+    });
   }
 }
 ```
@@ -283,20 +348,46 @@ import React, { createContext, useContext } from "react";
 
 ```js
 import { ShadowDomMixin } from "@litsx/core/elements";
-import { prepareEffects, ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { createContext, useContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/core/context";
 const ThemeContext = createContext("light");
 export class Toolbar extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1vv3759";
+  static [Symbol.for("litsx.component")] = true;
   render() {
     prepareEffects(this);
-    const theme = useContext(this, ThemeContext);
-    return html`<button class="${theme}">${theme}</button>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      const theme = useContext(this, ThemeContext);
+      return html`<button class="${theme}">${theme}</button>`;
+    });
   }
 }
 export class App extends ShadowDomMixin(LitElement) {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1lmfb9l";
+  static [Symbol.for("litsx.component")] = true;
   render() {
-    return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}><toolbar></toolbar></litsx-context-provider>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}><toolbar></toolbar></litsx-context-provider>`;
+    });
   }
   static elements = {
     "toolbar": Toolbar,
@@ -333,13 +424,26 @@ import { createContext } from "react";
 
 ```js
 import { ShadowDomMixin } from "@litsx/core/elements";
-import { ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { createContext, renderContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/core/context";
 const ThemeContext = createContext("light");
 export class App extends ShadowDomMixin(LitElement) {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1q1huks";
+  static [Symbol.for("litsx.component")] = true;
   render() {
-    return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}>${renderContext(this, ThemeContext, theme => html`<span class="${theme}">${theme}</span>`)}</litsx-context-provider>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}>${renderContext(this, ThemeContext, theme => html`<span class="${theme}">${theme}</span>`)}</litsx-context-provider>`;
+    });
   }
   static elements = {
     "litsx-context-provider": LitsxContextProvider
@@ -374,7 +478,7 @@ import { createContext, useContext } from "react";
 #### Generated Output
 
 ```js
-import { prepareEffects, ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { createContext, useContext } from "@litsx/core/context";
 const ThemeContext = createContext("light");
@@ -383,10 +487,23 @@ function useThemeLabel(_host, prefix) {
   return prefix + ":" + theme;
 }
 export class Toolbar extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1q2f9d3";
+  static [Symbol.for("litsx.component")] = true;
   render() {
     prepareEffects(this);
-    const label = useThemeLabel(this, "theme");
-    return html`<span>${label}</span>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      const label = useThemeLabel(this, "theme");
+      return html`<span>${label}</span>`;
+    });
   }
 }
 ```
@@ -412,9 +529,11 @@ import React, { forwardRef, memo } from "react";
 #### Generated Output
 
 ```js
-import { useCallbackRef, prepareEffects, ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class CardShell extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-12o3d3a";
+  static [Symbol.for("litsx.component")] = true;
   static properties = {
     title: {
       type: String
@@ -425,21 +544,23 @@ export class CardShell extends LitElement {
     }
   };
   render() {
-    prepareEffects(this);
-    useCallbackRef(this, () => this.renderRoot?.querySelector("[data-ref=\"_refElement\"]") ?? this.querySelector("[data-ref=\"_refElement\"]"), node => {
-      const componentRef = this.ref;
-      if (typeof componentRef === "function") {
-        componentRef(node);
-      } else if (componentRef && typeof componentRef === "object") {
-        componentRef.current = node;
-      }
-    }, [this.ref]);
-    return html`<label data-ref="_refElement">${this.title}</label>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this.renderRoot?.querySelector("[data-ref=\"_refElement\"]") ?? this.querySelector("[data-ref=\"_refElement\"]"), node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<label data-ref="_refElement">${this.title}</label>`;
+    });
   }
 }
 ```
 
-### Can force light DOM output for react-compat migrations
+### Rejects forced light DOM output for react-compat migrations when scoped elements are required
 
 #### Interpretation
 
@@ -463,10 +584,12 @@ import FancyButton from './FancyButton.js';
 
 ```js
 import { ShadowDomMixin } from "@litsx/core/elements";
-import { ErrorBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import FancyButton from './FancyButton.js';
 export class LightForm extends ShadowDomMixin(LitElement) {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-qetzkv";
+  static [Symbol.for("litsx.component")] = true;
   static properties = {
     label: {
       type: String
@@ -476,7 +599,18 @@ export class LightForm extends ShadowDomMixin(LitElement) {
     "fancy-button": FancyButton
   };
   render() {
-    return html`<section><fancy-button .label=${this.label}></fancy-button></section>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<section><fancy-button .label=${this.label}></fancy-button></section>`;
+    });
   }
 }
 ```
@@ -509,19 +643,32 @@ import { ErrorBoundary } from "react-error-boundary";
 #### Generated Output
 
 ```js
-import { ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
+import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import { bindRendererContext } from "@litsx/core/rendering";
 import { ShadowDomMixin } from "@litsx/core/elements";
 const ResultsPanel = () => import("./ResultsPanel.js");
 export class SearchCard extends ShadowDomMixin(LitElement) {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-18hnjqh";
+  static [Symbol.for("litsx.component")] = true;
   render() {
     ensureLazyElement(this, "results-panel", ResultsPanel);
-    return html`<error-boundary .fallbackRenderer=${() => html`<p>Oops</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<suspense-boundary .fallbackRenderer=${() => html`<p>Loading</p>`} .contentRenderer=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<results-panel value="ready"></results-panel>`, {
-      projected: true
-    })}></suspense-boundary>`, {
-      projected: true
-    })}></error-boundary>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      return html`<error-boundary .fallback=${() => html`<p>Oops</p>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<suspense-boundary .fallback=${() => html`<p>Loading</p>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<results-panel value="ready"></results-panel>`, {
+        projected: true
+      })}></suspense-boundary>`, {
+        projected: true
+      })}></error-boundary>`;
+    });
   }
   static elements = {
     "error-boundary": ErrorBoundary,
@@ -550,13 +697,26 @@ import { useState } from "react";
 #### Generated Output
 
 ```js
-import { useState, prepareEffects, ErrorBoundary } from "@litsx/core";
+import { useState, prepareEffects, useCallbackRef, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 export class Counter extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1mo3ar6";
+  static [Symbol.for("litsx.component")] = true;
   render() {
     prepareEffects(this);
-    const [count, setCount] = useState(this, 0);
-    return html`<button @click=${() => setCount(count + 1)}>${count}</button>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      const [count, setCount] = useState(this, 0);
+      return html`<button @click=${() => setCount(count + 1)}>${count}</button>`;
+    });
   }
 }
 ```
@@ -575,14 +735,27 @@ import React, { useState } from "react";
 #### Generated Output
 
 ```js
-import { useState, prepareEffects, ErrorBoundary } from "@litsx/core";
+import { useState, prepareEffects, useCallbackRef, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
 import { LitElement, html } from "lit";
 import React from "react";
 export class Counter extends LitElement {
+  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-izthnw";
+  static [Symbol.for("litsx.component")] = true;
   render() {
     prepareEffects(this);
-    const [count, setCount] = useState(this, 0);
-    return html`<button title="${React.version}" @click=${() => setCount(count + 1)}>${count}</button>`;
+    return renderWithSoftSuspense(this, () => {
+      prepareEffects(this);
+      useCallbackRef(this, () => this, node => {
+        const componentRef = this.ref;
+        if (typeof componentRef === "function") {
+          componentRef(node);
+        } else if (componentRef && typeof componentRef === "object") {
+          componentRef.current = node;
+        }
+      }, [this.ref]);
+      const [count, setCount] = useState(this, 0);
+      return html`<button title="${React.version}" @click=${() => setCount(count + 1)}>${count}</button>`;
+    });
   }
 }
 ```

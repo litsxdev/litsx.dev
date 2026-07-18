@@ -225,7 +225,7 @@ This case highlights syntax that should survive the transform unchanged or be pr
 
 ```jsx
 const view = (
-        <suspense-boundary .contentRenderer={() => <span>ready</span>} @resolve={handleResolve} ?pending={isPending}>
+        <suspense-boundary .content={() => <span>ready</span>} @resolve={handleResolve} ?pending={isPending}>
           <span>fallback</span>
         </suspense-boundary>
       );
@@ -235,7 +235,7 @@ const view = (
 
 ```js
 import { html } from "lit";
-const view = html`<suspense-boundary .contentRenderer=${() => html`<span>ready</span>`} @resolve=${handleResolve} ?pending=${isPending}><span>fallback</span></suspense-boundary>`;
+const view = html`<suspense-boundary .content=${() => html`<span>ready</span>`} @resolve=${handleResolve} ?pending=${isPending}><span>fallback</span></suspense-boundary>`;
 ```
 
 ### Trims whitespace around text nodes in templates

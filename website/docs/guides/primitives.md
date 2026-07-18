@@ -27,6 +27,8 @@ For everyday component work, the runtime surface also includes the hooks that mo
 - `useOnCommit(...)`
 - `useAfterUpdate(...)`
 
+Structural hooks are a separate authoring contract for library authors who need reusable hooks with class/type structural work, host middleware wiring, or both. They are still consumed with normal hook syntax, but they are declared with `defineHook({ static, setup, middlewares, use })`; see [Structural Hooks](./structural-hooks.md).
+
 This example shows that split directly in one component:
 
 - `useState(...)` keeps the counter alive across renders

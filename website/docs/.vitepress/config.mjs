@@ -126,6 +126,7 @@ export default defineConfig({
           { text: "Styling", link: "/guides/styling" },
           { text: "Property Inference", link: "/guides/property-inference" },
           { text: "Primitives", link: "/guides/primitives" },
+          { text: "Structural Hooks", link: "/guides/structural-hooks" },
           { text: "Events", link: "/guides/events" },
           { text: "Refs", link: "/guides/refs" },
           { text: "Async UI", link: "/guides/suspense" },
@@ -187,6 +188,12 @@ export default defineConfig({
               { text: "useState", link: "/reference/generated/usestate" },
               { text: "useTextContent", link: "/reference/generated/usetextcontent" },
               { text: "useTransition", link: "/reference/generated/usetransition" },
+            ],
+          },
+          {
+            text: "Advanced Hooks",
+            items: [
+              { text: "Structural Hooks", link: "/guides/structural-hooks" },
             ],
           },
           {

@@ -22,6 +22,7 @@ Use this reference when you already know the feature you need and want the nativ
 - refs and imperative escape hatches
 - host-level dynamic styling
 - resource identity that must remain stable across authored server output and browser hydration
+- structural hooks for reusable hooks that need class/type structural work, host middleware participation, or both
 
 If you are still learning the authoring model itself, start with the guides first and then come back here as the API map.
 
@@ -73,6 +74,7 @@ Start here for that layer:
 - [JSX Authoring](../guides/jsx-authoring.md)
 - [Static Hoists](../guides/static-hoists.md)
 - [Property Inference](../guides/property-inference.md)
+- [Structural Hooks](../guides/structural-hooks.md)
 
 ## Primitives
 
@@ -131,6 +133,10 @@ The rough mental model is:
 ### External State
 
 - [useExternalStore](./generated/useexternalstore.md)
+
+### Structural Hooks
+
+- [Structural Hooks Guide](../guides/structural-hooks.md)
 
 ## Styling
 

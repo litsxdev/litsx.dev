@@ -7,7 +7,6 @@ import { fence, slugify } from "./shared/markdown-utils.mjs";
 
 const outputDir = path.join(docsRepoRoot, "website/docs/reference/generated");
 const indexDtsPath = path.join(litsxSourceRoot, "packages/core/src/index.d.ts");
-const hooksPluginPath = path.join(litsxSourceRoot, "packages/babel-preset-litsx/src/internal/transform-litsx-hooks.js");
 const runtimeDocSourcePaths = [
   path.join(litsxSourceRoot, "packages/core/src/effect-hooks.js"),
   path.join(litsxSourceRoot, "packages/core/src/host-hooks.js"),
@@ -57,15 +56,30 @@ function getCommentText(comment, { preserveWhitespace = false } = {}) {
   return "";
 }
 
-function getAuthorHookNames() {
-  const source = read(hooksPluginPath);
-  const match = source.match(/const RUNTIME_HELPERS = \[([\s\S]*?)\];/);
-  if (!match) return [];
-  return match[1]
-    .split(",")
-    .map((entry) => entry.replace(/["'`\s]/g, ""))
-    .filter(Boolean)
-    .filter((name) => !["suspenseBoundary", "suspenseBoundaryList", "errorBoundary"].includes(name));
+function getAuthorHookNames(sourceFile) {
+  const excluded = new Set([
+    "useStructuralEntry",
+    "useStructuralStaticEntry",
+  ]);
+
+  const names = [];
+  for (const statement of sourceFile.statements) {
+    if (!ts.isFunctionDeclaration(statement) || !statement.name?.text) {
+      continue;
+    }
+
+    const name = statement.name.text;
+    if (
+      (name.startsWith("use") && /^[A-Z]/.test(name.slice(3))) ||
+      name === "startTransition"
+    ) {
+      if (!excluded.has(name)) {
+        names.push(name);
+      }
+    }
+  }
+
+  return names;
 }
 
 function getJsDoc(node) {
@@ -556,11 +570,9 @@ const runtimeDocSources = runtimeDocSourcePaths.map((filePath) =>
 const errorBoundarySource = readSourceFile(errorBoundaryJsPath, ts.ScriptKind.JS);
 const suspenseBoundarySource = readSourceFile(suspenseBoundaryJsPath, ts.ScriptKind.JS);
 const suspenseListSource = readSourceFile(suspenseListJsPath, ts.ScriptKind.JS);
-const authorHookNames = [...new Set([
-  "useState",
-  "startTransition",
-  ...getAuthorHookNames(),
-].filter((name) => !["useEffect", "useLayoutEffect"].includes(name)))];
+const authorHookNames = [...new Set(
+  getAuthorHookNames(sourceFile).filter((name) => !["useEffect", "useLayoutEffect"].includes(name))
+)];
 const primitives = ["ErrorBoundary", "SuspenseBoundary", "SuspenseList"];
 const names = [...new Set([...primitives, ...authorHookNames, ...staticApis, ...stylingApis])];
 const items = collectDeclarations(sourceFile, names);

@@ -84,6 +84,7 @@ The important thing is that tooling is not just parsing JSX. It also understands
 - `static styles = ...` is treated as static component CSS
 - `static name = ...` hoists are validated as top-level-only component statements
 - `useStyle(...)` stays in the dynamic runtime surface
+- structural hooks declared with `defineHook({ static, setup, middlewares, use })` are discovered through the hook graph and wired into static or instance structural plans automatically
 
 Type declarations also carry the native styling helpers, so editor tooling can distinguish:
 
