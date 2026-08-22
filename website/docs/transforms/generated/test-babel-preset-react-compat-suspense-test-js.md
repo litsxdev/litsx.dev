@@ -30,33 +30,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1slxa86";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => html`<span>loading</span>`} .content=${() => html`<div>ready</div>`}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (5:14)
 ```
 
 ### Rewrites SuspenseList to a suspense-list utility component
@@ -84,34 +61,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-x8zvud";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallback=${() => html`<span>One</span>`} .content=${() => html`<div>alpha</div>`}></suspense-boundary><suspense-boundary .fallback=${() => html`<span>Two</span>`} .content=${() => html`<div>beta</div>`}></suspense-boundary></suspense-list>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary,
-    "suspense-list": SuspenseList
-  };
-}
+```txt
+Unexpected token, expected "," (5:18)
 ```
 
 ### Keeps lazy registration inside the content renderer of suspense-boundary
@@ -136,38 +89,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-import { bindRendererContext } from "@litsx/core/rendering";
-import { ShadowDomMixin } from "@litsx/core/elements";
-const FancyButton = () => import('./FancyButton.js');
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1gsa5md";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    ensureLazyElement(this, "fancy-button", FancyButton);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => html`<span>loading</span>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<fancy-button></fancy-button>`, {
-        projected: true
-      })}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (7:14)
 ```
 
 ### Keeps each lazy registration inside its own suspense-boundary when using SuspenseList
@@ -198,43 +123,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ensureLazyElement, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
-import { LitElement, html } from "lit";
-import { bindRendererContext } from "@litsx/core/rendering";
-import { ShadowDomMixin } from "@litsx/core/elements";
-const AlphaPanel = () => import('./AlphaPanel.js');
-const BetaPanel = () => import('./BetaPanel.js');
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-5n9xi3";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    ensureLazyElement(this, "alpha-panel", AlphaPanel);
-    ensureLazyElement(this, "beta-panel", BetaPanel);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallback=${() => html`<span>One</span>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<alpha-panel></alpha-panel>`, {
-        projected: true
-      })}></suspense-boundary><suspense-boundary .fallback=${() => html`<span>Two</span>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<beta-panel></beta-panel>`, {
-        projected: true
-      })}></suspense-boundary></suspense-list>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary,
-    "suspense-list": SuspenseList
-  };
-}
+```txt
+Unexpected token, expected "," (8:18)
 ```
 
 ### Handles namespace React.Suspense and React.SuspenseList forms
@@ -259,35 +151,19 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1s1y2u8";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallback=${() => html`<span>loading</span>`} .content=${() => html`<div>ready</div>`}></suspense-boundary></suspense-list>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary,
-    "suspense-list": SuspenseList
-  };
-}
+```txt
+Unexpected token, expected "," (5:10)
 ```
+
+### Keeps native @litsx/core SuspenseList props as property bindings in react-compat
+
+#### Interpretation
+
+This case highlights syntax that should survive the transform unchanged or be preserved semantically.
+
+- No inline source fixture extracted for this case.
 
 ### Emits null renderers when suspense has no fallback or content
 
@@ -305,33 +181,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1slxa86";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => null} .content=${() => null}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (4:19)
 ```
 
 ### Preserves fragment children inside the suspense content renderer
@@ -357,33 +210,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1slxa86";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => html`<span>loading</span>`} .content=${() => html`<div>alpha</div><div>beta</div>`}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (5:14)
 ```
 
 ### Supports boolean fallbacks and single expression children
@@ -402,38 +232,10 @@ export const Screen = ({ readyView }) => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-wyx4nf";
-  static [Symbol.for("litsx.component")] = true;
-  static properties = {
-    readyView: {
-      type: String
-    }
-  };
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => true} .content=${() => this.readyView}></suspense-boundary>`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "," (4:15)
 ```
 
 ### Supports string fallbacks and plain text children
@@ -452,33 +254,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1slxa86";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => "loading"} .content=${() => "ready"}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (4:19)
 ```
 
 ### Treats empty fallback expressions as boolean true instead of crashing
@@ -497,40 +276,17 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1slxa86";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => true} .content=${() => html`<div>ready</div>`}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (4:19)
 ```
 
-### Leaves non-React namespace suspense lookalikes untouched
+### Registers non-React namespace suspense components without treating them as boundaries
 
 #### Interpretation
 
-This case highlights syntax that should survive the transform unchanged or be preserved semantically.
+This case records the authored input and the generated output as a living transform contract.
 
 #### Authored Input
 
@@ -542,32 +298,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-import * as UI from 'ui-kit';
-export class Screen extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1tpvp02";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`${UI.Suspense({
-        fallback: "loading"
-      }, html`<div>ready</div>`)}`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "," (4:12)
 ```
 
 ### Drops key attributes from suspense lists imported under aliases
@@ -592,34 +326,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-wpink2";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallback=${() => html`<span>One</span>`} .content=${() => html`<div>alpha</div>`}></suspense-boundary></suspense-list>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary,
-    "suspense-list": SuspenseList
-  };
-}
+```txt
+Unexpected token, expected "," (5:11)
 ```
 
 ### Renders numeric fallbacks and null content when suspense children are empty comments
@@ -638,33 +348,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1slxa86";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => 404} .content=${() => null}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (4:19)
 ```
 
 ### Does not move manual ensureLazyElement calls into suspense content renderers
@@ -695,40 +382,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { LitElement, html } from "lit";
-import { bindRendererContext } from "@litsx/core/rendering";
-import { ensureLazyElement, useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from '@litsx/core';
-const AlphaPanel = () => null;
-const BetaPanel = () => null;
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1vtly9v";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      ensureLazyElement(this, 'alpha-panel', AlphaPanel);
-      ensureLazyElement(this, 'beta-panel', BetaPanel);
-      return html`<section><suspense-boundary .fallback=${() => html`<span>loading</span>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<alpha-panel></alpha-panel>`, {
-        projected: true
-      })}></suspense-boundary></section>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "</>/<=/>=" (12:16)
 ```
 
 ### Does not introduce boundary-key or list-key attributes in the component model
@@ -753,34 +410,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-z6x3p6";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-list revealOrder="forwards"><suspense-boundary .fallback=${() => html`<span>One</span>`} .content=${() => html`<div>alpha</div>`}></suspense-boundary></suspense-list>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary,
-    "suspense-list": SuspenseList
-  };
-}
+```txt
+Unexpected token, expected "," (5:18)
 ```
 
 ### Uses light-dom utility components rather than runtime helper functions
@@ -803,33 +436,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1slxa86";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => html`<span>loading</span>`} .content=${() => html`<div>ready</div>`}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (5:14)
 ```
 
 ### Emits final html output after lowering Suspense before the template pass
@@ -852,33 +462,10 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1slxa86";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<suspense-boundary .fallback=${() => html`<span>loading</span>`} .content=${() => html`<div>ready</div>`}></suspense-boundary>`;
-    });
-  }
-  static elements = {
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (5:14)
 ```
 
 ### Lowers nested error and suspense structures through multiple recursion levels
@@ -913,40 +500,8 @@ export const Screen = () => {
 };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ensureLazyElement, ErrorBoundary, SuspenseBoundary, SuspenseList } from "@litsx/core";
-import { LitElement, html } from "lit";
-import { bindRendererContext } from "@litsx/core/rendering";
-import { ShadowDomMixin } from "@litsx/core/elements";
-const AlphaPanel = () => import('./AlphaPanel.js');
-export class Screen extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-6794w1";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    ensureLazyElement(this, "alpha-panel", AlphaPanel);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<error-boundary .fallback=${() => html`<p>outer-fallback</p>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<section><suspense-list revealOrder="forwards"><suspense-boundary .fallback=${() => html`<span>alpha-loading</span>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<alpha-panel></alpha-panel>`, {
-        projected: true
-      })}></suspense-boundary><suspense-boundary .fallback=${() => html`<span>beta-loading</span>`} .content=${() => html`<article><strong>beta-ready</strong></article>`}></suspense-boundary></suspense-list></section>`, {
-        projected: true
-      })}></error-boundary>`;
-    });
-  }
-  static elements = {
-    "error-boundary": ErrorBoundary,
-    "suspense-boundary": SuspenseBoundary,
-    "suspense-list": SuspenseList
-  };
-}
+```txt
+Unexpected token, expected "," (8:19)
 ```

@@ -1,244 +1,89 @@
-# Property Inference
+# Property and Binding Inference
 
-Lit<sup>sx</sup> generates the web-component property descriptor at compile time.
+Lit<sup>sx</sup> derives a component's reactive property surface from TypeScript props and uses that same surface to choose bindings at JSX callsites.
 
-The starting point is the strongest prop information the compiler can resolve. In practice, that usually means:
-
-1. TypeScript prop types
-2. destructured prop names in the component signature
-3. direct opaque member access such as `props.title`
-
-If you add `static properties = ...`, Lit<sup>sx</sup> treats it as an override layer on top of whatever descriptor was inferred.
-The transform lowers that authored macro to a memoized static getter on the generated class, so object-valued metadata keeps a stable identity per component class.
-`static properties = ...` is just one named use of the general `static name = ...` hoist model, but it is the one that Lit property inference cares about directly.
-
-## The Mental Model
-
-Think in this order:
-
-1. write the props type
-2. let Lit<sup>sx</sup> infer the Lit property descriptor
-3. use `static properties = ...` only when a property needs explicit Lit options
-
-In day-to-day authoring, `Props` should stay as the source of truth. The generated class metadata is an implementation detail, but it is an implementation detail that Lit<sup>sx</sup> needs to derive correctly.
-
-## What Infers Cleanly
-
-These prop shapes map directly to stable Lit property descriptors:
-
-- `string` -> `String`
-- `number` -> `Number`
-- `boolean` -> `Boolean`
-- `Date` -> `Date`
-- arrays and tuples -> `Array`
-- object-like values -> `Object`
-- callbacks and function props -> `Object` with `attribute: false`
-
-String enums and string literal unions also infer to `String`. Numeric enums infer to `Number`.
-
-That means most authored component types do not need any extra property metadata.
-
-## Inference Priority
-
-Lit<sup>sx</sup> prefers the strongest available source of truth.
-
-- explicit TypeScript prop types
-- destructured prop names from the component signature
-- explicit `static properties = ...` overrides layered on top
-- fallback inference from direct `props.foo` member access
-
-That means these two inputs are combinable, not exclusive:
-
-- TypeScript gives the base runtime `type`
-- `static properties = ...` enriches Lit-specific behavior such as `reflect`, `attribute`, or `converter`
-
-If both exist, Lit<sup>sx</sup> does not choose one or the other. It starts from the typed descriptor and then merges the authored `static properties = ...` overrides inside that memoized static getter.
-
-## Example
-
-The easiest way to inspect the inference model is to look at the emitted module. In this playground, the authored `Props` type establishes the base descriptor, and `static properties = ...` only enriches Lit-specific behavior.
-
-<script setup>
-import { propertyInferenceExampleSource } from "../.vitepress/theme/components/playground-example-source.js";
-</script>
-
-<ClientOnly>
-  <litsx-playground
-    exportname="ProfileCard"
-    previewtagname="docs-profile-card-preview"
-    filename="/playground/ProfileCard.tsx"
-    panelmaxheight="30rem"
-  >{{ propertyInferenceExampleSource }}</litsx-playground>
-</ClientOnly>
+## Start with props
 
 ```tsx
-type CardProps = {
+type ProfileCardProps = {
   title: string;
-  active: boolean;
-  createdAt: Date;
+  active?: boolean;
   tags: string[];
+  createdAt: Date;
   onSelect: (id: string) => void;
 };
 
-export function Card(props: CardProps) {
-  return (
-    <article>
-      <h2>{props.title}</h2>
-      <p>{props.active ? "on" : "off"}</p>
-      <p>{props.createdAt.toISOString()}</p>
-      <p>{props.tags.length}</p>
-      <button onClick={() => props.onSelect(props.title)}>select</button>
-    </article>
-  );
+export function ProfileCard(props: ProfileCardProps) {
+  return <article>{props.title}</article>;
 }
 ```
 
-This starts from a property descriptor equivalent to:
+The compiler can derive metadata equivalent to:
 
 ```js
 {
   title: { type: String },
   active: { type: Boolean },
-  createdAt: { type: Date },
   tags: { type: Array },
+  createdAt: { type: Date },
   onSelect: { type: Object, attribute: false },
 }
 ```
 
-## Using `static properties = ...`
+Strings, numbers, booleans, dates, arrays, tuples, and object-like values map to the corresponding Lit constructors. Functions do not use attributes. When a TypeScript shape cannot map safely to one constructor, Lit<sup>sx</sup> prefers `Object` over a wrong guess.
 
-Use `static properties = ...` when the inferred type is correct but the Lit behavior needs more detail.
+## Refine Lit behavior
 
-```tsx
-type CardProps = {
-  title: string;
-  active: boolean;
-  payload: Record<string, unknown>;
-  onSelect: (id: string) => void;
-};
-
-export function Card(props: CardProps) {
-  static properties = {
-    active: { reflect: true },
-    payload: { attribute: false },
-    onSelect: { attribute: false },
-  };
-
-  return <article>{props.title}</article>;
-}
-```
-
-That produces a descriptor shaped like:
-
-```js
-{
-  title: { type: String },
-  active: { type: Boolean, reflect: true },
-  payload: { type: Object, attribute: false },
-  onSelect: { type: Object, attribute: false },
-}
-```
-
-The important distinction is:
-
-- inference decides the base `type`
-- `static properties = ...` refines Lit-specific behavior such as `reflect`, `attribute`, `converter`, or `hasChanged`
-
-That also means `static properties = ...` is useful even when TypeScript inference is already correct. It is the place to enrich the descriptor, not to replace typing entirely.
-
-## Untyped Props Fallback
-
-If a component uses an opaque `props` object without TypeScript types, Lit<sup>sx</sup> still tries to recover usable metadata from direct member access.
-
-```jsx
-export function Banner(props) {
-  return <section>{props.title} {props.count}</section>;
-}
-```
-
-This compiles to a descriptor like:
-
-```js
-{
-  title: { type: String },
-  count: { type: String },
-}
-```
-
-and the component body is lowered to instance properties:
-
-```js
-return <section>{this.title} {this.count}</section>;
-```
-
-That fallback exists to make `function Component(props)` usable, but it is deliberately weak. Without types or destructuring, Lit<sup>sx</sup> cannot prove whether `props.count` was really a number, string, boolean, or something richer.
-
-So the fallback rule is intentionally conservative:
-
-- direct `props.foo` access can produce property metadata
-- untyped opaque member access falls back to `String`
-- stronger sources such as TypeScript types or `static properties = ...` still win
-
-## When Lit<sup>sx</sup> Degrades to `Object`
-
-Some TypeScript shapes do not map cleanly to a single Lit constructor.
-
-Typical examples:
-
-- mixed unions like `string | number`
-- conditional types
-- mapped types that describe dynamic object shape
-- generic wrappers where the final runtime shape is object-like
-
-In those cases, Lit<sup>sx</sup> degrades to `Object` instead of failing compilation.
+Add ordinary static metadata after the component declaration when inference needs Lit-specific options:
 
 ```tsx
-type ValueOrFactory<T> = T extends string ? T | (() => T) : T;
+export function ProfileCard(props: ProfileCardProps) {
+  return <article data-active={props.active}>{props.title}</article>;
+}
 
-type PanelProps = {
-  displayValue: ValueOrFactory<string>;
+ProfileCard.properties = {
+  active: { reflect: true },
+  tags: { attribute: false },
+  createdAt: { attribute: false },
+  onSelect: { attribute: false },
 };
 ```
 
-This resolves to a property descriptor like:
+TypeScript remains the base source of truth. `Component.properties` layers `reflect`, `attribute`, `converter`, `hasChanged`, and other Lit options on top.
 
-```js
-{
-  displayValue: { type: Object },
-}
+## How JSX bindings are chosen
+
+Authors always use ordinary JSX names:
+
+```tsx
+<ProfileCard
+  title="Ada"
+  active={true}
+  tags={["compiler", "web components"]}
+  createdAt={new Date()}
+  onSelect={(id) => select(id)}
+/>
 ```
 
-That fallback is intentional. If Lit<sup>sx</sup> cannot prove that a prop cleanly maps to `String`, `Number`, `Boolean`, `Date`, or `Array`, it prefers a stable `Object` descriptor over a wrong guess.
+The compiler resolves the destination constructor before lowering bindings:
 
-## Compile Warnings For Weak Inference
+- Boolean component props and camelCase public props use properties.
+- Objects, arrays, functions, `unknown`, and `{ attribute: false }` use properties.
+- A declared lowercase scalar attribute with the same public name uses an attribute.
+- A declared Boolean attribute alias uses Boolean-presence semantics.
+- `data-*`, `aria-*`, and ordinary native HTML attributes stay attributes.
+- native `value` on `input`, `textarea`, and `select` uses a property.
 
-When Lit<sup>sx</sup> has to infer a property only from opaque member access like `props.title`, it emits a compiler warning in metadata:
+Spreads apply the same rules after their sources have been merged in authored order.
 
-- `code: "LITSX_PROP_FALLBACK_STRING"`
+## Weaker JavaScript fallback
 
-The warning means:
+Untyped `props.foo` access can still produce usable metadata, but the compiler cannot prove the runtime type and may fall back to `String`. Transform metadata records a `LITSX_PROP_FALLBACK_STRING` warning so tooling can recommend a prop type, destructuring, or explicit metadata.
 
-- the prop was discovered from `props.foo`
-- Lit<sup>sx</sup> had to fall back to `String`
-- you should prefer one of:
-- TypeScript prop types
-- destructuring in the component signature
-- explicit `static properties = ...`
-
-That warning is there because the component still compiles, but the inferred property descriptor is weaker than it could be.
-
-## Good Practice
-
-- keep `Props` as the source of truth
-- use destructuring when the component shape is simple
-- let inference do the default work
-- use `function Component(props)` only when you really want an opaque prop object
-- use `static properties = ...` only for Lit-specific behavior
-- treat `props.foo` fallback inference as a recovery path, not the ideal authoring style
-- prefer degradation to `Object` over manually duplicating every property unless you need explicit options
+Prefer typed props for public components. Treat opaque untyped member access as a recovery path.
 
 ## Related
 
-- [Styling](./styling.md)
-- [JSX Authoring](./jsx-authoring.md)
+- [Standard JSX authoring](./jsx-authoring.md)
+- [Component metadata](./component-metadata.md)
 - [Tooling](./tooling.md)

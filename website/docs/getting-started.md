@@ -1,89 +1,95 @@
 # Getting Started
 
-The recommended entry point for a new Lit<sup>sx</sup> project is `create-litsx-app`.
+Lit<sup>sx</sup> 1.0 uses ordinary `.tsx` and `.jsx`. The Lit<sup>sx</sup> compiler turns standard JSX into Lit templates and custom elements; TypeScript, ESLint, Prettier, and editors can work with the source directly.
+
+## Create a project
 
 ```sh
-create-litsx-app my-app --template app
-create-litsx-app my-components --template component
-create-litsx-app my-design-system --template design-system --visual-tests
-```
-
-If you want the shortest path to a running project, start with `--template app`:
-
-```sh
-create-litsx-app my-app --template app
+npm create litsx-app@next my-app -- --template app
 cd my-app
 npm install
 npm run dev
 ```
 
-That scaffold keeps the first contact intentionally small:
+Choose a different starting point when needed:
 
-- one authored Lit<sup>sx</sup> component
-- one `@click` binding
-- one `useState(...)`
-- one `static styles = ...`
-- one `eslint.config.js` already wired to the official Lit<sup>sx</sup> preset
+```sh
+npm create litsx-app@next my-components -- --template component
+npm create litsx-app@next my-design-system -- --template design-system --visual-tests
+npm create litsx-app@next my-ssr-app -- --template ssr
+```
 
-For the editor story, Lit<sup>sx</sup> treats its own authored source format as the primary path:
+The generated project configures Vite, TypeScript, and the official ESLint rules. The `ssr` template also includes a document renderer and browser hydration entry.
 
-- `.litsx` is the primary authored source format
-- `.litsx.jsx` is the explicit JavaScript variant
-- plain `.jsx` and `.tsx` remain supported as compatibility paths
+## Your first component
 
-## The Default Model
+```tsx
+import { css, useState } from "@litsx/core";
 
-By default, think in native Lit<sup>sx</sup> terms:
+type CounterProps = {
+  initialCount?: number;
+};
 
-- `.litsx` is the primary authoring format
-- Lit powers rendering
-- the deployed unit is a web component
-- prop types are the source of truth for generated property metadata
-- static hoists such as `static name = ...` belong to the component type
+export function Counter({ initialCount = 0 }: CounterProps) {
+  const [count, setCount] = useState(initialCount);
 
-In practice, a static hoist such as `static styles = ...` or `static properties = ...`:
+  return (
+    <button on:click={() => setCount((value) => value + 1)}>
+      Count: {count}
+    </button>
+  );
+}
 
-- is authored syntax, not a runtime import
-- must appear as a top-level statement in the component body
-- lowers to a memoized static getter on the generated class
+Counter.styles = css`
+  button {
+    padding: 0.65rem 1rem;
+    border-radius: 999px;
+  }
+`;
+```
 
-## Workspace Expectations
+The important 1.0 conventions are visible here:
 
-- `@litsx/core` is the runtime package
-- Babel transforms handle native Lit<sup>sx</sup> JSX
-- the TypeScript plugin improves authored JSX tooling
-- the VS Code extension handles Lit<sup>sx</sup>-specific highlighting
-- Storybook and visual testing can be scaffolded for component and design-system workflows
+- source files are normal `.tsx` or `.jsx`
+- DOM and custom-element listeners use `on:event`
+- ordinary JSX prop names are mapped to the right Lit binding by the compiler
+- component metadata uses top-level assignments such as `Counter.styles = ...`; styles may be one `CSSResult` or an ordered array of reusable `CSSResult` values
+- `css` is Lit's real tagged template, re-exported by `@litsx/core`
 
-In practice, a Lit<sup>sx</sup> project has three layers working together:
+## Add Lit<sup>sx</sup> to an existing Vite project
 
-- authored component code in JSX and TypeScript
-- transforms that lower that code to Lit-compatible output
-- web components as the runtime artifact
+```sh
+npm install @litsx/core lit
+npm install -D @litsx/vite-plugin @litsx/eslint-plugin
+```
 
-## Good Fit
+```js
+// vite.config.js
+import { defineConfig } from "vite";
+import { litsx } from "@litsx/vite-plugin";
 
-Start with Lit<sup>sx</sup> if your team wants:
+export default defineConfig({
+  plugins: [litsx()],
+});
+```
 
-- component authoring in JSX
-- web components as the shipped artifact
-- Lit as the rendering layer
-- strong design-system ergonomics
+```json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "@litsx/core"
+  }
+}
+```
 
-It is especially a good fit when you want the authoring model itself to stay explicit:
+The Vite plugin compiles `.jsx` and `.tsx` by default. Standard TypeScript and Prettier handle the source; there is no custom file extension or formatter to install.
 
-- typed props drive web-component properties
-- static CSS stays attached to the component
-- dynamic styling flows through CSS custom properties and hooks
+## Where to go next
 
-## Next Steps
-
-- [Why Lit<sup>sx</sup>](./guides/why-litsx.md)
-- [JSX Authoring](./guides/jsx-authoring.md)
-- [Static Hoists](./guides/static-hoists.md)
-- [Styling](./guides/styling.md)
-- [Property Inference](./guides/property-inference.md)
-- [Primitives](./guides/primitives.md)
-- [Refs](./guides/refs.md)
+- [Standard JSX authoring](./guides/jsx-authoring.md)
+- [Component metadata](./guides/component-metadata.md)
+- [Property and binding inference](./guides/property-inference.md)
+- [Server rendering and hydration](./guides/ssr.md)
+- [Styling options](./guides/styling.md), including the optional [UnoCSS integration](./guides/unocss.md)
 - [Tooling](./guides/tooling.md)
-- [Examples](./examples/)
+- [Migrating pre-1.0 source](./guides/migrating-to-1.md)

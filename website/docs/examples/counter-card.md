@@ -3,9 +3,9 @@
 This example is a compact support demo, not the main sales pitch.
 
 - local state with `useState(...)`
-- component-owned styling with `static styles = ...`
+- component-owned styling with `Counter.styles = css` after the declaration
 - dynamic CSS values with `useStyle(...)`
-- Lit-flavored event bindings in authored JSX
+- explicit `on:event` listeners in standard JSX
 
 <script setup>
 import { counterExampleSource } from "../.vitepress/theme/components/playground-example-source.js";

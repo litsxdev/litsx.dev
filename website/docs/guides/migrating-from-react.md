@@ -162,8 +162,8 @@ The more a React component API depends on treating `children` as an in-memory da
 | `selected` | `?selected` | Lowered as a boolean binding. |
 | `defaultValue` | initial value binding | Migration-friendly initial binding, not long-term native vocabulary. |
 | `defaultChecked` | initial checked binding | Migration-friendly initial binding, not long-term native vocabulary. |
-| text-like `onChange` | `@input` | Normalized toward native input events where React differs from the DOM. |
-| checkbox/radio `onChange` | `@change` | Preserved where native DOM semantics already match the intent. |
+| text-like `onChange` | `on:input` | Normalized toward native input events where React differs from the DOM. |
+| checkbox/radio `onChange` | `on:change` | Preserved where native DOM semantics already match the intent. |
 | `children` | projected content / slots | Supported as migration vocabulary, but native Lit<sup>sx</sup> prefers slots for public composition APIs. |
 | render-prop `children` | function prop | Still possible, but this is not the same thing as projected content. |
 | `React.Children.*` | no native equivalent | Complex child traversal is not the preferred composition model in Lit<sup>sx</sup>. |

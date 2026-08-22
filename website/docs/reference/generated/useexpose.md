@@ -11,7 +11,7 @@ import { useExpose } from "@litsx/core";
 ```
 
 ```ts
-useExpose<T extends Record<string, (...args: any[]) => unknown>>(ref: { current: T | null; } | ((value: T | null) => void), createHandle: () => T, deps?: unknown[]): void
+useExpose<T extends Record<string, (...args: any[]) => unknown>>(ref: { value: T | undefined; } | ((value: T | undefined) => void), createHandle: () => T, deps?: unknown[]): void
 ```
 
 ## Usage
@@ -40,7 +40,7 @@ useExpose draws a boundary between the component's full internal implementation 
 ```ts
 useExpose(() => ({
   focus() {
-    inputRef.current?.focus();
+    inputRef.value?.focus();
   },
   clear() {
     setValue("");
@@ -49,7 +49,7 @@ useExpose(() => ({
 
 useExpose(forwardedRef, () => ({
   focus() {
-    innerRef.current?.focus();
+    innerRef.value?.focus();
   },
 }), [forwardedRef, innerRef]);
 ```
@@ -63,7 +63,7 @@ useExpose(forwardedRef, () => ({
 
 ### `ref`
 
-Type: `{ current: T | null } | ((value: T | null) => void)`
+Type: `{ value: T | undefined } | ((value: T | undefined) => void)`
 
 Either the target ref that should receive the exposed methods, or the handle factory when targeting the host instance directly.
 

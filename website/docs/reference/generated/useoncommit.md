@@ -37,7 +37,7 @@ useOnCommit sits on the critical path between "the DOM just updated" and "the br
 ```ts
 useOnCommit(() => {
   if (shouldFocus) {
-    inputRef.current?.focus();
+    inputRef.value?.focus();
   }
 }, []);
 ```

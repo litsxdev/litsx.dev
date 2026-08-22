@@ -11,7 +11,7 @@ import { useEmit } from "@litsx/core";
 ```
 
 ```ts
-useEmit(): <T = undefined>(type: string, detail?: T, options?: { bubbles?: boolean; composed?: boolean; cancelable?: boolean; }) => boolean
+useEmit<Events extends Record<string, unknown> | undefined = undefined>(): Events extends Record<string, unknown> ? LitsxTypedEmit<Events> : LitsxEmit
 ```
 
 ## Usage
@@ -45,15 +45,7 @@ emit("submit", value, { cancelable: true });
 
 ## Returns
 
-Type: `<T = undefined>(
-  type: string,
-  detail?: T,
-  options?: {
-    bubbles?: boolean;
-    composed?: boolean;
-    cancelable?: boolean;
-  }
-) => boolean`
+Type: `Events extends Record<string, unknown> ? LitsxTypedEmit<Events> : LitsxEmit`
 
 ## Related
 

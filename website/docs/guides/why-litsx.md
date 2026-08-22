@@ -17,10 +17,12 @@ Use Lit<sup>sx</sup> if you want to:
 Lit already gives you an excellent base for web components. Lit<sup>sx</sup> adds a different authoring experience on top of that base:
 
 - JSX as the primary language for composing component trees
+- standard `.jsx` and `.tsx` that work with the existing TypeScript ecosystem
 - less ceremony around view authoring
 - a more functional way to express UI as data + composition
 - a framework-level runtime surface for state, suspense, and authoring patterns
-- editor and TypeScript support tuned for Lit-flavored JSX
+- server rendering and hydration for scoped component trees
+- compiler-driven property, attribute, event, spread, and ref lowering
 - a compatibility layer for bringing React code into a web-component architecture progressively
 
 The point is not to reimplement React. The point is to make Lit-based component authoring feel more expressive and more familiar for teams that prefer JSX.
@@ -83,4 +85,5 @@ That separation is intentional. It keeps the framework's identity clear.
 - [How to write Lit<sup>sx</sup>](./jsx-authoring.md)
 - [Primitives](./primitives.md)
 - [Refs](./refs.md)
+- [Server Rendering and Hydration](./ssr.md)
 - [Migrating from React](./migrating-from-react.md)

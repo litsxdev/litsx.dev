@@ -12,6 +12,7 @@ It documents the APIs that developers write in Lit<sup>sx</sup> code, not the lo
 
 ## Hooks
 
+- [`useSsrResourceSnapshot`](./usessrresourcesnapshot.md)
 - [`useAfterUpdate`](./useafterupdate.md)
 - [`useOnCommit`](./useoncommit.md)
 - [`useOnConnect`](./useonconnect.md)

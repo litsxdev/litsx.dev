@@ -11,7 +11,7 @@ import { useCallbackRef } from "@litsx/core";
 ```
 
 ```ts
-useCallbackRef(getTarget: () => Element | null, callback: (node: Element | null) => void, deps?: unknown[]): void
+useCallbackRef(getTarget: () => Element | undefined, callback: (node: Element | undefined) => void, deps?: unknown[]): void
 ```
 
 ## Usage
@@ -22,11 +22,11 @@ Call `useCallbackRef` in authored Lit<sup>sx</sup> code when you want this behav
 
 ### `getTarget`
 
-Type: `() => Element | null`
+Type: `() => Element | undefined`
 
 ### `callback`
 
-Type: `(node: Element | null) => void`
+Type: `(node: Element | undefined) => void`
 
 ### `deps`
 

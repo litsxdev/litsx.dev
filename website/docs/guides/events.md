@@ -1,75 +1,60 @@
 # Events
 
-Lit<sup>sx</sup> treats events as part of the native web component surface.
+Lit<sup>sx</sup> events use the platform model end to end: listen with `on:event`, keep external callbacks fresh with `useEvent(...)`, and publish typed `CustomEvent`s with `useEmit(...)`.
 
-There are three separate jobs:
+## Listening in JSX
 
-- listen to DOM events in JSX with `@event`
-- keep external listeners stable with `useEvent(...)`
-- publish public component events with `useEmit(...)`
+```tsx
+<button on:click={save}>Save</button>
+<input on:input={(event) => setQuery(event.currentTarget.value)} />
+<user-picker on:user-selected={(event) => select(event.detail.id)} />
+```
 
-## Listening In JSX
+The colon marks the explicit event channel and preserves the event name. Native `onClick` is not an event alias; it remains an ordinary prop. The React compatibility pipeline translates React event conventions separately.
 
-Use native listener syntax in authored JSX:
+## Typed component events
 
-- `@click`
-- `@input`
-- `@change`
+Pass an event map to `useEmit` so emission and consumers share one contract:
 
-That keeps the authored model aligned with Lit and the DOM instead of introducing a parallel React-style event layer.
+```tsx
+type PickerEvents = {
+  "user-selected": { id: string };
+  close: undefined;
+};
 
-## Stable External Listeners
+export function UserPicker() {
+  const emit = useEmit<PickerEvents>();
+  return (
+    <button on:click={() => emit("user-selected", { id: "ada" })}>
+      Select Ada
+    </button>
+  );
+}
 
-`useEvent(...)` is for callbacks that are registered once with an external API but still need fresh state and props.
+const picker = (
+  <UserPicker on:user-selected={(event) => event.detail.id} />
+);
+```
 
-Use it with `useOnConnect(...)` for things like:
+Literal event names let the compiler publish a complete event contract on the component. Use lowercase kebab-case for public declarative events. Names outside the JSX channel, such as `menu:open`, remain available through `addEventListener()`.
 
-- `window` listeners
-- `document` listeners
-- observers
-- timers
+`useEmit(...)` defaults to `{ bubbles: true, composed: true, cancelable: false }`; pass options when a component needs a different public event contract.
 
-## Publishing Public Events
+## External listeners
 
-`useEmit(...)` is the native way to emit a `CustomEvent` from the current host without reaching for `this.dispatchEvent(...)` in authored code.
+`useEvent(...)` returns a stable callback that always sees current props and state. Pair it with `useOnConnect(...)` for listeners or resources registered against `window`, `document`, observers, or timers.
 
-Defaults:
+```tsx
+const onResize = useEvent(() => measure(layout));
 
-- `bubbles: true`
-- `composed: true`
-- `cancelable: false`
-
-Those defaults are aimed at public component events that should escape the component boundary and be observable from parent code.
-
-<script setup>
-import { useEmitExampleSource } from "../.vitepress/theme/components/playground-example-source.js";
-</script>
-
-<ClientOnly>
-  <litsx-playground
-    exportname="UseEmitDemo"
-    previewtagname="docs-events-use-emit-preview"
-    filename="/playground/UseEmitDemo.tsx"
-    panelmaxheight="30rem"
-  >{{ useEmitExampleSource }}</litsx-playground>
-</ClientOnly>
-
-## When To Use Events
-
-Events are a good fit when a component needs to notify the outside world about something that happened:
-
-- `change`
-- `select`
-- `open`
-- `close`
-- `submit`
-
-They are not a replacement for local reactive state.
-
-If another part of the same component tree must stay visually in sync with current data, prefer state/props. Use events when the component is publishing a boundary-level signal to parent or host code.
+useOnConnect(() => {
+  window.addEventListener("resize", onResize);
+  return () => window.removeEventListener("resize", onResize);
+}, []);
+```
 
 ## Related
 
 - [useEmit](../reference/generated/useemit.md)
 - [useEvent](../reference/generated/useevent.md)
-- [Primitives](./primitives.md)
+- [JSX authoring](./jsx-authoring.md)

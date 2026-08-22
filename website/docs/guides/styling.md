@@ -1,252 +1,161 @@
 # Styling
 
-Lit<sup>sx</sup> does not introduce a separate styling language. You style components with normal CSS, using Lit-flavored bindings where they help and web-platform primitives where they already work well.
+Lit<sup>sx</sup> separates static component CSS from render-time values. Use `Component.styles` for the stylesheet and `useStyle(...)` or ordinary JSX attributes for dynamic state.
 
-## Styling Model
+## Component-owned CSS
 
-When writing Lit<sup>sx</sup>, the styling model is intentionally simple:
+```tsx
+import { css, useStyle } from "@litsx/core";
 
-- use `class` to attach CSS classes from JSX
-- use attributes when styling depends on component state; `data-*` is a common convention, not a requirement
-- use `style` for one-off inline values
-- use CSS custom properties for dynamic theme values
-- keep reusable styling in CSS files, tokens, and component-level selectors
+export function StatusCard({ tone = "#0f766e", active = false }) {
+  useStyle("--status-tone", tone);
+  return <article data-active={active}><slot /></article>;
+}
 
-The goal is to keep styling close to the platform instead of inventing a second framework API for presentation.
+StatusCard.styles = css`
+  :host { display: block; }
+  article { border-color: var(--status-tone); }
+  article[data-active="true"] { background: color-mix(in srgb, var(--status-tone) 12%, white); }
+`;
+```
 
-Lit<sup>sx</sup> also exposes one styling hook and participates in the general static-hoist model:
+`css` is Lit's real tag, re-exported from `@litsx/core`, so editors understand the template and Lit receives a `CSSResult`.
 
-- `static styles = ...` for component-owned static CSS
-- `useStyle(...)` for dynamic host-level style properties and CSS custom properties
+## Composing styles
 
-They mirror the same split that shows up elsewhere in the framework:
+`Component.styles` accepts either one Lit `CSSResult` or an array of style results. Use an array to share foundations, tokens, states, or theme layers without concatenating CSS strings:
 
-- static declarations belong to the component type
-- dynamic values belong to render and commit
+```tsx
+import { css } from "@litsx/core";
 
-## Classes and State Selectors
+const interactiveStyles = css`
+  :host { display: inline-block; }
+  button:focus-visible { outline: 3px solid var(--focus-ring, #38bdf8); }
+`;
 
-For most component styling, start with classes and attributes. `data-*` works well for generic state, but normal HTML attributes and component-defined attributes are equally valid when they better match the API you want to expose.
+const buttonStyles = css`
+  button {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.65rem 1rem;
+  }
+`;
 
-```jsx
-export function StatusPill({ tone = "neutral", active = false, label }) {
+export function PrimaryButton() {
+  return <button><slot /></button>;
+}
+
+PrimaryButton.styles = [
+  interactiveStyles,
+  buttonStyles,
+  css`button { background: #f97316; color: white; }`,
+];
+```
+
+Arrays may be nested, which makes it possible for a shared style module to expose a complete group:
+
+```tsx
+const controlFoundation = [interactiveStyles, buttonStyles];
+
+PrimaryButton.styles = [
+  controlFoundation,
+  css`button { background: #f97316; }`,
+];
+```
+
+Lit applies the results in array order, so later rules can override earlier layers through the normal CSS cascade. Every runtime entry must remain a valid Lit `CSSResult` or nested `CSSResult` array; plain strings are not component styles.
+
+This composition is static component metadata. It is different from `useStyle(...)`, which updates one dynamic property on a component instance.
+
+<script setup>
+import { stylingExampleSource } from "../.vitepress/theme/components/playground-example-source.js";
+</script>
+
+<ClientOnly>
+  <litsx-playground
+    exportname="StyleCompositionDemo"
+    previewtagname="docs-style-composition-preview"
+    filename="/playground/StyleCompositionDemo.tsx"
+    panelmaxheight="38rem"
+  >{{ stylingExampleSource }}</litsx-playground>
+</ClientOnly>
+
+## Inherited styles and replacement
+
+Lit<sup>sx</sup> preserves styles contributed by a generated base class or structural mixin. A normal assignment extends that chain: inherited styles come first, followed by the component's `CSSResult` or composed array.
+
+Use `replaceStyles(...)` only when a component intentionally needs to discard inherited styles:
+
+```tsx
+import { css, replaceStyles } from "@litsx/core";
+
+export function IsolatedPanel() {
+  return <section><slot /></section>;
+}
+
+IsolatedPanel.styles = replaceStyles([
+  css`:host { display: block; }`,
+  css`section { padding: 1rem; }`,
+]);
+```
+
+`replaceStyles(...)` marks the authored group for the compiler; it does not introduce a second styling runtime. Prefer ordinary array composition unless cutting the inherited style chain is deliberate.
+
+## Inline style values
+
+Native Lit<sup>sx</sup> accepts both CSS text and property maps in JSX `style` bindings. Object values are lowered through Lit's official `styleMap` directive, so no directive import or manual wrapper is necessary:
+
+```tsx
+export function StatusBadge({ tone, compact }) {
   return (
     <span
-      class="status-pill"
-      data-tone={tone}
-      ?data-active={active}
+      style={{
+        backgroundColor: tone,
+        paddingInline: compact ? "0.5rem" : "0.8rem",
+        "--badge-ring": `${tone}66`,
+      }}
     >
-      {label}
+      Ready
     </span>
   );
 }
 ```
 
-```css
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 0.25rem 0.625rem;
+Use camelCase for ordinary multi-word properties and quoted kebab-case names for CSS custom properties. Values may be strings, numbers, `null`, or `undefined`; nullish values remove the property. A string such as `style="color: coral"` keeps its normal inline-CSS meaning.
+
+The compiler emits `resolveStyle(value)` at the binding boundary. This helper preserves strings and existing Lit directives, and delegates object values to `styleMap`. It is public for lower-level integrations, but application JSX normally should not call it directly.
+
+Use `useStyle(name, value)` when the target is the component host rather than an element returned by JSX.
+
+## Shadow DOM and Light DOM
+
+Components render to Shadow DOM by default. Opt into Light DOM with module-level metadata:
+
+```tsx
+export function PageSection({ children }) {
+  return <section>{children}</section>;
 }
 
-.status-pill[data-tone="success"] {
-  background: var(--color-success-surface);
-  color: var(--color-success-text);
-}
-
-.status-pill[data-active] {
-  box-shadow: 0 0 0 2px var(--color-focus-ring);
-}
+PageSection.lightDom = true;
+PageSection.styles = css`section { container-type: inline-size; }`;
 ```
 
-This tends to scale better than pushing lots of visual logic into inline styles.
+The compiler option `lightDomStyles` controls generated integration styles:
 
-## Inline Styles and CSS Variables
+- `scoped` (default) adds a stable component boundary
+- `global` routes generated rules to an integration-owned document sheet
+- `none` disables automatic generated Light DOM styles
 
-Use `style` for values that are truly local to a render path, especially when you need to set a CSS custom property that the stylesheet will consume.
+Authored `Component.styles` remain active. Shadow DOM styles always remain component-local.
 
-```jsx
-export function AccentPanel({ accent = "tomato", children }) {
-  return (
-    <section class="accent-panel" style={`--panel-accent: ${accent};`}>
-      {children}
-    </section>
-  );
-}
-```
+## Choosing a styling solution
 
-```css
-.accent-panel {
-  border-left: 4px solid var(--panel-accent);
-  padding-inline-start: 1rem;
-}
-```
+No utility-CSS engine is required. The built-in path is Lit's `css` tagged template through `Component.styles`, including arrays of reusable `CSSResult` values, and it is sufficient for component-owned Shadow DOM or Light DOM styles.
 
-Prefer this pattern over building large inline style objects. Let CSS keep ownership of layout, spacing, and states.
+Projects can also use another CSS pipeline through the compiler's generic authoring and output integration points. [`@litsx/unocss`](./unocss.md) is one optional integration for teams that already want UnoCSS; it is not part of the core authoring contract or the default styling requirement.
 
-## Native Styling Helpers
+## Related
 
-The split between static CSS and dynamic values is easiest to see in a live component. In this example:
-
-- `static styles = ...` owns the layout, selectors, and component skin
-- `useStyle(...)` pushes the changing accent into `--panel-accent`
-- `?data-active` gives CSS a simple state selector without moving presentation logic into JavaScript
-
-Switch to `Emitted` to inspect how static stylesheet ownership and runtime style updates are kept separate.
-
-<script setup>
-import {
-  lightDomStylingExampleSource,
-  stylingExampleSource,
-} from "../.vitepress/theme/components/playground-example-source.js";
-</script>
-
-<ClientOnly>
-  <litsx-playground
-    exportname="AccentPanel"
-    previewtagname="docs-styling-accent-panel-preview"
-    filename="/playground/AccentPanel.tsx"
-    panelmaxheight="32rem"
-  >{{ stylingExampleSource }}</litsx-playground>
-</ClientOnly>
-
-## Light DOM Styling
-
-`static lightDom = true` is also a styling decision.
-
-Use it when a component should stay in the page's normal styling flow instead of creating a shadow boundary. That is useful when you want:
-
-- surrounding page variables to flow through naturally
-- host-level layout and typography rules to keep applying
-- a component to participate directly in document-level CSS without a shadow root
-
-In the example below:
-
-- the host is authored with `static lightDom = true`
-- the component still owns static CSS through `static styles = ...`
-- the result stays visually close to the page instead of behaving like an isolated shadow subtree
-
-<ClientOnly>
-  <litsx-playground
-    exportname="LightDomPalette"
-    previewtagname="docs-styling-light-dom-preview"
-    filename="/playground/LightDomPalette.tsx"
-    panelmaxheight="34rem"
-  >{{ lightDomStylingExampleSource }}</litsx-playground>
-</ClientOnly>
-
-Use `static styles = ...` when the component should own a stylesheet directly from authored Lit<sup>sx</sup> code.
-
-```jsx
-static styles = `
-  :host {
-    display: block;
-  }
-
-  .panel {
-    border-radius: 1rem;
-    background: var(--panel-surface);
-  }
-`;
-```
-
-`static styles = ...` is not a runtime DOM mutation API. Lit<sup>sx</sup> lowers it to a memoized static getter on the generated class, so the stylesheet is resolved once per component class and still describes CSS owned by the component type rather than values that vary by render.
-Like any other hoist, it must appear as a top-level statement in the component body.
-
-Interpolations are fine when they come from static module-level values:
-
-```jsx
-const radius = "12px";
-
-static styles = `
-  .panel {
-    border-radius: ${radius};
-  }
-`;
-```
-
-In practice, `static styles = ...` accepts:
-
-- imports
-- module-level constants
-- static compositions built from other module-level constants
-
-That is the same mental model as any `static name = ...` hoist: authored code declares static component metadata, and the transform lowers it into a memoized static getter on the generated class shape.
-
-What it does not accept is component-scope data, even when that data looks locally constant:
-
-```jsx
-export function Panel({ radius }) {
-  const localRadius = `${radius}px`;
-
-  static styles = `
-    .panel {
-      border-radius: ${localRadius};
-    }
-  `;
-
-  return <section class="panel">panel</section>;
-}
-```
-
-That is rejected because `localRadius` still belongs to the component scope. If a value depends on props, state, or any render-time calculation, keep the rule in `static styles = ...` and move the changing part to `useStyle(...)` or a CSS custom property.
-
-What should not go there is anything that depends on props, state, or other component-scope values. Move those cases to `useStyle(...)`, CSS custom properties, or normal JSX style bindings.
-
-Use `useStyle(...)` when JavaScript should provide a dynamic value that CSS will consume.
-
-```jsx
-useStyle("--panel-accent", accent);
-useStyle("--panel-width", `${width}px`);
-useStyle("--panel-gap", () => `${gap}px`);
-useStyle("--panel-gap", () => `${gap}px`, [gap]);
-```
-
-Together, these two helpers cover the common split:
-
-- stylesheet structure and selectors stay in CSS
-- dynamic values come from state through CSS custom properties
-
-That keeps styling aligned with the rest of Lit<sup>sx</sup>: static declarations are compile-time, dynamic values stay in the authored runtime surface.
-
-## Shared CSS and Design Tokens
-
-For shared styling, use CSS files directly. The Lit<sup>sx</sup> scaffolds generated by `create-litsx-app` already follow this pattern:
-
-- shared tokens live in `src/styles/tokens.css`
-- app or design-system entrypoints import those tokens once
-- components consume the tokens through classes and custom properties
-
-This works well for:
-
-- design systems
-- multi-component libraries
-- themeable applications
-
-## Styling Async UI Primitives
-
-`SuspenseBoundary` and `SuspenseList` are designed around light DOM coordination. That means surrounding layout and typography styles can continue to flow naturally through async UI.
-
-In practice:
-
-- keep page-level layout styles outside the boundary
-- keep typography and spacing rules on the containing component
-- use the boundary to control loading and reveal behavior, not to become a styling boundary
-
-If a region needs special loading visuals, style the fallback content you pass into the boundary just like any other Lit<sup>sx</sup> subtree.
-
-## Practical Guidance
-
-- prefer classes, attributes, and CSS files for reusable styling
-- prefer CSS custom properties for dynamic theming
-- use `style` sparingly for one-off values
-- keep styling decisions in CSS and state decisions in JavaScript
-- use the scaffold token files as the baseline structure for larger systems
-
-## Where To Look Next
-
-- [JSX Authoring](./jsx-authoring.md)
-- [Reference](../reference/)
-- [Primitives](./primitives.md)
-- [Examples](../examples/)
+- [Component metadata](./component-metadata.md)
+- [Property and binding inference](./property-inference.md)
+- [Optional UnoCSS integration](./unocss.md)

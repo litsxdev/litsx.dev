@@ -3,7 +3,7 @@
 This example is about keeping the prop contract TypeScript-first while still handling the awkward cases.
 
 - prop types come from TypeScript
-- `static properties = ...` only touches the props that need explicit metadata
+- `ProfileCard.properties = ...` only touches the props that need explicit metadata
 - reflected booleans and JS-only values can live in the same authored API
 
 <script setup>
@@ -22,7 +22,7 @@ import { propertyInferenceExampleSource } from "../.vitepress/theme/components/p
 ## What To Notice
 
 - `active` reflects, while `tags`, `createdAt`, and `onSelect` stay JS-only
-- `static properties = ...` is additive, not a replacement for inference
+- `ProfileCard.properties = ...` is additive, not a replacement for inference
 - the authored API stays close to the prop type instead of becoming decorator-heavy
 
 ## Next

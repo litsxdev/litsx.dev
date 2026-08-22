@@ -67,11 +67,12 @@ If you want the shortest path through the native surface, start here:
 
 Some Lit<sup>sx</sup> features are authored natively but are not runtime imports.
 
-The most important examples are static hoists such as `static styles = ...`, `static properties = ...`, and other `static name = ...` forms. They are part of the authoring model, but they belong in the guides because they are compile-time syntax, not ordinary importable APIs.
+The most important examples are component metadata assignments such as `Component.styles = ...`, `Component.properties = ...`, and `Component.lightDom = true`. They belong in the guides because they are standard authored metadata rather than importable runtime APIs.
 
 Start here for that layer:
 
 - [JSX Authoring](../guides/jsx-authoring.md)
+- [Styling and CSSResult composition](../guides/styling.md#composing-styles)
 - [Static Hoists](../guides/static-hoists.md)
 - [Property Inference](../guides/property-inference.md)
 - [Structural Hooks](../guides/structural-hooks.md)

@@ -29,20 +29,10 @@ import { LitElement, html } from 'lit';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { LitElement, html } from 'lit';
-import FancyButton from './FancyButton.js';
-class MyElement extends ShadowDomMixin(LitElement) {
-  render() {
-    return <fancy-button>Click me</fancy-button>;
-  }
-  static elements = {
-    "fancy-button": FancyButton
-  };
-}
+```txt
+Missing semicolon. (6:35)
 ```
 
 ### Handles React-style function components with useRef
@@ -82,28 +72,10 @@ import { useRef, useEffect } from 'react';
       };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import FancyButton from './FancyButton.js';
-const FancyForm = props => {
-  const buttonRef = useRef(null);
-  useEffect(() => {
-    buttonRef.current.focus();
-  }, []);
-  return <div>
-            <FancyButton ref={buttonRef} .label={props.label} />
-          </div>;
-};
-FancyForm.propTypes = {
-  label: PropTypes.string
-};
-export const Alert = message => {
-  const lower = message.toLowerCase();
-  return <p>{lower}</p>;
-};
+```txt
+Unexpected token, expected "</>/<=/>=" (14:25)
 ```
 
 ### Detects scoped usage inside html tagged templates
@@ -147,14 +119,10 @@ import * as VdsIcon from './icons.js';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import * as VdsIcon from './icons.js';
-const MyComponent = (VdsIcon as any).VdsIcon;
-function IconButton() {
-  return <MyComponent size="sm" />;
-}
+```txt
+Unexpected token, expected "," (6:28)
 ```
 
 ### Inserts elements after existing properties
@@ -180,25 +148,10 @@ import { LitElement, html } from 'lit';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { LitElement, html } from 'lit';
-import FancyButton from './FancyButton.js';
-class WithProperties extends ShadowDomMixin(LitElement) {
-  static properties = {
-    label: {
-      type: String
-    }
-  };
-  static elements = {
-    "fancy-button": FancyButton
-  };
-  render() {
-    return <fancy-button label={this.label} />;
-  }
-}
+```txt
+Unexpected token, expected "," (10:30)
 ```
 
 ### Leaves classes without scoped usage untouched
@@ -223,7 +176,7 @@ import { LitElement, html } from 'lit';
 Expecting Unicode escape sequence \uXXXX. (5:22)
 ```
 
-### Rejects scoped elements in light DOM components
+### Registers scoped elements in light DOM components
 
 #### Interpretation
 
@@ -235,19 +188,16 @@ This case records the authored input and the generated output as a living transf
 import FancyButton from './FancyButton.js';
 
       function LightScreen() {
-        static lightDom = true;
         return <FancyButton />;
       }
+
+      LightScreen.lightDom = true;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import FancyButton from './FancyButton.js';
-function LightScreen() {
-  __litsx_static_lightDom(true);
-  return <FancyButton />;
-}
+```txt
+Unexpected token, expected "," (4:28)
 ```
 
 ### Uses LightDomMixin for light DOM components without element dependencies
@@ -260,18 +210,16 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 function LightCard() {
-        static lightDom = true;
         return <div>ready</div>;
       }
+
+      LightCard.lightDom = true;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-function LightCard() {
-  __litsx_static_lightDom(true);
-  return <div>ready</div>;
-}
+```txt
+Unterminated regular expression. (2:27)
 ```
 
 ### Reuses an existing ShadowDomMixin import
@@ -294,20 +242,10 @@ import { LitElement } from 'lit';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { LitElement } from 'lit';
-import { ShadowDomMixin } from '@litsx/core/elements';
-import FancyButton from './FancyButton.js';
-class ReadyElement extends ShadowDomMixin(LitElement) {
-  render() {
-    return <fancy-button />;
-  }
-  static elements = {
-    "fancy-button": FancyButton
-  };
-}
+```txt
+Unexpected token, expected "," (7:30)
 ```
 
 ### Supports classes extending mixins around LitElement
@@ -328,19 +266,10 @@ import FancyButton from './FancyButton.js';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import FancyButton from './FancyButton.js';
-class MixedElement extends ShadowDomMixin(withTheme(LitElement)) {
-  render() {
-    return <fancy-button></fancy-button>;
-  }
-  static elements = {
-    "fancy-button": FancyButton
-  };
-}
+```txt
+Unexpected token (5:31)
 ```
 
 ### Does not duplicate ShadowDomMixin when it is nested inside another mixin
@@ -362,19 +291,10 @@ import { ShadowDomMixin } from '@litsx/core/elements';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from '@litsx/core/elements';
-import FancyButton from './FancyButton.js';
-class MixedElement extends withTheme(ShadowDomMixin(LitElement)) {
-  render() {
-    return <fancy-button />;
-  }
-  static elements = {
-    "fancy-button": FancyButton
-  };
-}
+```txt
+Unexpected token, expected "," (6:30)
 ```
 
 ### Does not duplicate LightDomMixin when it is nested inside another mixin
@@ -395,15 +315,10 @@ import { LightDomMixin } from '@litsx/core/elements';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { LightDomMixin } from '@litsx/core/elements';
-class MixedLightCard extends withTheme(LightDomMixin(LitElement)) {
-  render() {
-    return <div>ready</div>;
-  }
-}
+```txt
+Unterminated regular expression. (5:29)
 ```
 
 ### Consumes early static IR for element candidates and light DOM
@@ -416,7 +331,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { LitElement } from 'lit';
-      import { ChildCard } from './child-card.litsx';
+      import { ChildCard } from './child-card.tsx';
 
       class HostCard extends LitElement {
         render() {
@@ -425,20 +340,10 @@ import { LitElement } from 'lit';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { LitElement } from 'lit';
-import { ChildCard } from './child-card.litsx';
-class HostCard extends ShadowDomMixin(LitElement) {
-  render() {
-    return <child-card />;
-  }
-  static elements = {
-    "child-card": ChildCard
-  };
-}
+```txt
+Unexpected token, expected "," (6:28)
 ```
 
 ### Rewrites JSX opening tags with attributes to kebab-case consistently
@@ -460,20 +365,10 @@ import { LitElement } from 'lit';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { LitElement } from 'lit';
-import FancyButton from './FancyButton.js';
-class AttributedElement extends ShadowDomMixin(LitElement) {
-  render() {
-    return <fancy-button label={this.label}>Click</fancy-button>;
-  }
-  static elements = {
-    "fancy-button": FancyButton
-  };
-}
+```txt
+Unexpected token, expected "," (6:30)
 ```
 
 ### Registers locally defined sibling components used in JSX
@@ -500,24 +395,10 @@ import { LitElement } from 'lit';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { LitElement } from 'lit';
-export class ProfileChip extends LitElement {
-  render() {
-    return <article>chip</article>;
-  }
-}
-export class ProfileScreen extends ShadowDomMixin(LitElement) {
-  render() {
-    return <profile-chip />;
-  }
-  static elements = {
-    "profile-chip": ProfileChip
-  };
-}
+```txt
+Unterminated regular expression. (5:32)
 ```
 
 ### Registers the current class when it is used recursively as a JSX tag
@@ -542,21 +423,10 @@ import { LitElement } from 'lit';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { LitElement } from 'lit';
-export class TreeNode extends ShadowDomMixin(LitElement) {
-  render() {
-    return <section>
-              <tree-node />
-            </section>;
-  }
-  static elements = {
-    "tree-node": TreeNode
-  };
-}
+```txt
+Unexpected token, expected "</>/<=/>=" (7:24)
 ```
 
 ### Emits the same base tag for light DOM components from different sources
@@ -567,11 +437,11 @@ This case records the authored input and the generated output as a living transf
 
 - No inline source fixture extracted for this case.
 
-### Rejects repeated light DOM components that require scoped elements from the same source
+### Supports repeated light DOM components that require scoped elements from the same source
 
 #### Interpretation
 
-This case records the authored input and the generated output as a living transform contract.
+This case captures supported authored syntax and the emitted code path used to preserve that behavior.
 
 #### Authored Input
 
@@ -579,28 +449,21 @@ This case records the authored input and the generated output as a living transf
 import ProfileChip from './profile/ProfileChip.js';
 
       export function FirstScreen() {
-        static lightDom = true;
         return <ProfileChip />;
       }
 
       export function SecondScreen() {
-        static lightDom = true;
         return <ProfileChip />;
       }
+
+      FirstScreen.lightDom = true;
+      SecondScreen.lightDom = true;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import ProfileChip from './profile/ProfileChip.js';
-export function FirstScreen() {
-  __litsx_static_lightDom(true);
-  return <ProfileChip />;
-}
-export function SecondScreen() {
-  __litsx_static_lightDom(true);
-  return <ProfileChip />;
-}
+```txt
+Unexpected token, expected "," (4:28)
 ```
 
 ### Still rewrites scoped tags when candidates were precomputed by transform-litsx
@@ -625,17 +488,10 @@ import { SuspenseBoundary } from '@litsx\/core';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { SuspenseBoundary } from '@litsx\/core';
-export function Screen() {
-  return <section>
-            <SuspenseBoundary fallback={<span>loading</span>}>
-              <span>ready</span>
-            </SuspenseBoundary>
-          </section>;
-}
+```txt
+Unexpected token, expected "</>/<=/>=" (6:30)
 ```
 
 ### Rewrites scoped tags nested inside keyed(...) expressions
@@ -663,20 +519,10 @@ import { keyed } from 'lit/directives/keyed.js';
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { keyed } from 'lit/directives/keyed.js';
-import { SuspenseBoundary } from '@litsx\/core';
-export function Screen({
-  cycle
-}) {
-  return <section>
-            {keyed(cycle, <SuspenseBoundary fallback={<span>loading</span>}>
-                <span>ready</span>
-              </SuspenseBoundary>)}
-          </section>;
-}
+```txt
+Unexpected token (7:26)
 ```
 
 ### Rewrites scoped tags inside nested html templates under keyed(...) expressions

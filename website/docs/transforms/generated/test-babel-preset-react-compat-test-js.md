@@ -10,6 +10,29 @@ Generated from transform tests.
 
 ## Covered Cases
 
+### Lowers React createRef and namespace createRef to Lit-backed facades
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import React, { createRef as makeRef } from "react";
+      const first = makeRef();
+      const second = React.createRef();
+      export function RefPair() {
+        return <><input ref={first} /><button ref={second} /></>;
+      }
+```
+
+#### Generated Error
+
+```txt
+Type parameter list cannot be empty. (5:15)
+```
+
 ### Transforms a component using propTypes, useRef, and JSX
 
 #### Interpretation
@@ -42,51 +65,10 @@ import { useRef, useEffect } from 'react';
       };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, useAfterUpdate, useRef, ErrorBoundary } from "@litsx/core";
-import { LitsxStaticHoistsMixin, ShadowDomMixin } from "@litsx/core/elements";
-import { LitElement, html } from "lit";
-const _litsx_static_properties = Symbol("litsx.static.properties");
-import FancyButton from './FancyButton.js';
-class FancyForm extends ShadowDomMixin(LitsxStaticHoistsMixin(LitElement)) {
-  static get properties() {
-    return this.__litsxStatic(_litsx_static_properties, () => this.__litsxMergeProperties({
-      label: {
-        type: String
-      }
-    }, this.__litsxResolveStaticValue({
-      label: {
-        type: String
-      }
-    })));
-  }
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1b33bdn";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    prepareEffects(this);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      const buttonRef = useRef(this, null);
-      useAfterUpdate(this, () => {
-        buttonRef.current.focus();
-      }, []);
-      return html`<div><fancy-button .ref=${buttonRef} .label=${this.label}></fancy-button></div>`;
-    });
-  }
-  static elements = {
-    "fancy-button": FancyButton
-  };
-}
+```txt
+Unexpected token, expected "</>/<=/>=" (14:25)
 ```
 
 ### Normalizes React DOM and form semantics
@@ -109,44 +91,435 @@ export const FilterForm = ({ query, enabled, onQueryChange, onEnabledChange }) =
       };
 ```
 
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (3:17)
+```
+
+### Keeps onX component props distinct from React DOM events
+
+#### Interpretation
+
+This case highlights syntax that should survive the transform unchanged or be preserved semantically.
+
+#### Authored Input
+
+```jsx
+const Child = ({ onAction }) => <button onClick={onAction}>Run</button>;
+      export const Parent = ({ onAction }) => <Child onAction={onAction} />;
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (1:40)
+```
+
+### Lowers JSX spreads with surrounding React props in source order
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+export const Action = ({ props, active, onClick }) => (
+        <button {...props} className="action" disabled={active} onClick={onClick} />
+      );
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (2:16)
+```
+
+### Lowers keyed React map expressions through Lit repeat
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const Row = ({ item }) => <li>{item.label}</li>;
+      export const List = ({ items }) => (
+        <ul>{items.map((item, index) => <Row key={item.id} item={item} index={index} />)}</ul>
+      );
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (1:35)
+```
+
+### Lowers standalone React keys through Lit keyed and can disable key compatibility
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const Panel = ({ label }) => <section>{label}</section>;
+      export const Screen = ({ selectedId, label }) => (
+        <main><Panel key={selectedId} label={label} /></main>
+      );
+```
+
+#### Generated Error
+
+```txt
+Unterminated regular expression. (1:47)
+```
+
+### Keeps typed object rest bindings in a compact reactive bag
+
+#### Interpretation
+
+This case highlights syntax that should survive the transform unchanged or be preserved semantically.
+
+#### Authored Input
+
+```jsx
+export function Action(
+        { disabled, ...props }: { disabled: boolean; title?: string }
+      ) {
+        return <button {...props} disabled={disabled} />;
+      }
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (4:23)
+```
+
+### Routes explicit callsite props into a local component rest bag
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+function Action({ disabled, ...props }) {
+        return <button {...props} disabled={disabled} />;
+      }
+
+      export function App() {
+        return <Action disabled aria-label="Save" data-track="primary" />;
+      }
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (2:23)
+```
+
+### Quotes hyphenated typed component properties
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Preserves TypeScript type/value namespaces during component lowering
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Rejects declaration-only hooks from external packages
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { useTheme } from "theme-lib";
+        export function ThemeLabel() {
+          const { theme } = useTheme();
+          return <span>{theme}</span>;
+        }
+```
+
+#### Generated Error
+
+```txt
+Unterminated regular expression. (4:32)
+```
+
+### Accepts external hooks carrying LitSX compilation metadata
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { useTheme } from "theme-lib";
+        export function ThemeLabel() {
+          const theme = useTheme();
+          return <span>{theme}</span>;
+        }
+```
+
+#### Generated Error
+
+```txt
+Unterminated regular expression. (4:32)
+```
+
+### Rejects uncompiled external React hooks even when their source is available
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { useTheme } from "theme-lib";
+        export function ThemeLabel() {
+          const theme = useTheme();
+          return <span>{theme}</span>;
+        }
+```
+
+#### Generated Error
+
+```txt
+Unterminated regular expression. (4:32)
+```
+
+### Transforms allowlisted external custom hooks through their React hook graph
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Hook Source
+
+```jsx
+import { useResizeEffect } from "./resize-effect.js";
+        const a = (listener) => {
+          useResizeEffect(listener);
+        };
+        export { a as useWindowResize };
+```
+
+#### Generated Error
+
+```txt
+unknown file: Unable to resolve imported custom hook "useResizeEffect" from "./resize-effect.js". LitSX must resolve imported custom hooks to determine whether they require the LitSX render runtime.
+  1 | import { useResizeEffect } from "./resize-effect.js";
+  2 |         const a = (listener) => {
+> 3 |           useResizeEffect(listener);
+    |           ^^^^^^^^^^^^^^^
+  4 |         };
+  5 |         export { a as useWindowResize };
+```
+
+#### Inner Hook Source
+
+```jsx
+import { useEffect } from "react";
+        export function useResizeEffect(listener) {
+          useEffect(() => {
+            window.addEventListener("resize", listener);
+            return () => window.removeEventListener("resize", listener);
+          }, [listener]);
+        }
+```
+
 #### Generated Output
 
 ```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class FilterForm extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-l1m4gw";
-  static [Symbol.for("litsx.component")] = true;
-  static properties = {
-    query: {
-      type: String
-    },
-    enabled: {
-      type: String
-    },
-    onQueryChange: {
-      type: String
-    },
-    onEnabledChange: {
-      type: String
-    }
-  };
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<label for="search">Search<input id="search" .value=${this.query} @input=${this.onQueryChange}><input type="checkbox" ?checked=${this.enabled} @change=${this.onEnabledChange}></label>`;
-    });
-  }
+import { useAfterUpdate, ErrorBoundary } from "@litsx/core";
+export function useResizeEffect(listener) {
+  useAfterUpdate(() => {
+    window.addEventListener("resize", listener);
+    return () => window.removeEventListener("resize", listener);
+  }, [listener]);
 }
+useResizeEffect[Symbol.for("litsx.hook")] = true;
 ```
+
+#### Consumer Source
+
+```jsx
+import { useWindowResize } from "resize-hooks";
+        export function ResizePanel() {
+          useWindowResize(() => {});
+          return <section>Ready</section>;
+        }
+```
+
+#### Generated Error
+
+```txt
+Unterminated regular expression. (4:33)
+```
+
+### Reports the unsupported React hook where dependency transformation stops
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { useInsertionEffect } from "react";
+      export function useCssRuntime() {
+        useInsertionEffect(() => {}, []);
+      }
+```
+
+#### Generated Error
+
+```txt
+unknown file: Cannot transform React hook "useInsertionEffect" from "react" because react-compat has no LitSX equivalent. The dependency transformation stopped at this hook boundary.
+> 1 | import { useInsertionEffect } from "react";
+    |          ^^^^^^^^^^^^^^^^^^
+  2 |       export function useCssRuntime() {
+  3 |         useInsertionEffect(() => {}, []);
+  4 |       }
+```
+
+### Reports private React internals as dependency transformation boundaries
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import React from "react";
+      export function useDispatcherOwner() {
+        return React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+      }
+```
+
+#### Generated Error
+
+```txt
+unknown file: Cannot transform access to React internal "__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE". The dependency transformation stopped at a private React runtime boundary.
+  1 | import React from "react";
+  2 |       export function useDispatcherOwner() {
+> 3 |         return React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |       }
+```
+
+### Normalizes static React.createElement calls before component lowering
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Recovers component hosts for hooks inside createElement-authored components
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Recovers namespace hooks in bundled internal createElement components
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Recognizes effect-only components that render null
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Recognizes internal components exported by a trailing specifier
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Expands statically bounded polymorphic component aliases
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Treats hooks from allowlisted ESM dependency exports as runtime hooks
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { useTheme } from "next-themes";
+        export function ThemeLabel() {
+          const theme = useTheme();
+          return <span>{theme}</span>;
+        }
+```
+
+#### Generated Error
+
+```txt
+Unterminated regular expression. (4:32)
+```
+
+### Normalizes jsx-runtime calls, fragments, keys, and nested children
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Normalizes named jsxDEV calls with referenced props
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Rejects dynamic createElement types, cloneElement, and portals
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
 
 ### Preserves React event alias behavior for focus, blur, and double click
 
@@ -167,46 +540,10 @@ export const AliasedEvents = ({ onFocus, onBlur, onDoubleClick }) => {
       };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class AliasedEvents extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-142wgja";
-  static [Symbol.for("litsx.component")] = true;
-  static properties = {
-    onFocus: {
-      type: String
-    },
-    onBlur: {
-      type: String
-    },
-    onDoubleClick: {
-      type: String
-    }
-  };
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<section><input @focusin=${{
-        handleEvent: this.onFocus,
-        capture: true
-      }} @focusout=${{
-        handleEvent: this.onBlur,
-        capture: true
-      }}><button @dblclick=${this.onDoubleClick}>Open</button></section>`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "</>/<=/>=" (4:19)
 ```
 
 ### Can stop before final template lowering when jsxTemplate is disabled
@@ -223,37 +560,10 @@ export const FilterForm = ({ query, onQueryChange }) => {
       };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class FilterForm extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-l1m4gw";
-  static [Symbol.for("litsx.component")] = true;
-  static properties = {
-    query: {
-      type: String
-    },
-    onQueryChange: {
-      type: String
-    }
-  };
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<input .value=${this.query} @input=${this.onQueryChange}>`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "," (2:22)
 ```
 
 ### Applies event aliases before final template lowering is skipped
@@ -275,46 +585,10 @@ export const AliasedEvents = ({ onFocus, onBlur, onDoubleClick }) => {
       };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class AliasedEvents extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-142wgja";
-  static [Symbol.for("litsx.component")] = true;
-  static properties = {
-    onFocus: {
-      type: String
-    },
-    onBlur: {
-      type: String
-    },
-    onDoubleClick: {
-      type: String
-    }
-  };
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<section><input @focusin=${{
-        handleEvent: this.onFocus,
-        capture: true
-      }} @focusout=${{
-        handleEvent: this.onBlur,
-        capture: true
-      }}><button @dblclick=${this.onDoubleClick}>Open</button></section>`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "</>/<=/>=" (4:19)
 ```
 
 ### Lowers createContext, Provider, and useContext through the compat preset
@@ -344,56 +618,10 @@ import React, { createContext, useContext } from "react";
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-import { createContext, useContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/core/context";
-const ThemeContext = createContext("light");
-export class Toolbar extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1vv3759";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    prepareEffects(this);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      const theme = useContext(this, ThemeContext);
-      return html`<button class="${theme}">${theme}</button>`;
-    });
-  }
-}
-export class App extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1lmfb9l";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}><toolbar></toolbar></litsx-context-provider>`;
-    });
-  }
-  static elements = {
-    "toolbar": Toolbar,
-    "litsx-context-provider": LitsxContextProvider
-  };
-}
+```txt
+Unexpected token, expected "," (7:23)
 ```
 
 ### Lowers Context.Consumer and preserves context helpers before final template lowering
@@ -420,42 +648,17 @@ import { createContext } from "react";
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-import { createContext, renderContext, LitsxContextProviderElement as LitsxContextProvider } from "@litsx/core/context";
-const ThemeContext = createContext("light");
-export class App extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1q1huks";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<litsx-context-provider .context=${ThemeContext} .value=${"dark"}>${renderContext(this, ThemeContext, theme => html`<span class="${theme}">${theme}</span>`)}</litsx-context-provider>`;
-    });
-  }
-  static elements = {
-    "litsx-context-provider": LitsxContextProvider
-  };
-}
+```txt
+Unexpected token, expected "," (7:23)
 ```
 
-### Rewrites local custom hooks that call useContext with the active host
+### Preserves local custom hooks that call useContext
 
 #### Interpretation
 
-This case shows the authored JSX/API surface and the normalized output produced by the compatibility transform.
+This case records the authored input and the generated output as a living transform contract.
 
 #### Authored Input
 
@@ -475,37 +678,10 @@ import { createContext, useContext } from "react";
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-import { createContext, useContext } from "@litsx/core/context";
-const ThemeContext = createContext("light");
-function useThemeLabel(_host, prefix) {
-  const theme = useContext(_host, ThemeContext);
-  return prefix + ":" + theme;
-}
-export class Toolbar extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1q2f9d3";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    prepareEffects(this);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      const label = useThemeLabel(this, "theme");
-      return html`<span>${label}</span>`;
-    });
-  }
-}
+```txt
+Unterminated regular expression. (12:30)
 ```
 
 ### Lowers memo and forwardRef together through the preset
@@ -526,41 +702,13 @@ import React, { forwardRef, memo } from "react";
       );
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class CardShell extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-12o3d3a";
-  static [Symbol.for("litsx.component")] = true;
-  static properties = {
-    title: {
-      type: String
-    },
-    ref: {
-      type: Object,
-      attribute: false
-    }
-  };
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this.renderRoot?.querySelector("[data-ref=\"_refElement\"]") ?? this.querySelector("[data-ref=\"_refElement\"]"), node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<label data-ref="_refElement">${this.title}</label>`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "," (5:24)
 ```
 
-### Rejects forced light DOM output for react-compat migrations when scoped elements are required
+### Uses contextual scoped elements in default light DOM react-compat output
 
 #### Interpretation
 
@@ -580,39 +728,10 @@ import FancyButton from './FancyButton.js';
       };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { ShadowDomMixin } from "@litsx/core/elements";
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-import FancyButton from './FancyButton.js';
-export class LightForm extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-qetzkv";
-  static [Symbol.for("litsx.component")] = true;
-  static properties = {
-    label: {
-      type: String
-    }
-  };
-  static elements = {
-    "fancy-button": FancyButton
-  };
-  render() {
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<section><fancy-button .label=${this.label}></fancy-button></section>`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "</>/<=/>=" (6:31)
 ```
 
 ### Rewrites ErrorBoundary and Suspense together to final Lit output
@@ -640,41 +759,10 @@ import { ErrorBoundary } from "react-error-boundary";
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useCallbackRef, prepareEffects, renderWithSoftSuspense, ensureLazyElement, ErrorBoundary, SuspenseBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-import { bindRendererContext } from "@litsx/core/rendering";
-import { ShadowDomMixin } from "@litsx/core/elements";
-const ResultsPanel = () => import("./ResultsPanel.js");
-export class SearchCard extends ShadowDomMixin(LitElement) {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-18hnjqh";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    ensureLazyElement(this, "results-panel", ResultsPanel);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      return html`<error-boundary .fallback=${() => html`<p>Oops</p>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<suspense-boundary .fallback=${() => html`<p>Loading</p>`} .content=${bindRendererContext(typeof this === "undefined" ? null : this, () => html`<results-panel value="ready"></results-panel>`, {
-        projected: true
-      })}></suspense-boundary>`, {
-        projected: true
-      })}></error-boundary>`;
-    });
-  }
-  static elements = {
-    "error-boundary": ErrorBoundary,
-    "suspense-boundary": SuspenseBoundary
-  };
-}
+```txt
+Unexpected token, expected "," (8:25)
 ```
 
 ### Drops React imports when fully lowered but preserves them when still referenced
@@ -694,31 +782,10 @@ import { useState } from "react";
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useState, prepareEffects, useCallbackRef, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-export class Counter extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-1mo3ar6";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    prepareEffects(this);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      const [count, setCount] = useState(this, 0);
-      return html`<button @click=${() => setCount(count + 1)}>${count}</button>`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "," (5:23)
 ```
 
 #### Preserved Import Source
@@ -732,32 +799,10 @@ import React, { useState } from "react";
       }
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { useState, prepareEffects, useCallbackRef, renderWithSoftSuspense, ErrorBoundary } from "@litsx/core";
-import { LitElement, html } from "lit";
-import React from "react";
-export class Counter extends LitElement {
-  static [Symbol.for("litsx.hostTypeId")] = "litsx-host-type-izthnw";
-  static [Symbol.for("litsx.component")] = true;
-  render() {
-    prepareEffects(this);
-    return renderWithSoftSuspense(this, () => {
-      prepareEffects(this);
-      useCallbackRef(this, () => this, node => {
-        const componentRef = this.ref;
-        if (typeof componentRef === "function") {
-          componentRef(node);
-        } else if (componentRef && typeof componentRef === "object") {
-          componentRef.current = node;
-        }
-      }, [this.ref]);
-      const [count, setCount] = useState(this, 0);
-      return html`<button title="${React.version}" @click=${() => setCount(count + 1)}>${count}</button>`;
-    });
-  }
-}
+```txt
+Unexpected token, expected "," (5:23)
 ```
 
 ### Errors on unsupported class contextType
@@ -785,14 +830,7 @@ import React, { createContext } from "react";
 #### Generated Error
 
 ```txt
-unknown file: React class contextType is not supported by @litsx/babel-preset-react-compat.
-  4 |
-  5 |       export class LegacyPanel extends React.Component {
-> 6 |         static contextType = ThemeContext;
-    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  7 |
-  8 |         render() {
-  9 |           return <div>{this.context}</div>;
+Unexpected keyword 'this'. (9:23)
 ```
 
 ### Errors when Context.Consumer does not receive exactly one function child
@@ -820,14 +858,33 @@ import { createContext } from "react";
 #### Generated Error
 
 ```txt
-unknown file: React context Consumer requires a function child.
-   5 |       export function BrokenConsumer() {
-   6 |         return (
->  7 |           <ThemeContext.Consumer>
-     |           ^
-   8 |             <span>broken</span>
-   9 |           </ThemeContext.Consumer>
-  10 |         );
+Unexpected token, expected "," (7:23)
+```
+
+### Preserves named-imported Context Provider and Consumer semantics before namespace element lowering
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { ThemeContext } from "./theme-context.js";
+
+      export function ContextPanel({ theme }) {
+        return (
+          <ThemeContext.Provider value={theme}>
+            <ThemeContext.Consumer>{value => <span>{value}</span>}</ThemeContext.Consumer>
+          </ThemeContext.Provider>
+        );
+      }
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (5:23)
 ```
 
 ### Errors on truly undeclared PascalCase JSX
@@ -847,9 +904,5 @@ export function BrokenPanel() {
 #### Generated Error
 
 ```txt
-unknown file: Unknown LitSX component "MissingThing". Add an import or declare it in this module before using it in JSX.
-  1 | export function BrokenPanel() {
-> 2 |         return <MissingThing />;
-    |                ^^^^^^^^^^^^^^^^
-  3 |       }
+Unexpected token, expected "," (2:29)
 ```

@@ -1,8 +1,7 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import babelCore from "@babel/core";
+import * as babelCore from "@babel/core";
 import * as babelParser from "@babel/parser";
-import { parseWithLitsxVirtualization } from "@litsx/authoring/parser";
 import { cleanDir, listFiles, readIfExists, writeFile } from "./shared/fs-utils.mjs";
 import { docsRepoRoot, litsxSourceRoot } from "./shared/source-roots.mjs";
 import { fence, slugify } from "./shared/markdown-utils.mjs";
@@ -149,11 +148,7 @@ function parseAuthoredSource(source, parserOptions = {}) {
 
   for (const options of parserAttempts) {
     try {
-      return parseWithLitsxVirtualization(
-        babelParser.parse,
-        source,
-        { sourceType: "module", ...options },
-      );
+      return babelParser.parse(source, { sourceType: "module", ...options });
     } catch (error) {
       lastError = error;
     }

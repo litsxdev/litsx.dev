@@ -27,7 +27,7 @@ For everyday component work, the runtime surface also includes the hooks that mo
 - `useOnCommit(...)`
 - `useAfterUpdate(...)`
 
-Structural hooks are a separate authoring contract for library authors who need reusable hooks with class/type structural work, host middleware wiring, or both. They are still consumed with normal hook syntax, but they are declared with `defineHook({ static, setup, middlewares, use })`; see [Structural Hooks](./structural-hooks.md).
+Structural hooks are a separate authoring contract for library authors who need reusable host capabilities. They are consumed with normal hook syntax and declared with `defineHook({ mixin, use })`; see [Structural Hooks](./structural-hooks.md).
 
 This example shows that split directly in one component:
 
@@ -127,13 +127,13 @@ Use this pattern when the UI should briefly show an expected outcome before the 
 
 ## Authoring Model
 
-Lit<sup>sx</sup> is Lit-flavored at the authored level:
+Lit<sup>sx</sup> 1.0 uses standard JSX and TSX:
 
-- event listeners use `@event`
-- property bindings use `.prop`
-- boolean attributes use `?attr`
+- event listeners use `on:event`
+- ordinary prop names are lowered to Lit bindings from the destination contract
+- component metadata uses top-level assignments
 - Lit directives remain first-class in template expressions
-- components are authored in JSX and compiled down to Lit-compatible output
+- components compile to Lit-compatible output
 
 That last point matters more than it may seem: when a problem is already a Lit template problem, the right answer is usually still a Lit directive.
 

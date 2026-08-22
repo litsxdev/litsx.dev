@@ -22,11 +22,78 @@ This case records the authored input and the generated output as a living transf
 const view = <button .label={text}>{count}</button>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<button .label=${text}>${count}</button>`;
+```txt
+Unexpected token, expected "," (1:21)
+```
+
+### Escapes template syntax in JSX text emitted inside Lit templates
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+- No inline source fixture extracted for this case.
+
+### Lowers native JSX refs to Lit ref directives without DOM markers
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const inputRef = createRef(); const view = <input ref={inputRef} />;
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (1:50)
+```
+
+### Adapts React refs at native, component, and spread boundaries
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const view = <section>
+        <input ref={inputRef} />
+        <x-field ref={fieldRef} />
+        <button {...props} />
+      </section>;
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "</>/<=/>=" (2:15)
+```
+
+### Aliases the generated ref helpers when authoring bindings use their names
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const ref = "local";
+      const toLitRef = "local";
+      const view = <input ref={inputRef} />;
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (3:26)
 ```
 
 ### Keeps Lit-style listener attributes intact
@@ -41,11 +108,10 @@ This case highlights syntax that should survive the transform unchanged or be pr
 const view = <button @click={handleClick}></button>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<button @click=${handleClick}></button>`;
+```txt
+Unexpected token, expected "," (1:21)
 ```
 
 ### Keeps later lit-style attributes aligned in sourcemaps
@@ -60,11 +126,10 @@ This case highlights syntax that should survive the transform unchanged or be pr
 const view = <button @click={save} .value={name} ?disabled={busy}></button>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<button @click=${save} .value=${name} ?disabled=${busy}></button>`;
+```txt
+Unexpected token, expected "," (1:21)
 ```
 
 ### Leaves React-style listener syntax untouched
@@ -79,11 +144,10 @@ This case highlights syntax that should survive the transform unchanged or be pr
 const view = <button onClick={handleClick}></button>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<button onClick="${handleClick}"></button>`;
+```txt
+Unexpected token, expected "," (1:21)
 ```
 
 ### Handles nested nodes and boolean attributes
@@ -109,11 +173,10 @@ const view = (
       );
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<section class="dashboard"><button ?disabled=${isDisabled} .label=${label}>${greeting}${items.map(item => html`<span class="item" key="${item.id}"><strong>${item.label}</strong></span>`)}</button></section>`;
+```txt
+Unexpected token, expected "," (2:17)
 ```
 
 ### Renders capitalized components as HTML elements
@@ -128,11 +191,10 @@ This case records the authored input and the generated output as a living transf
 const view = <FancyButton foo="bar" baz={value} />;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<fancy-button foo="bar" .baz=${value}></fancy-button>`;
+```txt
+Unexpected token, expected "," (1:26)
 ```
 
 ### Supports bare boolean attributes without values
@@ -147,11 +209,10 @@ This case captures supported authored syntax and the emitted code path used to p
 const view = <button disabled></button>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<button disabled></button>`;
+```txt
+Unexpected token, expected "," (1:21)
 ```
 
 ### Does not self-close non-void HTML elements
@@ -166,11 +227,10 @@ This case records the authored input and the generated output as a living transf
 const view = <div class="host" />;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<div class="host"></div>`;
+```txt
+Unexpected token, expected "," (1:18)
 ```
 
 ### Does not self-close iframe elements
@@ -185,11 +245,10 @@ This case records the authored input and the generated output as a living transf
 const view = <iframe srcdoc={doc} sandbox="allow-scripts" />;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<iframe srcdoc="${doc}" sandbox="allow-scripts"></iframe>`;
+```txt
+Unexpected token, expected "," (1:21)
 ```
 
 ### Keeps opening and closing tags aligned for kebab-case custom elements with attributes
@@ -208,11 +267,10 @@ const view = (
       );
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<suspense-boundary fallback="${html`<span>loading</span>`}"><span>ready</span></suspense-boundary>`;
+```txt
+Unexpected token, expected "," (2:17)
 ```
 
 ### Keeps Lit-style prefixed attributes on kebab-case custom elements
@@ -231,11 +289,10 @@ const view = (
       );
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<suspense-boundary .content=${() => html`<span>ready</span>`} @resolve=${handleResolve} ?pending=${isPending}><span>fallback</span></suspense-boundary>`;
+```txt
+Unexpected token, expected "," (2:17)
 ```
 
 ### Trims whitespace around text nodes in templates
@@ -250,11 +307,10 @@ This case records the authored input and the generated output as a living transf
 const view = <div>\n      hello\n    </div>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<div>\n      hello\n    </div>`;
+```txt
+Expecting Unicode escape sequence \uXXXX. (1:19)
 ```
 
 ### Transforms namespaced component tags
@@ -269,13 +325,10 @@ This case records the authored input and the generated output as a living transf
 const view = <x:custom foo={value} />;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`${x.custom({
-  foo: value
-}, html``)}`;
+```txt
+Unexpected token, expected "," (1:15)
 ```
 
 ### Ignores empty JSX expression containers
@@ -290,11 +343,10 @@ This case records the authored input and the generated output as a living transf
 const view = <div>{}</div>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<div></div>`;
+```txt
+Unterminated regular expression. (1:22)
 ```
 
 ### Transforms JSX in nested functions
@@ -315,41 +367,64 @@ const createFactory = () => {
       };
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const createFactory = () => {
-  const render = () => {
-    const inline = () => html`<span>${value}</span>`;
-    return inline;
-  };
-  return render();
-};
+```txt
+Unterminated regular expression. (3:46)
 ```
 
-### Throws on unsupported spread attributes
+### Lowers spread attributes and surrounding explicit props in source order
 
 #### Interpretation
 
-This case documents an intentionally unsupported construct and the failure mode that callers should expect.
+This case records the authored input and the generated output as a living transform contract.
 
 #### Authored Input
 
 ```jsx
-const x = <div {...rest}></div>;
+const x = <div title="before" {...first} id="fixed" disabled={active} {...second} hidden></div>;
 ```
 
 #### Generated Error
 
 ```txt
-unknown file: JSXSpreadAttribute is not supported
+Unexpected token, expected "," (1:15)
 ```
 
-#### Expected Error
+### Marks SVG spread namespaces and returns to HTML inside foreignObject
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const x = <svg><circle {...shape} /><foreignObject><div {...htmlProps} /></foreignObject></svg>;
+```
+
+#### Generated Error
 
 ```txt
-JSXSpreadAttribute is not supported
+Unexpected token, expected "</>/<=/>=" (1:23)
+```
+
+### Passes an authored component constructor for spread prop inference
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const x = <ThirdPartyButton {...props}></ThirdPartyButton>;
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (1:28)
 ```
 
 ### Throws on spread children
@@ -367,7 +442,7 @@ const x = <div>{...items}</div>;
 #### Generated Error
 
 ```txt
-unknown file: JSXSpreadChild is not supported
+Unterminated regular expression. (1:27)
 ```
 
 #### Expected Error
@@ -388,11 +463,10 @@ This case captures supported authored syntax and the emitted code path used to p
 const view = <><span>one</span><span>two</span></>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { html } from "lit";
-const view = html`<span>one</span><span>two</span>`;
+```txt
+Type parameter list cannot be empty. (1:13)
 ```
 
 ### Creates bare template literals when tag is disabled
@@ -415,10 +489,10 @@ This case records the authored input and the generated output as a living transf
 const view = <div>{label}</div>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-const view = `<div>${label}</div>`;
+```txt
+Unterminated regular expression. (1:27)
 ```
 
 ### Adds a custom tagged import next to existing lit imports
@@ -434,11 +508,10 @@ import { LitElement } from "lit";
 const view = <div>{label}</div>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { LitElement, svg } from "lit";
-const view = svg`<div>${label}</div>`;
+```txt
+Unterminated regular expression. (2:27)
 ```
 
 ### Does not duplicate an existing custom tagged import from lit
@@ -454,11 +527,10 @@ import { LitElement, svg } from "lit";
 const view = <div>{label}</div>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { LitElement, svg } from "lit";
-const view = svg`<div>${label}</div>`;
+```txt
+Unterminated regular expression. (2:27)
 ```
 
 ### Adds a separate tagged import when lit is imported as a namespace
@@ -474,12 +546,10 @@ import * as lit from "lit";
 const view = <div>{label}</div>;
 ```
 
-#### Generated Output
+#### Generated Error
 
-```js
-import { svg } from "lit";
-import * as lit from "lit";
-const view = svg`<div>${label}</div>`;
+```txt
+Unterminated regular expression. (2:27)
 ```
 
 ### Ignores lit attribute sourcemap metadata whose generated needle is missing
