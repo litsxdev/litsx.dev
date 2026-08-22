@@ -1,13 +1,14 @@
 import assert from "assert";
 import fs from "fs";
 import path from "path";
-import babelCore from "@babel/core";
+import * as babelCore from "@babel/core";
 import * as babelParser from "@babel/parser";
-import { ensureSyntaxTree, foldable, syntaxTree } from "@codemirror/language";
+import { ensureSyntaxTree, syntaxTree } from "@codemirror/language";
+import { css, unsafeCSS } from "lit";
 import { PLAYGROUND_TYPE_FILES } from "../packages/litsx-playground/src/virtual-types.js";
 import { createSourceEditorState } from "../packages/litsx-playground/src/litsx-playground-editors.js";
 import { createFallbackPreviewDocument } from "../packages/litsx-playground/src/litsx-playground-preview.js";
-import { createVirtualLitsxJsxSource } from "@litsx/authoring";
+import { playgroundStyles } from "../packages/litsx-playground/src/litsx-playground-styles.js";
 import {
   litDirectivesExampleSource,
   primitivesExampleSource,
@@ -17,8 +18,6 @@ import {
   useOptimisticExampleSource,
 } from "../website/docs/.vitepress/theme/components/playground-example-source.js";
 import { beforeAll, describe, it } from "vitest";
-import { interopDefault } from "./helpers/interop-default.js";
-
 const { transformFromAstSync } = babelCore;
 
 const playgroundPath = path.join(
@@ -37,19 +36,16 @@ const playgroundPreviewPath = path.join(
 let nativePreset;
 
 beforeAll(async () => {
-  nativePreset = interopDefault(
-    await import("@litsx/babel-preset-litsx")
-  );
+  nativePreset = (await import("@litsx/babel-preset-litsx")).default;
 });
 
 function transformDocsComponent(source, filename) {
-  const virtualSource = createVirtualLitsxJsxSource(source).code;
-  const ast = babelParser.parse(virtualSource, {
+  const ast = babelParser.parse(source, {
     sourceType: "module",
     plugins: ["jsx", "typescript"],
   });
 
-  return transformFromAstSync(ast, virtualSource, {
+  return transformFromAstSync(ast, source, {
     filename,
     configFile: false,
     babelrc: false,
@@ -65,41 +61,42 @@ describe("LitsxPlayground docs component", () => {
     const source = fs.readFileSync(playgroundPath, "utf8");
     const code = transformDocsComponent(source, playgroundPath);
 
-    assert.match(code, /import \{ LitsxStaticHoistsMixin \} from "@litsx\/core\/elements";/);
-    assert.match(code, /export class LitsxPlayground extends LitsxStaticHoistsMixin\(LitElement\)/);
-    assert.match(code, /customElements\.define\("litsx-playground", LitsxPlayground\)/);
-    assert.match(code, /prepareEffects\(this\);/);
-    assert.match(code, /static get styles\(\)/);
-    assert.match(code, /const hostContent = useHostContent\(this, \{\s*trim: true\s*\}\);/);
+    assert.match(code, /export class LitsxPlayground extends LitElement/);
+    assert.match(code, /customElements\.define\(\s*"litsx-playground",\s*LitsxPlayground/);
+    assert.match(code, /return renderWithHooks\(this, \(\) =>/);
+    assert.match(code, /static styles =/);
+    assert.match(code, /import \{[^}]*unsafeCSS[^}]*\} from "lit";/);
+    assert.match(code, /css`\$\{unsafeCSS\(playgroundStyles\)\}`/);
+    assert.match(code, /const hostContent = useHostContent\(\{\s*trim: true\s*\}\);/);
     assert.match(code, /const slottedSource = hostContent\.text;/);
-    assert.match(code, /const \{[\s\S]*cancel: cancelScheduledCompile[\s\S]*schedule: scheduleCompile[\s\S]*\} = useDebouncedAction\(this, 220\);/);
-    assert.match(code, /useCallbackRef\(this, \(\) => this\.[_A-Za-z0-9]+Element, node => sourceEditorElement\.current = node\);/);
-    assert.match(code, /useCallbackRef\(this, \(\) => this\.[_A-Za-z0-9]+Element, node => emittedEditorElement\.current = node\);/);
-    assert.match(code, /useCallbackRef\(this, \(\) => this\.[_A-Za-z0-9]+Element, node => previewFrame\.current = node\);/);
-    assert.match(code, /const \[activeEditorPanel, setActiveEditorPanel\] = useState<"source" \| "emitted">\(this, "source"\);/);
-    assert.match(code, /usePlaygroundEditorsAndWorker\(this, \{/);
+    assert.match(code, /const \{[\s\S]*cancel: cancelScheduledCompile[\s\S]*schedule: scheduleCompile[\s\S]*\} = useDebouncedAction\(220\);/);
+    assert.match(code, /\$\{ref\(sourceEditorElement\)\}/);
+    assert.match(code, /\$\{ref\(emittedEditorElement\)\}/);
+    assert.match(code, /\$\{ref\(previewFrame\)\}/);
+    assert.match(code, /const \[activeEditorPanel, setActiveEditorPanel\] = useState<"source" \| "emitted">\("source"\);/);
+    assert.match(code, /usePlaygroundEditorsAndWorker\(\{/);
     assert.match(code, /function createPreviewInstanceId\(\) \{/);
-    assert.match(code, /const previewInstanceId = useRef\(this, createPreviewInstanceId\(\)\);/);
-    assert.match(code, /const previousFullscreenRef = useRef<boolean \| null>\(this, null\);/);
-    assert.match(code, /const previewId = `\$\{previewInstanceId\.current\}-preview-\$\{iframeVersion\}`;/);
-    assert.match(code, /const isResetDisabled = source === initialSourceRef\.current;/);
+    assert.match(code, /const previewInstanceId = useRef\(createPreviewInstanceId\(\)\);/);
+    assert.match(code, /const previousFullscreenRef = useRef<boolean \| null>\(null\);/);
+    assert.match(code, /const previewId = `\$\{previewInstanceId\.value\}-preview-\$\{iframeVersion\}`;/);
+    assert.match(code, /const isResetDisabled = source === initialSourceRef\.value;/);
     assert.doesNotMatch(code, /ensurePreviewRuntimeUrls\(\)/);
     assert.match(code, /buildPreviewDocument\(emittedCode, this\.exportName, this\.previewTagName, previewId\)/);
-    assert.match(code, /usePlaygroundPreviewMessages\(this, previewFrame, previewId, setPreviewHeight, setPreviewWidth, setPreviewError\);/);
-    assert.match(code, /usePlaygroundSourceSync\(this, \{/);
-    assert.match(code, /const \[previewWidth, setPreviewWidth\] = useState\(this, 420\);/);
-    assert.match(code, /const \[isFullscreen, setIsFullscreen\] = useState\(this, false\);/);
+    assert.match(code, /usePlaygroundPreviewMessages\(previewFrame, previewId, setPreviewHeight, setPreviewWidth, setPreviewError\);/);
+    assert.match(code, /usePlaygroundSourceSync\(\{/);
+    assert.match(code, /const \[previewWidth, setPreviewWidth\] = useState\(420\);/);
+    assert.match(code, /const \[isFullscreen, setIsFullscreen\] = useState\(false\);/);
     assert.match(code, /document\.startViewTransition/);
-    assert.match(code, /useOnConnect\(this, \(\) => \{/);
-    assert.match(code, /useAfterUpdate\(this, \(\) => \{/);
-    assert.match(code, /if \(previousFullscreenRef\.current && !isFullscreen\) \{/);
+    assert.match(code, /useOnConnect\(\(\) => \{/);
+    assert.match(code, /useAfterUpdate\(\(\) => \{/);
+    assert.match(code, /if \(previousFullscreenRef\.value && !isFullscreen\) \{/);
     assert.match(code, /setPreviewHeight\(initialHeight\);/);
     assert.match(code, /setIframeVersion\(value => value \+ 1\);/);
     assert.match(code, /document\.addEventListener\("fullscreenchange", handleFullscreenChange\);/);
     assert.match(code, /document\.removeEventListener\("fullscreenchange", handleFullscreenChange\);/);
-    assert.match(code, /useStyle\(this, "--litsx-playground-preview-height",/);
-    assert.match(code, /useStyle\(this, "--litsx-playground-preview-width",/);
-    assert.match(code, /workerRef\.current\.postMessage\(\{\s*id: compileRequestId\.current,\s*source: nextSource,\s*filename: this\.filename,\s*mode\s*\}\);/s);
+    assert.match(code, /useStyle\("--litsx-playground-preview-height",/);
+    assert.match(code, /useStyle\("--litsx-playground-preview-width",/);
+    assert.match(code, /workerRef\.value\.postMessage\(\{\s*id: compileRequestId\.value,\s*source: nextSource,\s*filename: this\.filename,\s*mode\s*\}\);/s);
     assert.match(code, /@click=\$\{handleReset\}/);
     assert.match(code, /data-role="fullscreen-button"/);
     assert.match(code, /aria-pressed="\$\{isFullscreen \? "true" : "false"\}"/);
@@ -118,6 +115,12 @@ describe("LitsxPlayground docs component", () => {
     assert.doesNotMatch(code, /sandbox=/);
   }, 30000);
 
+  it("constructs the package stylesheet as a valid Lit CSS result", () => {
+    const styles = css`${unsafeCSS(playgroundStyles)}`;
+
+    assert.match(styles.cssText, /\.litsx-playground__workspace/);
+  });
+
   it("keeps projected source content as authored input instead of manual host reads", () => {
     const source = fs.readFileSync(playgroundPath, "utf8");
     const code = transformDocsComponent(source, playgroundPath);
@@ -127,26 +130,26 @@ describe("LitsxPlayground docs component", () => {
     assert.match(code, /const initialSource = \(this\.source \?\? slottedSource \?\? ""\)\.trim\(\);/);
     assert.match(code, /const resolvedPanelMaxHeight = normalizePanelMaxHeight\(this\.panelMaxHeight\);/);
     assert.match(code, /const mode = this\.mode === "react-compat" \? "react-compat" : "native";/);
-    assert.match(code, /workerRef\.current\.postMessage\(\{\s*id: compileRequestId\.current,\s*source: nextSource,\s*filename: this\.filename,\s*mode\s*\}\);/s);
+    assert.match(code, /workerRef\.value\.postMessage\(\{\s*id: compileRequestId\.value,\s*source: nextSource,\s*filename: this\.filename,\s*mode\s*\}\);/s);
   });
 
   it("compiles the extracted playground hooks through the docs pipeline", () => {
     const source = fs.readFileSync(playgroundHooksPath, "utf8");
     const code = transformDocsComponent(source, playgroundHooksPath);
 
-    assert.match(code, /function useDebouncedAction\(_host, delay: number\)/);
-    assert.match(code, /useOnConnect\(_host, \(\) => cancel, \[delay\]\);/);
+    assert.match(code, /function useDebouncedAction\(delay: number\)/);
+    assert.match(code, /useOnConnect\(\(\) => cancel, \[delay\]\);/);
     assert.match(
       code,
-      /function usePlaygroundPreviewMessages\(_host, previewFrame(?:: [^,]+)?, previewId(?:: [^,]+)?, setPreviewHeight(?:: [^,]+)?, setPreviewWidth(?:: [^,]+)?, setPreviewError(?:: [^)]+)?\)/
+      /function usePlaygroundPreviewMessages\(previewFrame(?:: [^,]+)?, previewId(?:: [^,]+)?, setPreviewHeight(?:: [^,]+)?, setPreviewWidth(?:: [^,]+)?, setPreviewError(?:: [^)]+)?\)/
     );
     assert.match(code, /window\.addEventListener\("message", handlePreviewMessage\);/);
     assert.match(code, /window\.removeEventListener\("message", handlePreviewMessage\);/);
-    assert.match(code, /function usePlaygroundEditorsAndWorker\(_host, \{/);
-    assert.match(code, /const sourceEditorHost = sourceEditorElement\.current;/);
-    assert.match(code, /const emittedEditorHost = emittedEditorElement\.current;/);
-    assert.match(code, /const previewHost = previewFrame\.current;/);
-    assert.match(code, /function usePlaygroundSourceSync\(_host, \{/);
+    assert.match(code, /function usePlaygroundEditorsAndWorker\(\{/);
+    assert.match(code, /const sourceEditorHost = sourceEditorElement\.value;/);
+    assert.match(code, /const emittedEditorHost = emittedEditorElement\.value;/);
+    assert.match(code, /const previewHost = previewFrame\.value;/);
+    assert.match(code, /function usePlaygroundSourceSync\(\{/);
     assert.doesNotMatch(code, /new MutationObserver/);
   }, 15000);
 
@@ -154,7 +157,7 @@ describe("LitsxPlayground docs component", () => {
     const source = fs.readFileSync(playgroundPreviewPath, "utf8");
 
     assert.match(source, /"@litsx\/core\/elements":/);
-    assert.match(source, /"@litsx\/light-dom-registry":/);
+    assert.match(source, /"@litsx\/scoped-registry-shim":/);
     assert.match(source, /"lit\/directives\/keyed\.js":/);
     assert.match(source, /"lit\/directives\/repeat\.js":/);
     assert.match(source, /"lit\/directives\/when\.js":/);
@@ -188,11 +191,11 @@ describe("LitsxPlayground docs component", () => {
     assert.match(code, /return null;/);
     assert.match(
       code,
-      /if \(resolvedPanelMaxHeight != null\) \{\s*useStyle\(this, "--litsx-playground-editor-max-height", resolvedPanelMaxHeight\);\s*\}/s
+      /if \(resolvedPanelMaxHeight != null\) \{\s*useStyle\("--litsx-playground-editor-max-height", resolvedPanelMaxHeight\);\s*\}/s
     );
   });
 
-  it("fully parses authored source examples that use static hoists", () => {
+  it("fully parses authored source examples that use module-level metadata", () => {
     const state = createSourceEditorState(primitivesExampleSource, () => {});
     const tree = ensureSyntaxTree(state, state.doc.length, 5000);
     const errors = [];
@@ -282,39 +285,22 @@ describe("LitsxPlayground docs component", () => {
     assert.deepStrictEqual(errors, []);
   });
 
-  it("virtualizes multiline useEmit demo click handlers for the editor parser", () => {
-    const { code } = createVirtualLitsxJsxSource(useEmitExampleSource, {
-      strategy: "editor",
-    });
-
-    assert.match(code, /eclick=\{\(\) => \{/);
-    assert.match(code, /echange=\{\(event\) => \{/);
-    assert.doesNotMatch(code, /@click=/);
+  it("keeps standard event syntax directly parseable in the useEmit demo", () => {
+    assert.match(useEmitExampleSource, /on:click=\{\(\) => emit\(/);
+    assert.match(useEmitExampleSource, /on:color-change=/);
+    assert.doesNotMatch(useEmitExampleSource, /@click=/);
   });
 
-  it("virtualizes multiline useAsyncState demo click handlers for the editor parser", () => {
-    const { code } = createVirtualLitsxJsxSource(useAsyncStateExampleSource, {
-      strategy: "editor",
-    });
-
-    assert.match(code, /eclick=\{\(\) => saveCount\(count \+ 1\)\}/);
-    assert.match(code, /eclick=\{\(\) => \{\s*saveCount\(13\)\.catch\(\(\) => \{\}\);\s*\}\}/);
-    assert.doesNotMatch(code, /@click=/);
+  it("keeps standard event syntax directly parseable in the async demo", () => {
+    assert.match(useAsyncStateExampleSource, /on:click=\{\(\) => save\(count \+ 1\)\}/);
+    assert.match(useAsyncStateExampleSource, /disabled=\{meta\.pending\}/);
+    assert.doesNotMatch(useAsyncStateExampleSource, /@click=/);
   });
 
-  it("treats multi-line hoists as foldable regions in the source editor", () => {
+  it("keeps module-level styles visible in the source editor", () => {
     const state = createSourceEditorState(primitivesExampleSource, () => {});
-    const hoistOffset = primitivesExampleSource.indexOf("static styles = `");
-    assert.ok(hoistOffset >= 0);
-
-    const line = state.doc.lineAt(hoistOffset);
-    const fold = foldable(state, line.from, line.to);
-
-    assert.ok(fold);
-    assert.ok(fold.to > fold.from);
-    assert.strictEqual(primitivesExampleSource.slice(fold.from, fold.from + 1), "`");
-    assert.strictEqual(primitivesExampleSource.slice(fold.to - 1, fold.to), "`");
-    assert.strictEqual(primitivesExampleSource.slice(fold.to, fold.to + 1), ";");
+    assert.ok(primitivesExampleSource.includes("RuntimeCard.styles = css`"));
+    assert.strictEqual(state.doc.toString(), primitivesExampleSource);
   });
 
   it("fully parses the static expose playground example in the source editor", () => {

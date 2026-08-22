@@ -11,7 +11,6 @@ This repository owns:
 - the documentation site content in `website/docs`
 - the internal docs theme package in `packages/vitepress`
 - the docs playground in `packages/litsx-playground`
-- shared Shiki language definitions in `packages/shiki-languages`
 
 ## Source Contract
 

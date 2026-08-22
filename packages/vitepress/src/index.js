@@ -1,17 +1,10 @@
 import { transformLitsx } from "@litsx/compiler";
 import path from "path";
-import { litsxCodeLanguages } from "@litsx/shiki-languages";
-
-export function litsxVitePressMarkdown() {
-  return {
-    languages: litsxCodeLanguages(),
-  };
-}
 
 function defaultInclude(id) {
   return (
     id.includes("/website/docs/.vitepress/theme/components/") &&
-    (id.endsWith(".jsx") || id.endsWith(".tsx") || id.endsWith(".litsx") || id.endsWith(".litsx.jsx"))
+    (id.endsWith(".jsx") || id.endsWith(".tsx"))
   );
 }
 

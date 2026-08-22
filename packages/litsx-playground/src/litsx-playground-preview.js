@@ -24,7 +24,7 @@ const dedupeMixinModuleUrl =
 // Replace it with a cleaner browser-resolvable published-module strategy once
 // the extracted docs/playground repos settle on their runtime asset model.
 const lightDomRegistryModuleUrl =
-  new URL("./preview-runtime/light-dom-registry.js", import.meta.url).href;
+  new URL("./preview-runtime/scoped-registry-shim.js", import.meta.url).href;
 const scopedCustomElementRegistryPolyfillUrl =
   "https://cdn.jsdelivr.net/npm/@webcomponents/scoped-custom-element-registry@0.0.10/scoped-custom-element-registry.min.js";
 
@@ -124,7 +124,8 @@ export function buildPreviewDocument(
           "@litsx/core/context": ${JSON.stringify(previewRuntimeUrls.litsx)},
           "@litsx/core/elements": ${JSON.stringify(previewRuntimeUrls.litsx)},
           "@litsx/core/rendering": ${JSON.stringify(previewRuntimeUrls.litsx)},
-          "@litsx/light-dom-registry": ${JSON.stringify(previewRuntimeUrls.lightDomRegistry)},
+          "@litsx/core/react-compat": ${JSON.stringify(previewRuntimeUrls.litsx)},
+          "@litsx/scoped-registry-shim": ${JSON.stringify(previewRuntimeUrls.lightDomRegistry)},
           "@open-wc/scoped-elements/lit-element.js": ${JSON.stringify(previewRuntimeUrls.scopedElements)},
           "@open-wc/scoped-elements/html-element.js": ${JSON.stringify(previewRuntimeUrls.scopedElementsHtmlElement)},
           "@open-wc/dedupe-mixin": ${JSON.stringify(previewRuntimeUrls.dedupeMixin)},

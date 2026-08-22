@@ -1,15 +1,65 @@
 import { EditorState } from "@codemirror/state";
-import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { cssLanguage } from "@codemirror/lang-css";
+import { HighlightStyle, LanguageSupport, syntaxHighlighting } from "@codemirror/language";
 import { EditorView } from "@codemirror/view";
 import { javascript } from "@codemirror/lang-javascript";
+import { parseMixed } from "@lezer/common";
 import { tags as t } from "@lezer/highlight";
 import { basicSetup } from "codemirror";
-import {
-  createDefaultHoistFoldEffects,
-  litsxSourceHighlighting,
-  litsxSourceSupport,
-  litsxSourceTheme,
-} from "./litsx-source-language.js";
+
+function getCssTemplateRanges(templateNode) {
+  const ranges = [];
+  let rangeStart = templateNode.from + 1;
+
+  for (let child = templateNode.node.firstChild; child; child = child.nextSibling) {
+    if (child.name !== "Interpolation") continue;
+    if (rangeStart < child.from) {
+      ranges.push({ from: rangeStart, to: child.from });
+    }
+    rangeStart = child.to;
+  }
+
+  const contentEnd = Math.max(templateNode.from + 1, templateNode.to - 1);
+  if (rangeStart < contentEnd) {
+    ranges.push({ from: rangeStart, to: contentEnd });
+  }
+
+  return ranges;
+}
+
+function createCssTemplateWrapper() {
+  return parseMixed((node, input) => {
+    if (node.name !== "TemplateString") return null;
+
+    const parent = node.node.parent;
+    if (parent?.name !== "TaggedTemplateExpression") return null;
+
+    const tag = input.read(parent.from, node.from).trim();
+    if (tag !== "css") return null;
+
+    return {
+      parser: cssLanguage.parser,
+      overlay: getCssTemplateRanges(node),
+    };
+  });
+}
+
+function createLitsxJavascriptSupport(options) {
+  const base = javascript(options);
+  const language = base.language.configure({
+    wrap: createCssTemplateWrapper(),
+  }, options.typescript ? "litsx-tsx" : "litsx-jsx");
+  return new LanguageSupport(language, base.support);
+}
+
+const sourceLanguageSupport = createLitsxJavascriptSupport({
+  typescript: true,
+  jsx: true,
+});
+
+const emittedLanguageSupport = createLitsxJavascriptSupport({
+  jsx: true,
+});
 
 const editorSyntaxHighlighting = syntaxHighlighting(
   HighlightStyle.define([
@@ -105,11 +155,9 @@ export function createSourceEditorState(doc, onChange) {
     doc,
     extensions: [
       basicSetup,
-      litsxSourceSupport().extension,
-      litsxSourceHighlighting,
+      sourceLanguageSupport,
       editorSyntaxHighlighting,
       sourceEditorTheme,
-      litsxSourceTheme,
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           onChange(update.state.doc.toString());
@@ -119,23 +167,12 @@ export function createSourceEditorState(doc, onChange) {
   });
 }
 
-export function foldSourceEditorHoists(view) {
-  if (!view) return;
-
-  const effects = createDefaultHoistFoldEffects(view.state);
-  if (effects.length === 0) return;
-
-  view.dispatch({ effects });
-}
-
 export function createEmittedEditorState(doc) {
   return EditorState.create({
     doc,
     extensions: [
       basicSetup,
-      javascript({
-        jsx: true,
-      }),
+      emittedLanguageSupport,
       editorSyntaxHighlighting,
       emittedEditorTheme,
       EditorState.readOnly.of(true),

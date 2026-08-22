@@ -1,12 +1,10 @@
 import assert from "assert";
 import fs from "fs";
 import path from "path";
-import { createHighlighter } from "shiki";
 import { describe, it, vi } from "vitest";
-import {
-  litsxVitePress,
-  litsxVitePressMarkdown,
-} from "../packages/vitepress/src/index.js";
+import { createHighlighter } from "shiki";
+import { litsxVitePress } from "../packages/vitepress/src/index.js";
+import { litsxCodeLanguages } from "../packages/vitepress/src/litsx-code-languages.js";
 import {
   buildVersionPath,
   defineDocsVersions,
@@ -40,6 +38,30 @@ vi.mock("vitepress", async () => {
 });
 
 describe("@litsx/vitepress", () => {
+  it("embeds CSS highlighting in css tagged templates for TSX and JSX blocks", async () => {
+    const languages = litsxCodeLanguages();
+    const highlighter = await createHighlighter({
+      themes: ["github-dark"],
+      langs: languages,
+    });
+
+    try {
+      assert.deepStrictEqual(languages.map((language) => language.name), ["tsx", "jsx"]);
+      const result = highlighter.codeToTokens(
+        "Card.styles = css`:host { display: block; }`; const plain = `display: inline`;",
+        { lang: "tsx", theme: "github-dark", includeExplanation: true },
+      );
+      const displayTokens = result.tokens.flat().filter((token) => token.content === "display");
+
+      assert.equal(displayTokens.length, 1);
+      assert.ok(displayTokens[0].explanation.some((explanation) =>
+        explanation.scopes.some((scope) => scope.scopeName === "support.type.property-name.css")
+      ));
+    } finally {
+      highlighter.dispose();
+    }
+  });
+
   it("exposes public theme-related subpath exports", () => {
     const packageJson = JSON.parse(
       fs.readFileSync(path.join(process.cwd(), "packages/vitepress/package.json"), "utf8")
@@ -56,6 +78,7 @@ describe("@litsx/vitepress", () => {
     );
     assert.equal(packageJson.exports["./versions"].default, "./src/versions.js");
     assert.equal(packageJson.exports["./styles.css"], "./src/styles.css");
+    assert.equal(packageJson.exports["./shiki-litsx-languages"], undefined);
   });
 
   it("keeps theme/version ui under the theme entrypoint", () => {
@@ -132,7 +155,7 @@ describe("@litsx/vitepress", () => {
     assert.equal(resolverPlugin.resolveId("lit", null, { ssr: true }), null);
     assert.equal(transformPlugin.name, "litsx-docs-compiler");
 
-    const source = "export const Counter = () => <button @click={save}>Hi</button>;";
+    const source = "export const Counter = () => <button on:click={save}>Hi</button>;";
     const transformed = await transformPlugin.transform(
       source,
       id
@@ -199,103 +222,6 @@ describe("@litsx/vitepress", () => {
     assert.ok(functionIncluded);
     assert.equal(functionExcluded, null);
   }, 20000);
-
-  it("provides LitSX-aware markdown languages through the package", () => {
-    const markdown = litsxVitePressMarkdown();
-
-    assert.ok(Array.isArray(markdown.languages));
-    assert.deepStrictEqual(
-      markdown.languages.map((language) => language.name),
-      ["tsx", "jsx"]
-    );
-    assert.match(JSON.stringify(markdown.languages), /litsx-jsx-attributes/);
-    assert.match(JSON.stringify(markdown.languages), /litsx-hoists/);
-  });
-
-  it("loads LitSX-aware tsx highlighting without requiring external Shiki languages", async () => {
-    const markdown = litsxVitePressMarkdown();
-    const highlighter = await createHighlighter({
-      themes: ["github-dark"],
-      langs: markdown.languages,
-    });
-
-    try {
-      const html = highlighter.codeToHtml(
-        [
-          "export function Card() {",
-          "  static styles = `:host { display: block; }`;",
-          "  return <button .value={count} ?disabled={busy} @click={save}>Save</button>;",
-          "}",
-        ].join("\\n"),
-        { lang: "tsx", theme: "github-dark" }
-      );
-
-      assert.match(html, /vp-code|shiki/);
-      assert.match(html, /@(?:<\/span><span[^>]*>)?click/);
-      assert.match(html, /\.(?:<\/span><span[^>]*>)?value/);
-      assert.match(html, /\?(?:<\/span><span[^>]*>)?disabled/);
-      assert.match(html, /static(?:<\/span><span[^>]*>)?\s*(?:<\/span><span[^>]*>)?styles/);
-    } finally {
-      highlighter.dispose();
-    }
-  });
-
-  it("tokenizes CSS inside static styles template hoists", async () => {
-    const markdown = litsxVitePressMarkdown();
-    const highlighter = await createHighlighter({
-      themes: ["github-dark"],
-      langs: markdown.languages,
-    });
-
-    try {
-      const html = highlighter.codeToHtml(
-        [
-          "static styles = `",
-          "  :host {",
-          "    display: block;",
-          "    color: red;",
-          "  }",
-          "`;",
-        ].join("\n"),
-        { lang: "tsx", theme: "github-dark" }
-      );
-
-      assert.match(html, /display/);
-      assert.match(html, /color/);
-      assert.match(html, /block/);
-      assert.match(html, /red/);
-      assert.doesNotMatch(html, /static styles\(\)/);
-    } finally {
-      highlighter.dispose();
-    }
-  });
-
-  it("keeps JSX tag parsing intact for LitSX boolean attrs", async () => {
-    const markdown = litsxVitePressMarkdown();
-    const highlighter = await createHighlighter({
-      themes: ["github-dark"],
-      langs: markdown.languages,
-    });
-
-    try {
-      const tokens = highlighter.codeToTokens(
-        "<button ?disabled={count > 3} />",
-        { lang: "tsx", theme: "github-dark" }
-      );
-
-      const tagNameToken = tokens.tokens[0].find((token) => token.content === "button");
-      const attrNameToken = tokens.tokens[0].find((token) => token.content === "disabled");
-      const operatorToken = tokens.tokens[0].find((token) => token.content === "?");
-
-      assert.ok(tagNameToken);
-      assert.ok(attrNameToken);
-      assert.ok(operatorToken);
-      assert.notStrictEqual(tagNameToken.color, "#E1E4E8");
-      assert.notStrictEqual(attrNameToken.color, "#E1E4E8");
-    } finally {
-      highlighter.dispose();
-    }
-  });
 
   it("renders the version selector with the active version and navigates to the matching page", async () => {
     routePath = "/v1/guides/intro";

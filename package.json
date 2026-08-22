@@ -5,7 +5,6 @@
   "type": "module",
   "packageManager": "yarn@4.10.3",
   "workspaces": [
-    "packages/shiki-languages",
     "packages/vitepress",
     "packages/litsx-playground"
   ],
@@ -18,13 +17,13 @@
     "docs:dev": "yarn playground:build && yarn docs:build-content && vitepress dev website/docs",
     "docs:build": "yarn playground:build && yarn docs:build-content && vitepress build website/docs",
     "docs:preview": "vitepress preview website/docs",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run test/*.test.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/parser": "^7.29.3",
-    "@babel/standalone": "^7.29.3",
-    "@litsx/authoring": "^0.5.0",
+    "@babel/core": "^8.0.1",
+    "@babel/parser": "^8.0.4",
+    "@babel/standalone": "^8.0.4",
     "jsdom": "^29.1.1",
     "rollup": "^4.60.2",
     "typescript": "^6.0.0",

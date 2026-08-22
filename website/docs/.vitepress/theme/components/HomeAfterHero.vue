@@ -9,103 +9,58 @@ import { jsxAuthoringExampleSource } from "./playground-example-source.js";
         <aside class="litsx-home-body__playground">
           <div class="litsx-home-body__playground-shell">
             <div class="litsx-home-body__eyebrow">Live playground</div>
-            <h2 class="litsx-home-body__playground-title">
-              Try authored Lit<sup>sx</sup> immediately
-            </h2>
+            <h2 class="litsx-home-body__playground-title">Write standard TSX. Ship Lit.</h2>
             <p class="litsx-home-body__playground-copy">
-              Edit JSX, inspect the emitted output, and preview the generated web component
-              without leaving the home page.
+              Edit the component, inspect the generated Lit output, and preview the custom
+              element without leaving this page.
             </p>
             <litsx-playground
               exportname="Composer"
               previewtagname="docs-home-composer-preview"
               filename="/playground/HomeComposer.tsx"
               panelmaxheight="32rem"
-            >
-              {{ jsxAuthoringExampleSource }}
-            </litsx-playground>
+            >{{ jsxAuthoringExampleSource }}</litsx-playground>
           </div>
         </aside>
 
         <div class="litsx-home-body__content vp-doc">
           <section>
-            <h2>What Is Lit<sup>sx</sup>?</h2>
+            <h2>What is Lit<sup>sx</sup>?</h2>
             <p>
-              Lit<sup>sx</sup> is a framework for authoring Lit-based web components with JSX.
-              The framework has its own runtime model, its own primitives, and its own tooling
-              story.
+              Lit<sup>sx</sup> is a compiler and runtime for authoring Lit-based web components
+              with standard JSX and TSX. Lit remains the rendering engine and custom elements
+              remain the runtime boundary.
             </p>
-            <p>It is designed around one authored model:</p>
             <ul>
-              <li>JSX is the language for describing UI</li>
-              <li>prop types drive generated web-component property metadata</li>
-              <li>static declarations stay with the component</li>
-              <li>the runtime target is always Lit and web components</li>
+              <li>ordinary JSX prop names with compiler-driven Lit binding inference</li>
+              <li><code>on:event</code> listeners and typed custom events</li>
+              <li>state, refs, effects, suspense, transitions, and error boundaries</li>
+              <li>component metadata through normal top-level assignments</li>
             </ul>
           </section>
 
           <section>
-            <h2>Why Lit<sup>sx</sup></h2>
-            <p>Lit<sup>sx</sup> is for teams that want:</p>
+            <h2>Built for the whole component lifecycle</h2>
             <ul>
-              <li>JSX as the language for building component trees</li>
-              <li>Lit as the rendering foundation</li>
-              <li>web components as the runtime and distribution model</li>
-              <li>shakeable runtime primitives</li>
-              <li>less verbose UI authoring</li>
-              <li>a more functional style of component composition</li>
-            </ul>
-            <p>
-              The framework is opinionated about one thing: when you write Lit<sup>sx</sup>, it
-              must feel like JSX on top of Lit.
-            </p>
-            <p>That means the important surface is the code you author:</p>
-            <ul>
-              <li>typed props</li>
-              <li>JSX bindings</li>
-              <li>
-                static hoists such as <code>static properties = ...</code>,
-                <code>static styles = ...</code>, and other <code>static name = ...</code>
-                declarations
-              </li>
-              <li>runtime hooks such as <code>useStyle(...)</code></li>
+              <li>Vite compilation and standard TypeScript tooling</li>
+              <li>document SSR, scoped rendering, resource snapshots, and hydration</li>
+              <li>Lit CSS templates plus optional integrations such as UnoCSS</li>
+              <li>Storybook helpers for standard TSX stories</li>
+              <li>an optional React compatibility pipeline for staged migrations</li>
             </ul>
           </section>
 
           <section>
-            <h2>What You Get</h2>
+            <h2>Start with the 1.0 model</h2>
             <ul>
-              <li>Native Lit<sup>sx</sup> runtime primitives for JSX and web components</li>
-              <li>TypeScript language-service support for Lit-flavored authored JSX</li>
-              <li>Compile-time inference for generated Lit property descriptors from typed props</li>
-              <li>Static hoists that lower to memoized static getters on the generated class</li>
-              <li>Project scaffolding through <code>create-litsx-app</code></li>
+              <li><a href="/getting-started">Create a project</a></li>
+              <li><a href="/guides/jsx-authoring">Learn standard JSX authoring</a></li>
+              <li><a href="/guides/ssr">Render and hydrate on the server</a></li>
+              <li><a href="/guides/styling">Choose a styling approach</a></li>
+              <li><a href="/guides/migrating-to-1">Migrate pre-1.0 source</a></li>
+              <li><a href="/reference/">Browse the API reference</a></li>
             </ul>
           </section>
-
-          <section>
-            <h2>Who It Is For</h2>
-            <ul>
-              <li>design systems shipped as web components</li>
-              <li>product teams that want JSX authoring without a React runtime dependency</li>
-              <li>teams building framework-independent UI primitives</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2>Start Here</h2>
-            <ul>
-              <li><a href="/guides/why-litsx">Why Lit<sup>sx</sup></a></li>
-              <li><a href="/guides/jsx-authoring">How to write Lit<sup>sx</sup></a></li>
-              <li><a href="/guides/styling">How to style components</a></li>
-              <li><a href="/guides/primitives">What primitives exist</a></li>
-              <li><a href="/guides/refs">How refs resolve</a></li>
-              <li><a href="/guides/tooling">How to configure tooling</a></li>
-              <li><a href="/guides/migrating-from-react">How to migrate from React</a></li>
-              <li><a href="/examples/">Real examples</a></li>
-            </ul>
-          </section>
-
         </div>
       </div>
     </div>

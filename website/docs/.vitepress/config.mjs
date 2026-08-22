@@ -1,7 +1,8 @@
 import { defineConfig } from "vitepress";
 import path from "path";
 import { fileURLToPath } from "url";
-import { litsxVitePress, litsxVitePressMarkdown } from "@litsx/vitepress";
+import { litsxVitePress } from "@litsx/vitepress";
+import { litsxCodeLanguages } from "../../../packages/vitepress/src/litsx-code-languages.js";
 
 const docsConfigDir = path.dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = path.resolve(docsConfigDir, "../../..");
@@ -71,8 +72,8 @@ const analytics = resolveAnalyticsConfig();
 
 export default defineConfig({
   base: "/",
-  title: "Litsx",
-  description: "Lit<sup>sx</sup> is a JSX-first framework for authoring Lit-based web components, with native primitives, tooling, and optional React migration support.",
+  title: "LitSX",
+  description: "LitSX compiles standard JSX and TSX into Lit-based web components, with typed primitives, SSR, hydration, and optional React migration support.",
   head: [
     ["link", { rel: "icon", href: "/flame_32.png", type: "image/png", sizes: "32x32" }],
     ["link", { rel: "icon", href: "/flame_16.png", type: "image/png", sizes: "16x16" }],
@@ -94,7 +95,6 @@ export default defineConfig({
       __LITSX_ANALYTICS__: JSON.stringify(analytics),
     },
   },
-  markdown: litsxVitePressMarkdown(),
   vue: {
     template: {
       compilerOptions: {
@@ -103,12 +103,16 @@ export default defineConfig({
     },
   },
   cleanUrls: true,
+  markdown: {
+    languages: litsxCodeLanguages(),
+  },
   themeConfig: {
     logo: "/title.svg",
     siteTitle: false,
     nav: [
       { text: "Why Lit<sup>sx</sup>", link: "/guides/why-litsx" },
       { text: "Guide", link: "/getting-started" },
+      { text: "SSR", link: "/guides/ssr" },
       { text: "Reference", link: "/reference/" },
       { text: "Framework", link: "/framework/generated/" },
       { text: "React Migration", link: "/guides/migrating-from-react" },
@@ -121,8 +125,8 @@ export default defineConfig({
           { text: "What is Lit<sup>sx</sup>?", link: "/" },
           { text: "Why Lit<sup>sx</sup>", link: "/guides/why-litsx" },
           { text: "Getting Started", link: "/getting-started" },
-          { text: "JSX Authoring", link: "/guides/jsx-authoring" },
-          { text: "Static Hoists", link: "/guides/static-hoists" },
+          { text: "Standard JSX Authoring", link: "/guides/jsx-authoring" },
+          { text: "Component Metadata", link: "/guides/component-metadata" },
           { text: "Styling", link: "/guides/styling" },
           { text: "Property Inference", link: "/guides/property-inference" },
           { text: "Primitives", link: "/guides/primitives" },
@@ -130,7 +134,10 @@ export default defineConfig({
           { text: "Events", link: "/guides/events" },
           { text: "Refs", link: "/guides/refs" },
           { text: "Async UI", link: "/guides/suspense" },
+          { text: "SSR and Hydration", link: "/guides/ssr" },
+          { text: "UnoCSS (Optional)", link: "/guides/unocss" },
           { text: "Tooling", link: "/guides/tooling" },
+          { text: "Migrating to 1.0", link: "/guides/migrating-to-1" },
           { text: "Migrating from React", link: "/guides/migrating-from-react" },
           {
             text: "Example Walkthroughs",
@@ -174,7 +181,9 @@ export default defineConfig({
               { text: "useExpose", link: "/reference/generated/useexpose" },
               { text: "useExternalStore", link: "/reference/generated/useexternalstore" },
               { text: "useHost", link: "/reference/generated/usehost" },
+              { text: "useHostTypeId", link: "/reference/generated/usehosttypeid" },
               { text: "useHostContent", link: "/reference/generated/usehostcontent" },
+              { text: "useId", link: "/reference/generated/useid" },
               { text: "useMemoValue", link: "/reference/generated/usememovalue" },
               { text: "useOnCommit", link: "/reference/generated/useoncommit" },
               { text: "useOnConnect", link: "/reference/generated/useonconnect" },
@@ -188,6 +197,7 @@ export default defineConfig({
               { text: "useState", link: "/reference/generated/usestate" },
               { text: "useTextContent", link: "/reference/generated/usetextcontent" },
               { text: "useTransition", link: "/reference/generated/usetransition" },
+              { text: "useSsrResourceSnapshot", link: "/reference/generated/usessrresourcesnapshot" },
             ],
           },
           {

@@ -1,16 +1,15 @@
 // @vitest-environment jsdom
 
 import assert from "assert";
+import { syntaxTree } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { describe, expect, it, vi } from "vitest";
 import {
   createEmittedEditorState,
   createSourceEditorState,
-  foldSourceEditorHoists,
   setEditorDocument,
 } from "../packages/litsx-playground/src/litsx-playground-editors.js";
-import { buildLitsxSourceDecorations } from "../packages/litsx-playground/src/litsx-source-language.js";
 
 describe("@litsx/playground editors", () => {
   it("notifies source editor changes only when the document changes", () => {
@@ -41,105 +40,75 @@ describe("@litsx/playground editors", () => {
     }
   });
 
-  it("folds multiline authored hoists only when a view and foldable hoists are present", () => {
-    const dispatch = vi.fn();
-    const noHoistView = {
-      state: EditorState.create({
-        doc: "const value = 1;",
-      }),
-      dispatch,
-    };
+  it("parses source as standard TypeScript and JSX", () => {
+    const state = createSourceEditorState(
+      "const label: string = 'Save'; export const Card = () => <button on:click={save}>{label}</button>;",
+      vi.fn(),
+    );
+    const tree = syntaxTree(state);
+    let hasError = false;
 
-    foldSourceEditorHoists(null);
-    foldSourceEditorHoists(noHoistView);
-    expect(dispatch).not.toHaveBeenCalled();
+    tree.iterate({
+      enter(node) {
+        hasError ||= node.type.isError;
+      },
+    });
 
-    const singleLineHoistView = {
-      state: createSourceEditorState("static styles = `:host { display: block; }`;\nreturn <div />;", vi.fn()),
-      dispatch,
-    };
-
-    foldSourceEditorHoists(singleLineHoistView);
-    expect(dispatch).not.toHaveBeenCalled();
-
-    const hoistView = {
-      state: createSourceEditorState(
-        "static properties = {\n  active: { type: Boolean },\n  label: { type: String },\n};\nreturn <div />;",
-        vi.fn(),
-      ),
-      dispatch,
-    };
-
-    foldSourceEditorHoists(hoistView);
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch.mock.calls[0][0].effects.length).toBeGreaterThan(0);
+    expect(hasError).toBe(false);
+    expect(tree.toString()).toContain("JSXElement");
   });
 
-  it("highlights static hoist keywords and names in the source editor", () => {
+  it("renders standard component metadata in the source editor", () => {
     const view = new EditorView({
       state: createSourceEditorState(
-        "export const Card = () => { static styles = `:host { display: block; color: red; }`; return <button />; };",
+        "export const Card = () => <button />; Card.styles = css`:host { display: block; color: red; }`;",
         vi.fn(),
       ),
       parent: document.body.appendChild(document.createElement("div")),
     });
 
     try {
-      const keywordTokens = Array.from(view.dom.querySelectorAll(".tok-keyword"))
-        .map((node) => node.textContent)
-        .join(" ");
-      const hoistNames = Array.from(view.dom.querySelectorAll(".cm-litsx-static-hoist-name"))
-        .map((node) => node.textContent)
-        .join(" ");
-
-      expect(keywordTokens).toContain("static");
-      expect(hoistNames).toContain("styles");
+      expect(view.dom.textContent).toContain("Card.styles");
+      expect(view.dom.textContent).toContain("css`");
     } finally {
       view.destroy();
     }
   });
 
-  it("preserves CSS token highlighting inside static styles assignments", () => {
-    const state = createSourceEditorState(
-      "export const Card = () => { static styles = `:host { display: block; color: red; }`; return <button />; };",
-      vi.fn(),
-    );
-    const doc = state.doc.toString();
-    const decorations = buildLitsxSourceDecorations({ state });
-    const classesAt = (needle) => {
-      const start = doc.indexOf(needle);
-      const end = start + needle.length;
-      const classes = new Set();
+  it("parses css tagged templates with the embedded CSS language", () => {
+    const source = "Card.styles = css`:host { display: block; color: ${tone}; }`;";
+    const tree = syntaxTree(createSourceEditorState(source, vi.fn()));
 
-      decorations.between(start, end, (from, to, value) => {
-        if (to <= start || from >= end) {
-          return;
-        }
+    const displayNode = tree.resolveInner(source.indexOf("display") + 1, -1);
+    const blockNode = tree.resolveInner(source.indexOf("block") + 1, -1);
+    const toneNode = tree.resolveInner(source.indexOf("tone") + 1, -1);
 
-        classes.add(value.spec.attributes.class);
-      });
-
-      return classes;
-    };
-
-    const displayClasses = classesAt("display");
-    const colorClasses = classesAt("color");
-
-    expect(Array.from(displayClasses).some((value) => value.includes("tok-"))).toBe(true);
-    expect(Array.from(colorClasses).some((value) => value.includes("tok-"))).toBe(true);
+    expect(displayNode.name).toBe("PropertyName");
+    expect(displayNode.parent?.name).toBe("Declaration");
+    expect(blockNode.name).toBe("ValueName");
+    expect(toneNode.name).toBe("VariableName");
+    expect(toneNode.parent?.name).toBe("Interpolation");
   });
 
-  it("keeps source editor views mountable after static hoist highlighting", () => {
+  it("does not parse ordinary template strings as CSS", () => {
+    const source = "const text = `:host { display: block; }`;";
+    const tree = syntaxTree(createSourceEditorState(source, vi.fn()));
+    const displayNode = tree.resolveInner(source.indexOf("display") + 1, -1);
+
+    expect(displayNode.name).toBe("TemplateString");
+  });
+
+  it("keeps source editor views mountable with standard metadata", () => {
     const view = new EditorView({
       state: createSourceEditorState(
-        "export const Card = () => { static styles = `:host { display: block; color: red; }`; return <button />; };",
+        "export const Card = () => <button />; Card.styles = css`:host { display: block; color: red; }`;",
         vi.fn(),
       ),
       parent: document.body.appendChild(document.createElement("div")),
     });
 
     try {
-      expect(view.dom.textContent).toContain("static styles");
+      expect(view.dom.textContent).toContain("Card.styles");
     } finally {
       view.destroy();
     }

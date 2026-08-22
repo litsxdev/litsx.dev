@@ -4,55 +4,21 @@ import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
 import fs from "fs";
-import MagicString from "magic-string";
 import path from "path";
 import { fileURLToPath } from "url";
-import {
-  applyVirtualAttributeReplacements,
-  createVirtualLitsxJsxSource,
-} from "@litsx/authoring";
 import nativePreset from "@litsx/babel-preset-litsx";
 import transformJsxHtmlTemplate from "@litsx/babel-plugin-transform-jsx-html-template";
 import { PLAYGROUND_TYPE_FILES } from "./src/virtual-types.js";
 
 const configDir = path.dirname(fileURLToPath(import.meta.url));
-const srcDir = path.join(configDir, "src");
 const distDir = path.join(configDir, "dist");
 const browserExternalPrefix = "\0browser-external:";
-const lightDomRegistrySourcePath = fileURLToPath(import.meta.resolve("@litsx/light-dom-registry"));
+const scopedRegistryShimSourcePath = fileURLToPath(import.meta.resolve("@litsx/scoped-registry-shim"));
 // We use Rollup here because the previous tsup/esbuild path emitted multiple `lit`
 // import statements in the middle of the generated ESM file instead of hoisting
 // them to the top-level, which is invalid module syntax.
 
 fs.rmSync(distDir, { recursive: true, force: true });
-
-function virtualizeLitsxJsxAttributes() {
-  return {
-    name: "virtualize-litsx-jsx-attributes",
-    transform(code, id) {
-      if (!id.startsWith(srcDir) || !id.endsWith(".tsx")) {
-        return null;
-      }
-
-      const virtualSource = createVirtualLitsxJsxSource(code);
-      if (virtualSource.code === code) {
-        return null;
-      }
-
-      const editable = new MagicString(code);
-      applyVirtualAttributeReplacements(editable, virtualSource.replacements);
-
-      return {
-        code: editable.toString(),
-        map: editable.generateMap({
-          hires: true,
-          source: id,
-          includeContent: true,
-        }),
-      };
-    },
-  };
-}
 
 function browserExternalBuiltins() {
   return {
@@ -248,8 +214,8 @@ function copyPreviewRuntimeModules() {
       // extracted playground has a cleaner strategy for browser-resolving
       // published LitSX runtime helper modules inside the preview iframe.
       fs.copyFileSync(
-        lightDomRegistrySourcePath,
-        path.join(targetDir, "light-dom-registry.js"),
+        scopedRegistryShimSourcePath,
+        path.join(targetDir, "scoped-registry-shim.js"),
       );
     },
   };
@@ -265,7 +231,6 @@ function createSharedPlugins() {
       extensions: [".mjs", ".js", ".json", ".node", ".ts", ".tsx"],
     }),
     json(),
-    virtualizeLitsxJsxAttributes(),
     commonjs(),
   ];
 }

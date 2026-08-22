@@ -58,29 +58,29 @@
     "prepack": "yarn build"
   },
   "dependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/standalone": "^7.29.3",
+    "@babel/core": "^8.0.1",
+    "@babel/standalone": "^8.0.4",
     "@codemirror/lang-css": "^6.3.1",
     "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.41.1",
-    "@litsx/authoring": "^0.4.0",
-    "@litsx/babel-plugin-transform-jsx-html-template": "^0.3.2",
-    "@litsx/babel-preset-litsx": "^0.6.0",
-    "@litsx/babel-preset-react-compat": "^0.3.0",
-    "@litsx/compiler": "^0.6.0",
-    "@litsx/core": "^0.4.0",
+    "@lezer/common": "^1.5.2",
+    "@litsx/babel-plugin-transform-jsx-html-template": "1.0.0-next.3",
+    "@litsx/babel-preset-litsx": "1.0.0-next.3",
+    "@litsx/babel-preset-react-compat": "1.0.0-next.2",
+    "@litsx/compiler": "1.0.0-next.3",
+    "@litsx/core": "1.0.0-next.3",
+    "@litsx/scoped-registry-shim": "1.0.0-next.1",
     "codemirror": "^6.0.2",
     "lit": "^3.2.1"
   },
   "devDependencies": {
-    "@babel/plugin-transform-typescript": "^7.28.5",
-    "@rollup/plugin-babel": "^6.1.0",
+    "@babel/plugin-transform-typescript": "^8.0.1",
+    "@rollup/plugin-babel": "^7.1.0",
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "magic-string": "^0.30.21",
     "rollup": "^4.60.2"
   }
 }

@@ -12,7 +12,7 @@ const hookRuntime = vi.hoisted(() => ({
 
 vi.mock("@litsx/core", () => ({
   useRef(initialValue) {
-    return { current: initialValue };
+    return { value: initialValue };
   },
   useOnConnect(callback, deps) {
     hookRuntime.connectCallbacks.push({ callback, deps });
@@ -66,7 +66,6 @@ async function importHooksWithEditorMocks() {
 
   const createSourceEditorState = vi.fn((doc, onChange) => ({ kind: "source", doc, onChange }));
   const createEmittedEditorState = vi.fn((doc) => ({ kind: "emitted", doc }));
-  const foldSourceEditorHoists = vi.fn();
   const setEditorDocument = vi.fn();
   const editorDestroy = vi.fn();
   const editorInstances = [];
@@ -86,7 +85,6 @@ async function importHooksWithEditorMocks() {
   vi.doMock("../packages/litsx-playground/src/litsx-playground-editors.js", () => ({
     createSourceEditorState,
     createEmittedEditorState,
-    foldSourceEditorHoists,
     setEditorDocument,
   }));
 
@@ -95,7 +93,6 @@ async function importHooksWithEditorMocks() {
     mod,
     createSourceEditorState,
     createEmittedEditorState,
-    foldSourceEditorHoists,
     setEditorDocument,
     editorDestroy,
     editorInstances,
@@ -157,7 +154,7 @@ describe("@litsx/playground hooks", () => {
     const setPreviewError = vi.fn();
 
     hooksModule.usePlaygroundPreviewMessages(
-      { current: null },
+      { value: null },
       "preview-1",
       setPreviewHeight,
       setPreviewWidth,
@@ -231,20 +228,20 @@ describe("@litsx/playground hooks", () => {
     const setPreviewError = vi.fn();
 
     const sourceEditorView = {
-      current: {
+      value: {
         state: { doc: { toString: () => "old source" } },
         dispatch: sourceEditorDispatch,
       },
     };
     const emittedEditorView = {
-      current: {
+      value: {
         state: { doc: { toString: () => "old emitted" } },
         dispatch: emittedEditorDispatch,
       },
     };
-    const latestSourceRef = { current: "old source" };
-    const initialSourceRef = { current: "initial source" };
-    const isMountedRef = { current: true };
+    const latestSourceRef = { value: "old source" };
+    const initialSourceRef = { value: "initial source" };
+    const isMountedRef = { value: true };
 
     hooksModule.usePlaygroundSourceSync({
       sourceProp: "external source",
@@ -270,7 +267,7 @@ describe("@litsx/playground hooks", () => {
     expect(hookRuntime.afterUpdateCallbacks).toHaveLength(4);
 
     hookRuntime.afterUpdateCallbacks[0].callback();
-    assert.strictEqual(latestSourceRef.current, "new source");
+    assert.strictEqual(latestSourceRef.value, "new source");
     expect(sourceEditorDispatch).toHaveBeenCalledTimes(1);
     expect(scheduleCompile).toHaveBeenCalledTimes(1);
     expect(compileCurrentSource).toHaveBeenCalledWith("new source");
@@ -279,7 +276,7 @@ describe("@litsx/playground hooks", () => {
     expect(emittedEditorDispatch).toHaveBeenCalledTimes(1);
 
     hookRuntime.afterUpdateCallbacks[2].callback();
-    assert.strictEqual(initialSourceRef.current, "replacement source");
+    assert.strictEqual(initialSourceRef.value, "replacement source");
     expect(cancelScheduledCompile).toHaveBeenCalled();
     expect(setCompileError).toHaveBeenCalledWith("");
     expect(setCompileErrorDetails).toHaveBeenCalledWith("");
@@ -298,16 +295,16 @@ describe("@litsx/playground hooks", () => {
     const baseArgs = {
       source: "source",
       emittedOutput: "emitted",
-      initialSourceRef: { current: "initial" },
-      sourceEditorElement: { current: null },
-      emittedEditorElement: { current: null },
-      previewFrame: { current: null },
-      sourceEditorView: { current: null },
-      emittedEditorView: { current: null },
-      workerRef: { current: null },
-      compileRequestId: { current: 0 },
-      didInitRef: { current: true },
-      isMountedRef: { current: false },
+      initialSourceRef: { value: "initial" },
+      sourceEditorElement: { value: null },
+      emittedEditorElement: { value: null },
+      previewFrame: { value: null },
+      sourceEditorView: { value: null },
+      emittedEditorView: { value: null },
+      workerRef: { value: null },
+      compileRequestId: { value: 0 },
+      didInitRef: { value: true },
+      isMountedRef: { value: false },
       cancelScheduledCompile: vi.fn(),
       compileCurrentSource: vi.fn(),
       setSource: vi.fn(),
@@ -327,7 +324,7 @@ describe("@litsx/playground hooks", () => {
     expect(createEmittedEditorState).not.toHaveBeenCalled();
 
     hookRuntime.reset();
-    baseArgs.didInitRef.current = false;
+    baseArgs.didInitRef.value = false;
     mod.usePlaygroundEditorsAndWorker(baseArgs);
     hookRuntime.afterUpdateCallbacks[0].callback();
     expect(createSourceEditorState).not.toHaveBeenCalled();
@@ -339,7 +336,6 @@ describe("@litsx/playground hooks", () => {
       mod,
       createSourceEditorState,
       createEmittedEditorState,
-      foldSourceEditorHoists,
       editorDestroy,
       editorInstances,
     } = await importHooksWithEditorMocks();
@@ -361,16 +357,16 @@ describe("@litsx/playground hooks", () => {
     const args = {
       source: "source",
       emittedOutput: "emitted output",
-      initialSourceRef: { current: "initial source" },
-      sourceEditorElement: { current: { id: "source-host" } },
-      emittedEditorElement: { current: { id: "emitted-host" } },
-      previewFrame: { current: { id: "preview-host" } },
-      sourceEditorView: { current: null },
-      emittedEditorView: { current: null },
-      workerRef: { current: null },
-      compileRequestId: { current: 1 },
-      didInitRef: { current: false },
-      isMountedRef: { current: false },
+      initialSourceRef: { value: "initial source" },
+      sourceEditorElement: { value: { id: "source-host" } },
+      emittedEditorElement: { value: { id: "emitted-host" } },
+      previewFrame: { value: { id: "preview-host" } },
+      sourceEditorView: { value: null },
+      emittedEditorView: { value: null },
+      workerRef: { value: null },
+      compileRequestId: { value: 1 },
+      didInitRef: { value: false },
+      isMountedRef: { value: false },
       cancelScheduledCompile: vi.fn(),
       compileCurrentSource: vi.fn(),
       setSource: vi.fn(),
@@ -388,16 +384,15 @@ describe("@litsx/playground hooks", () => {
 
     expect(createSourceEditorState).toHaveBeenCalledWith("source", expect.any(Function));
     expect(createEmittedEditorState).toHaveBeenCalledWith("emitted output");
-    expect(foldSourceEditorHoists).toHaveBeenCalledTimes(1);
     expect(editorInstances).toHaveLength(2);
     expect(globalThis.Worker).toHaveBeenCalledTimes(1);
-    expect(args.isMountedRef.current).toBe(true);
+    expect(args.isMountedRef.value).toBe(true);
     expect(args.compileCurrentSource).toHaveBeenCalledWith("initial source");
 
     workerInstance.onmessage({ data: { id: 999, ok: true, code: "ignored" } });
     expect(args.setIsCompiling).not.toHaveBeenCalled();
 
-    args.compileRequestId.current = 4;
+    args.compileRequestId.value = 4;
     workerInstance.onmessage({
       data: {
         id: 4,
@@ -428,14 +423,14 @@ describe("@litsx/playground hooks", () => {
     expect(args.setEmittedCode).toHaveBeenCalledWith("export const Demo = true;");
 
     cleanup();
-    expect(args.didInitRef.current).toBe(false);
-    expect(args.isMountedRef.current).toBe(false);
+    expect(args.didInitRef.value).toBe(false);
+    expect(args.isMountedRef.value).toBe(false);
     expect(args.cancelScheduledCompile).toHaveBeenCalled();
     expect(terminate).toHaveBeenCalled();
     expect(editorDestroy).toHaveBeenCalledTimes(2);
-    expect(args.sourceEditorView.current).toBe(null);
-    expect(args.emittedEditorView.current).toBe(null);
-    expect(args.workerRef.current).toBe(null);
+    expect(args.sourceEditorView.value).toBe(null);
+    expect(args.emittedEditorView.value).toBe(null);
+    expect(args.workerRef.value).toBe(null);
     expect(workerMessages).toEqual([]);
   });
 
@@ -452,20 +447,20 @@ describe("@litsx/playground hooks", () => {
     const setPreviewError = vi.fn();
 
     const sourceEditorView = {
-      current: {
+      value: {
         state: { doc: { toString: () => "same source" } },
         dispatch: sourceEditorDispatch,
       },
     };
     const emittedEditorView = {
-      current: {
+      value: {
         state: { doc: { toString: () => "same emitted" } },
         dispatch: emittedEditorDispatch,
       },
     };
-    const latestSourceRef = { current: "same source" };
-    const initialSourceRef = { current: "same source" };
-    const isMountedRef = { current: false };
+    const latestSourceRef = { value: "same source" };
+    const initialSourceRef = { value: "same source" };
+    const isMountedRef = { value: false };
 
     hooksModule.usePlaygroundSourceSync({
       sourceProp: "same source",

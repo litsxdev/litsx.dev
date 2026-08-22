@@ -1,4 +1,5 @@
 import {
+  css,
   useAfterUpdate,
   useHostContent,
   useHost,
@@ -7,6 +8,8 @@ import {
   useState,
   useStyle,
 } from "@litsx/core";
+import { unsafeCSS } from "lit";
+import type { EditorView } from "@codemirror/view";
 import {
   buildPreviewDocument,
   createFallbackPreviewDocument,
@@ -95,22 +98,22 @@ export function LitsxPlayground({
   height,
   panelMaxHeight,
 }: LitsxPlaygroundProps) {
-  // static styles = ... attaches stylesheet metadata to the component type.
-  static styles = playgroundStyles;
-  const host = useHost();
+  const host = useHost<Element>();
 
   // useHostContent() turns projected light DOM content into reactive component input.
   const hostContent = useHostContent({ trim: true });
   const slottedSource = hostContent.text;
   const initialSource = (sourceProp ?? slottedSource ?? "").trim();
-  const initialHeight = Number.isFinite(height) && height > 0 ? height : 1;
+  const initialHeight = typeof height === "number" && Number.isFinite(height) && height > 0
+    ? height
+    : 1;
   const resolvedPanelMaxHeight = normalizePanelMaxHeight(panelMaxHeight);
   const filename = filenameProp;
   const mode = modeProp === "react-compat" ? "react-compat" : "native";
 
-  const sourceEditorView = useRef(null);
-  const emittedEditorView = useRef(null);
-  const workerRef = useRef(null);
+  const sourceEditorView = useRef<EditorView | null>(null);
+  const emittedEditorView = useRef<EditorView | null>(null);
+  const workerRef = useRef<Worker | null>(null);
   const compileRequestId = useRef(0);
   const previewInstanceId = useRef(createPreviewInstanceId());
   const latestSourceRef = useRef(initialSource);
@@ -120,9 +123,9 @@ export function LitsxPlayground({
   const previousFullscreenRef = useRef<boolean | null>(null);
   const { cancel: cancelScheduledCompile, schedule: scheduleCompile } = useDebouncedAction(220);
   // useRef() also binds to DOM nodes when attached to JSX ref=...
-  const sourceEditorElement = useRef(null);
-  const emittedEditorElement = useRef(null);
-  const previewFrame = useRef(null);
+  const sourceEditorElement = useRef<HTMLElement | null>(null);
+  const emittedEditorElement = useRef<HTMLElement | null>(null);
+  const previewFrame = useRef<HTMLIFrameElement | null>(null);
 
   // useState() drives the rendered shell and the compiler/preview lifecycle.
   const [source, setSource] = useState(initialSource);
@@ -138,7 +141,7 @@ export function LitsxPlayground({
   const [activeEditorPanel, setActiveEditorPanel] = useState<"source" | "emitted">("source");
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // useStyle() is the dynamic counterpart to static styles = ....
+  // useStyle() updates host-level values that vary at runtime.
   useStyle("--litsx-playground-preview-height", `${Math.max(previewHeight, 1)}px`);
   useStyle("--litsx-playground-preview-width", `${Math.max(previewWidth, 320)}px`);
   if (resolvedPanelMaxHeight != null) {
@@ -163,17 +166,17 @@ export function LitsxPlayground({
   }, [host]);
 
   useAfterUpdate(() => {
-    if (previousFullscreenRef.current === null) {
-      previousFullscreenRef.current = isFullscreen;
+    if (previousFullscreenRef.value === null) {
+      previousFullscreenRef.value = isFullscreen;
       return;
     }
 
-    if (previousFullscreenRef.current && !isFullscreen) {
+    if (previousFullscreenRef.value && !isFullscreen) {
       setPreviewHeight(initialHeight);
       setIframeVersion((value) => value + 1);
     }
 
-    previousFullscreenRef.current = isFullscreen;
+    previousFullscreenRef.value = isFullscreen;
   }, [isFullscreen]);
 
   const emittedOutput = currentEmittedOutput(
@@ -182,20 +185,20 @@ export function LitsxPlayground({
     previewError,
     emittedCode
   );
-  const previewId = `${previewInstanceId.current}-preview-${iframeVersion}`;
-  const isResetDisabled = source === initialSourceRef.current;
+  const previewId = `${previewInstanceId.value}-preview-${iframeVersion}`;
+  const isResetDisabled = source === initialSourceRef.value;
 
   const previewSrcdoc =
     compileError || !emittedCode
       ? createFallbackPreviewDocument(compileError || "Compiling...")
       : buildPreviewDocument(emittedCode, exportName, previewTagName, previewId);
 
-  const compileCurrentSource = (nextSource = latestSourceRef.current) => {
-    if (!workerRef.current) return;
-    compileRequestId.current += 1;
+  const compileCurrentSource = (nextSource = latestSourceRef.value ?? "") => {
+    if (!workerRef.value) return;
+    compileRequestId.value = (compileRequestId.value ?? 0) + 1;
     setIsCompiling(true);
-    workerRef.current.postMessage({
-      id: compileRequestId.current,
+    workerRef.value.postMessage({
+      id: compileRequestId.value,
       source: nextSource,
       filename,
       mode,
@@ -211,12 +214,12 @@ export function LitsxPlayground({
       setPreviewError
     );
 
-    if (latestSourceRef.current === initialSourceRef.current) {
-      compileCurrentSource(initialSourceRef.current);
+    if (latestSourceRef.value === initialSourceRef.value) {
+      compileCurrentSource(initialSourceRef.value ?? "");
       return;
     }
 
-    setSource(initialSourceRef.current);
+    setSource(initialSourceRef.value ?? "");
   };
   usePlaygroundEditorsAndWorker({
     source,
@@ -284,7 +287,7 @@ export function LitsxPlayground({
               }`}
               role="tab"
               aria-selected={activeEditorPanel === "source" ? "true" : "false"}
-              @click={() => setActiveEditorPanel("source")}
+              on:click={() => setActiveEditorPanel("source")}
             >
               Source
             </button>
@@ -295,7 +298,7 @@ export function LitsxPlayground({
               }`}
               role="tab"
               aria-selected={activeEditorPanel === "emitted" ? "true" : "false"}
-              @click={() => setActiveEditorPanel("emitted")}
+              on:click={() => setActiveEditorPanel("emitted")}
             >
               Emitted Module
             </button>
@@ -305,10 +308,9 @@ export function LitsxPlayground({
               data-role="reset-button"
               type="button"
               class="litsx-playground__action litsx-playground__action--chrome"
-              ?disabled={isResetDisabled}
+              disabled={isResetDisabled}
               title="Reset source"
-              // @click uses Lit-style event binding in authored JSX.
-              @click={handleReset}
+              on:click={handleReset}
             >
               Reset
             </button>
@@ -321,7 +323,7 @@ export function LitsxPlayground({
               aria-pressed={isFullscreen ? "true" : "false"}
               aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
               title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-              @click={() => toggleHostFullscreen(host, setIsFullscreen)}
+              on:click={() => toggleHostFullscreen(host, setIsFullscreen)}
             >
               ⛶
             </button>
@@ -362,7 +364,6 @@ export function LitsxPlayground({
             <iframe
               ref={previewFrame}
               data-role="preview-frame"
-              key={String(iframeVersion)}
               class="litsx-playground__preview"
               srcdoc={previewSrcdoc}
             />
@@ -395,6 +396,13 @@ export function LitsxPlayground({
   );
 }
 
+// The stylesheet is a trusted, package-owned string. Lit requires dynamic CSS
+// text to be explicitly wrapped before it can be interpolated into `css`.
+LitsxPlayground.styles = css`${unsafeCSS(playgroundStyles)}`;
+
 if (typeof customElements !== "undefined" && !customElements.get("litsx-playground")) {
-  customElements.define("litsx-playground", LitsxPlayground);
+  customElements.define(
+    "litsx-playground",
+    LitsxPlayground as unknown as CustomElementConstructor
+  );
 }

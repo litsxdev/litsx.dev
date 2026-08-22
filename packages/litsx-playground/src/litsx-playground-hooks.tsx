@@ -3,12 +3,11 @@ import { useAfterUpdate, useOnConnect, useRef } from "@litsx/core";
 import {
   createEmittedEditorState,
   createSourceEditorState,
-  foldSourceEditorHoists,
   setEditorDocument,
 } from "./litsx-playground-editors.js";
 import { readPreviewMessage } from "./litsx-playground-preview.js";
 
-type MutableRef<T> = { current: T };
+type MutableRef<T> = { value: T | undefined };
 type StateSetter<T> = (value: T | ((value: T) => T)) => void;
 type StringSetter = StateSetter<string>;
 type BooleanSetter = StateSetter<boolean>;
@@ -109,16 +108,16 @@ export function useDebouncedAction(delay: number): DebouncedAction {
   const timeoutRef = useRef<number | null>(null);
 
   function cancel() {
-    if (timeoutRef.current !== null) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+    if (timeoutRef.value !== null) {
+      clearTimeout(timeoutRef.value);
+      timeoutRef.value = null;
     }
   }
 
   function schedule(action: () => void) {
     cancel();
-    timeoutRef.current = window.setTimeout(() => {
-      timeoutRef.current = null;
+    timeoutRef.value = window.setTimeout(() => {
+      timeoutRef.value = null;
       action();
     }, delay);
   }
@@ -162,7 +161,7 @@ export function usePlaygroundPreviewMessages(
     return () => {
       window.removeEventListener("message", handlePreviewMessage);
     };
-  }, [previewFrame.current, previewId]);
+  }, [previewFrame.value, previewId]);
 }
 
 export function usePlaygroundEditorsAndWorker({
@@ -191,36 +190,35 @@ export function usePlaygroundEditorsAndWorker({
 }: PlaygroundEditorsAndWorkerArgs): void {
   // useAfterUpdate(..., []) is the one-time setup point for browser-only resources.
   useAfterUpdate(() => {
-    if (didInitRef.current) return;
+    if (didInitRef.value) return;
 
-    const sourceEditorHost = sourceEditorElement.current;
-    const emittedEditorHost = emittedEditorElement.current;
-    const previewHost = previewFrame.current;
+    const sourceEditorHost = sourceEditorElement.value;
+    const emittedEditorHost = emittedEditorElement.value;
+    const previewHost = previewFrame.value;
     if (!sourceEditorHost || !emittedEditorHost || !previewHost) return;
 
-    didInitRef.current = true;
+    didInitRef.value = true;
 
-    sourceEditorView.current = new EditorView({
+    sourceEditorView.value = new EditorView({
       state: createSourceEditorState(source, (nextSource: string) => {
         setSource(nextSource);
       }),
       parent: sourceEditorHost,
     });
-    foldSourceEditorHoists(sourceEditorView.current);
-
-    emittedEditorView.current = new EditorView({
+    emittedEditorView.value = new EditorView({
       state: createEmittedEditorState(emittedOutput),
       parent: emittedEditorHost,
     });
 
-    workerRef.current = new Worker(new URL("./litsx-playground.worker.js", import.meta.url), {
+    const worker = new Worker(new URL("./litsx-playground.worker.js", import.meta.url), {
       type: "module",
     });
+    workerRef.value = worker;
 
-    workerRef.current.onmessage = (event: MessageEvent<PlaygroundWorkerResponse>) => {
+    worker.onmessage = (event: MessageEvent<PlaygroundWorkerResponse>) => {
       const { id, ok, code, error, stack, warnings } = event.data || {};
 
-      if (id !== compileRequestId.current) return;
+      if (id !== compileRequestId.value) return;
 
       setIsCompiling(false);
 
@@ -242,19 +240,19 @@ export function usePlaygroundEditorsAndWorker({
       setIframeVersion((value) => value + 1);
     };
 
-    isMountedRef.current = true;
-    compileCurrentSource(initialSourceRef.current);
+    isMountedRef.value = true;
+    compileCurrentSource(initialSourceRef.value);
 
     return () => {
-      didInitRef.current = false;
-      isMountedRef.current = false;
+      didInitRef.value = false;
+      isMountedRef.value = false;
       cancelScheduledCompile();
-      workerRef.current?.terminate();
-      sourceEditorView.current?.destroy();
-      emittedEditorView.current?.destroy();
-      sourceEditorView.current = null;
-      emittedEditorView.current = null;
-      workerRef.current = null;
+      workerRef.value?.terminate();
+      sourceEditorView.value?.destroy();
+      emittedEditorView.value?.destroy();
+      sourceEditorView.value = null;
+      emittedEditorView.value = null;
+      workerRef.value = null;
     };
   }, []);
 }
@@ -281,24 +279,24 @@ export function usePlaygroundSourceSync({
 }: PlaygroundSourceSyncArgs): void {
   // When authored source changes, keep the editor and compiler in sync.
   useAfterUpdate(() => {
-    latestSourceRef.current = source;
-    setEditorDocument(sourceEditorView.current, source);
+    latestSourceRef.value = source;
+    setEditorDocument(sourceEditorView.value, source);
 
-    if (!isMountedRef.current) return;
+    if (!isMountedRef.value) return;
     scheduleCompile(() => {
       compileCurrentSource(source);
     });
   }, [source]);
 
   useAfterUpdate(() => {
-    setEditorDocument(emittedEditorView.current, emittedOutput);
+    setEditorDocument(emittedEditorView.value, emittedOutput);
   }, [emittedOutput]);
 
   // Keep external prop updates or projected content changes flowing back into local editor state.
   useAfterUpdate(() => {
-    if (initialSource === initialSourceRef.current) return;
+    if (initialSource === initialSourceRef.value) return;
 
-    initialSourceRef.current = initialSource;
+    initialSourceRef.value = initialSource;
     cancelScheduledCompile();
     resetPlaygroundDiagnostics(
       setCompileError,
@@ -307,13 +305,13 @@ export function usePlaygroundSourceSync({
       setPreviewError
     );
 
-    if (latestSourceRef.current !== initialSource) {
+    if (latestSourceRef.value !== initialSource) {
       setSource(initialSource);
     }
   }, [initialSource, sourceProp]);
 
   useAfterUpdate(() => {
-    if (!isMountedRef.current) return;
+    if (!isMountedRef.value) return;
 
     cancelScheduledCompile();
     resetPlaygroundDiagnostics(
@@ -322,6 +320,6 @@ export function usePlaygroundSourceSync({
       setCompileWarnings,
       setPreviewError
     );
-    compileCurrentSource(latestSourceRef.current);
+    compileCurrentSource(latestSourceRef.value);
   }, [mode]);
 }

@@ -2,9 +2,8 @@ import {
   ensureLitsxParserPlugins,
   prepareLitsxAuthoredInput,
 } from "@litsx/compiler/authored-input";
-import { createVirtualLitsxJsxSource } from "@litsx/authoring";
 import { PLAYGROUND_TYPE_FILES } from "./virtual-types.js";
-const BABEL_STANDALONE_CDN_URL = "https://esm.sh/@babel/standalone@7.26.5?bundle";
+const BABEL_STANDALONE_CDN_URL = "https://esm.sh/@babel/standalone@8.0.4?bundle";
 const TYPESCRIPT_CDN_URL = "https://esm.sh/typescript@5.8.3?bundle";
 const PLAYGROUND_MODE_NATIVE = "native";
 const PLAYGROUND_MODE_REACT_COMPAT = "react-compat";
@@ -199,7 +198,6 @@ export async function compileLitsxPlayground(source, options = {}) {
     outputPlugins = [],
   } = options;
 
-  const virtualSource = createVirtualLitsxJsxSource(source);
   const { inputAst } = prepareLitsxAuthoredInput(
     source,
     {
@@ -256,7 +254,7 @@ export async function compileLitsxPlayground(source, options = {}) {
 
   plugins.push(typescriptPlugin);
 
-  const firstPass = Babel.transformFromAst(inputAst, virtualSource.code, {
+  const firstPass = Babel.transformFromAst(inputAst, source, {
     configFile: false,
     babelrc: false,
     filename,
