@@ -188,29 +188,49 @@ import { css, useOptimistic, useState } from "@litsx/core";
 export function UseOptimisticDemo() {
   const [todos, setTodos] = useState(["Review 1.0 docs"]);
   const [visible, addOptimistic, reset] = useOptimistic(todos, (items, title: string) => [...items, title]);
+  const hasOverlay = visible !== todos;
   return (
     <article>
-      <ul>{visible.map((todo) => <li>{todo}</li>)}</ul>
-      <button on:click={() => addOptimistic(\`Draft #\${visible.length + 1}\`)}>Add optimistic</button>
-      <button on:click={() => setTodos([...todos, \`Server item #\${todos.length + 1}\`])}>Commit server item</button>
-      <button on:click={reset}>Reset overlay</button>
+      <div class="state-grid">
+        <section>
+          <span>Authoritative</span>
+          <ul data-state="authoritative">{todos.map((todo) => <li>{todo}</li>)}</ul>
+        </section>
+        <section>
+          <span>Rendered overlay</span>
+          <ul data-state="optimistic">{visible.map((todo) => <li>{todo}</li>)}</ul>
+        </section>
+      </div>
+      <div class="actions">
+        <button data-action="add-optimistic" on:click={() => addOptimistic(\`Draft #\${visible.length + 1}\`)}>Add optimistic</button>
+        <button on:click={() => setTodos([...todos, \`Server item #\${todos.length + 1}\`])}>Commit server item</button>
+        <button data-action="reset-overlay" disabled={!hasOverlay} on:click={() => reset()}>Reset overlay</button>
+      </div>
+      <p role="status">{hasOverlay ? "Optimistic overlay active" : "No optimistic overlay"}</p>
     </article>
   );
 }
 UseOptimisticDemo.styles = css\`
   :host { display: block; color: #e5e7eb; font-family: "IBM Plex Sans", "Segoe UI", sans-serif; }
-  article { display: flex; gap: .55rem; flex-wrap: wrap; width: min(100%, 28rem); padding: 1rem; border: 1px solid #4338ca; border-radius: 1rem; background: radial-gradient(circle at top right, rgba(124,58,237,.2), transparent 44%), #111827; box-shadow: 0 18px 40px rgba(49,46,129,.2); }
-  ul { display: grid; gap: .45rem; flex-basis: 100%; margin: 0 0 .4rem; padding: 0; list-style: none; }
+  article { display: grid; gap: .8rem; width: min(100%, 34rem); padding: 1rem; border: 1px solid #4338ca; border-radius: 1rem; background: radial-gradient(circle at top right, rgba(124,58,237,.2), transparent 44%), #111827; box-shadow: 0 18px 40px rgba(49,46,129,.2); }
+  .state-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+  section { display: grid; align-content: start; gap: .5rem; padding: .7rem; border: 1px solid rgba(129,140,248,.22); border-radius: .85rem; background: rgba(15,23,42,.7); }
+  section > span { color: #c4b5fd; font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  ul { display: grid; gap: .45rem; margin: 0; padding: 0; list-style: none; }
   li { padding: .68rem .8rem; border: 1px solid #312e81; border-radius: .8rem; background: #0f172a; }
+  .actions { display: flex; gap: .55rem; flex-wrap: wrap; }
   button { padding: .58rem .82rem; border: 0; border-radius: 999px; background: #6d28d9; color: #f5f3ff; cursor: pointer; font-weight: 650; }
   button:last-child { background: #334155; }
+  button:disabled { cursor: not-allowed; opacity: .45; }
+  [role="status"] { margin: 0; color: #cbd5e1; font-size: .8rem; }
+  @media (max-width: 34rem) { .state-grid { grid-template-columns: 1fr; } }
 \`;
 `.trim();
 
 export const errorBoundaryExampleSource = `
 import { css, ErrorBoundary, useState } from "@litsx/core";
 
-function BrokenPanel() {
+function renderBrokenPanel() {
   throw new Error("Demo render failed");
   return <p>This branch is intentionally unreachable.</p>;
 }
@@ -218,7 +238,7 @@ export function BoundaryDemo() {
   const [broken, setBroken] = useState(false);
   return (
     <ErrorBoundary fallback={(error) => <p role="alert">Recovered: {String(error.message ?? error)}</p>}>
-      {broken ? <BrokenPanel /> : <button on:click={() => setBroken(true)}>Trigger failure</button>}
+      {broken ? renderBrokenPanel() : <button on:click={() => setBroken(true)}>Trigger failure</button>}
     </ErrorBoundary>
   );
 }
