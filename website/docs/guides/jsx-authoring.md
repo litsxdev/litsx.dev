@@ -3,7 +3,7 @@
 Lit<sup>sx</sup> 1.0 source is ordinary JSX or TSX. You write familiar element and prop names; the compiler inspects the destination API and emits the correct Lit attribute, boolean-attribute, property, event, or ref part.
 
 ```tsx
-export function Checkout({ order, disabled = false }) {
+export function CheckoutForm({ order, disabled = false }) {
   return (
     <checkout-button
       order={order}
@@ -78,13 +78,13 @@ Top-level PascalCase functions and function-valued declarations are component ca
 ```tsx
 import { css } from "@litsx/core";
 
-export function Panel({ title }) {
+export function ContentPanel({ title }) {
   return <section><h2>{title}</h2></section>;
 }
 
-Panel.styles = css`:host { display: block; }`;
-Panel.properties = { title: { reflect: true } };
-Panel.shadowRootOptions = { mode: "open", delegatesFocus: true };
+ContentPanel.styles = css`:host { display: block; }`;
+ContentPanel.properties = { title: { reflect: true } };
+ContentPanel.shadowRootOptions = { mode: "open", delegatesFocus: true };
 ```
 
 See [Component Metadata](./component-metadata.md) for `styles`, `properties`, `elements`, `lightDom`, and exposed static methods.

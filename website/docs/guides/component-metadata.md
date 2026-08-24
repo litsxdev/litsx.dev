@@ -5,14 +5,20 @@ Static component behavior is authored with ordinary top-level assignments. Lit<s
 ```tsx
 import { css } from "@litsx/core";
 
-export function Dialog({ open = false }) {
+export function DialogPanel({ open = false }) {
   return <dialog open={open}><slot /></dialog>;
 }
 
-Dialog.styles = css`:host { display: contents; }`;
-Dialog.properties = { open: { type: Boolean, reflect: true } };
-Dialog.shadowRootOptions = { mode: "open", delegatesFocus: true };
+DialogPanel.styles = css`:host { display: contents; }`;
+DialogPanel.properties = { open: { type: Boolean, reflect: true } };
+DialogPanel.shadowRootOptions = { mode: "open", delegatesFocus: true };
 ```
+
+## Component names
+
+A component identifier must derive directly to a valid custom-element name. Use at least two words: `DialogPanel` maps to `dialog-panel`, while a single-word identifier such as `Dialog` is rejected. Lit<sup>sx</sup> does not invent framework prefixes or suffixes.
+
+Namespace members are also explicit: `Controls.Switch` maps to `controls-switch`. This keeps generated tag names stable and visible in authored code.
 
 ## Supported metadata
 
@@ -57,11 +63,11 @@ The compiler normally generates scoped-element metadata for imported component u
 Expose class-level behavior with ordinary assignments:
 
 ```tsx
-export function Badge({ tone }) {
+export function StatusBadge({ tone }) {
   return <span data-tone={tone}><slot /></span>;
 }
 
-Badge.canHandle = (tone) => tone === "success" || tone === "warning";
+StatusBadge.canHandle = (tone) => tone === "success" || tone === "warning";
 ```
 
 This is separate from `useExpose(...)`, which publishes an instance-level imperative handle through a ref.

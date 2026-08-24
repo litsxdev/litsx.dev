@@ -20,7 +20,22 @@ The plugin transforms `.jsx` and `.tsx`, runs the supported Lit<sup>sx</sup> pip
 - `reactCompat: true | { domMode, reactKeys, transformDependencies }`
 - generic `authoringPlugins` and `outputPlugins` extension points
 
-Use `@litsx/compiler` directly only for a custom build integration or programmatic compilation.
+Use `@litsx/compiler` directly only for a custom build integration or programmatic compilation. Build tools that transform many modules can reuse analysis and compiler caches through `createLitsxCompilationSession(...)`:
+
+```js
+import { createLitsxCompilationSession } from "@litsx/compiler";
+
+const session = createLitsxCompilationSession({
+  projectPath: process.cwd(),
+  transformOptions: { sourceMaps: true },
+});
+
+const result = await session.transform(source, { filename });
+session.invalidate([filename]);
+session.dispose();
+```
+
+Call `invalidate(...)` for changed watched files and `dispose()` when the build or development server stops. The session also provides `transformSync(...)`.
 
 ## TypeScript
 
@@ -43,7 +58,9 @@ import litsx from "@litsx/eslint-plugin";
 export default [litsx.configs["recommended-flat"]];
 ```
 
-The recommended rules catch native `className` and React `memo` usage. The plugin uses normal JSX/TypeScript parsing and does not ship a custom processor. Format source with standard Prettier TSX support.
+The recommended preset enables `no-native-classname`, `valid-component-name`, and `rules-of-hooks`. Component names must derive directly to valid custom-element tags, and hooks must keep a stable order: conditions, early-return tails, loops, `try` blocks, handlers, deferred actions, async render functions, and nested hook declarations are rejected with stable `LITSX_*` diagnostic codes.
+
+The plugin uses normal JSX/TypeScript parsing and does not ship a custom processor. React migration semantics remain owned by the optional compatibility compiler. Format source with standard Prettier TSX support.
 
 ## Storybook
 
@@ -57,9 +74,14 @@ The helper builds on `@storybook/web-components-vite`, indexes ordinary `.storie
 
 ## Optional CSS integrations
 
-Lit<sup>sx</sup> does not require UnoCSS. Component styles can use Lit's `css` template directly, and other CSS systems can compose with the generic `authoringPlugins` and `outputPlugins` phases.
+Lit<sup>sx</sup> does not require a utility-CSS engine. Component styles can use Lit's `css` template directly, and other CSS systems can compose with the generic `authoringPlugins` and `outputPlugins` phases.
 
-If a project chooses UnoCSS, `@litsx/unocss/vite` composes Lit<sup>sx</sup> compilation and UnoCSS generation in the correct order. See the [optional UnoCSS integration](./unocss.md).
+The official Vite adapters compose Lit<sup>sx</sup> compilation with their CSS engine in the correct order:
+
+- [`@litsx/tailwind/vite`](./tailwind.md) for Tailwind CSS v4
+- [`@litsx/unocss/vite`](./unocss.md) for UnoCSS
+
+Integration authors can use the shared finite-class analysis exposed by `@litsx/compiler/utility-css`. Applications should use one of the adapters instead of calling those low-level helpers directly.
 
 ## Server rendering
 

@@ -6,6 +6,10 @@ UnoCSS is optional. Lit<sup>sx</sup> does not require a utility-CSS engine: the 
 
 Use this package when UnoCSS matches the project's styling strategy. Otherwise, continue with [`Component.styles = css\`...\``](./styling.md) or another compiler/build integration.
 
+```sh
+npm install -D @litsx/unocss@next unocss
+```
+
 ```js
 import { presetWind3 } from "unocss";
 import { defineConfig } from "vite";
@@ -20,7 +24,31 @@ export default defineConfig({
 });
 ```
 
-The adapter compiles Lit<sup>sx</sup>, extracts utilities per module, preserves authored `Component.styles`, and shares the project preflight without embedding an independent reset in every production module.
+The adapter compiles Lit<sup>sx</sup>, extracts utilities for each component, preserves authored `Component.styles`, and shares the project preflight without embedding an independent reset in every production module. In production it finalizes the global sheet after collecting the module graph; during Vite development it refreshes both component and global output when modules, tokens, or UnoCSS configuration change.
+
+## Finite class bindings
+
+Complete utility strings reachable from a component's `class` or `className` expressions are resolved automatically:
+
+```tsx
+const BASE_CLASSES = "inline-flex items-center";
+const SIZE_CLASSES = {
+  sm: "h-8 px-3 text-sm",
+  lg: "h-12 px-6 text-lg",
+} as const;
+
+export function ActionButton({ size = "sm" }) {
+  return (
+    <button class={`${BASE_CLASSES} ${SIZE_CLASSES[size]}`}>
+      Save
+    </button>
+  );
+}
+```
+
+Local constants, finite maps, static template literals, constant composition, finite branches, and exact resolvable imports or re-exports are supported. Imported dependencies are watched for development updates. The binding establishes ownership, so unrelated strings and utilities owned by sibling components do not leak into this component's generated sheet.
+
+This is the recommended form for variants: keep the runtime lookup and its finite utility inventory together. Do not repeat a resolvable map in `Component.styles`.
 
 ## Light-DOM routing
 
@@ -36,27 +64,54 @@ litsxUnoCss({
 - `global` sends generated utilities to the integration-owned document sheet.
 - `none` disables automatic generated styles for light-DOM components.
 
-Shadow-DOM components always keep their generated utility sheet locally. Import `virtual:uno.css` once in the browser entry when ordinary document markup also needs the global utilities and preflight. React compatibility selects the global route because migrated React trees expect document-level CSS.
+Shadow-DOM components always keep their generated utility sheet locally. The normal Vite integration emits the shared document sheet once for generated components. Import `virtual:uno.css` explicitly only from ordinary browser modules that are not compiled as Lit<sup>sx</sup> components and also need global utilities. React compatibility selects the global route because migrated React trees expect document-level CSS.
 
-## Static utility maps
+## Preflight destinations
 
-Attach an imported, statically enumerable utility map to `Component.styles` to make ownership explicit:
+By default, the UnoCSS `theme` preflight layer is routed to the document sheet and omitted from component shadow styles. Other layers remain available in shadow roots. This lets theme custom properties inherit through nested roots without repeating or resetting them in every component.
+
+Override ownership by layer name when a preset uses a different structure:
+
+```js
+litsxUnoCss({
+  integration: {
+    preflightLayers: {
+      component: ({ layer }) => layer !== "tokens",
+      global: ["tokens"],
+    },
+  },
+});
+```
+
+Set `integration.globalCssModule: false` only when the surrounding framework owns document CSS generation.
+
+## Explicit guards for opaque classes
+
+Use a statically enumerable `Component.styles` guard only when a class expression is opaque or cannot be resolved to a finite set. For example, a value received whole from outside the component has no static shape to follow:
 
 ```tsx
 import { css } from "@litsx/core";
 import { BUTTON_SIZE_CLASSES } from "./button.styles";
 
-export function Button({ size = "md" }) {
-  return <button class={BUTTON_SIZE_CLASSES[size]}>Save</button>;
+export function ActionButton({ className }) {
+  return <button class={className}>Save</button>;
 }
 
-Button.styles = [
+ActionButton.styles = [
   BUTTON_SIZE_CLASSES,
   css`:host { display: inline-block; }`,
 ];
 ```
 
-The integration resolves that exact export and its static dependencies without executing application modules, generates the owned CSS, and removes the utility map from the runtime Lit styles value. Dynamic class names still need a finite static source or project safelist.
+The integration resolves that exact export and its statically reachable dependencies without executing application modules, generates a component-owned `CSSResult`, and removes the guard object from the runtime Lit styles value. Static strings, objects, arrays, tuples, nested structures, finite branches, and exact imports/re-exports are supported. A cycle, function call, or other non-finite guard produces a compile-time error.
+
+Runtime-generated names such as `` `bg-${color}-600` `` also need an explicit finite guard or a project safelist. A safelist can be projected into a component only when the dynamic expression exposes a matching static pattern; a fully opaque `class={value}` should enumerate its allowed values through `Component.styles`.
+
+If TypeScript checks component sources separately from the Vite config, activate the UnoCSS authoring augmentation explicitly:
+
+```ts
+import type {} from "@litsx/unocss";
+```
 
 ## Other build tools
 

@@ -5,13 +5,13 @@ The experimental in-function `static name = ...` syntax has been removed. Lit<su
 ```tsx
 import { css } from "@litsx/core";
 
-export function Card({ active = false }) {
+export function StatusCard({ active = false }) {
   return <article data-active={active}><slot /></article>;
 }
 
-Card.styles = css`:host { display: block; }`;
-Card.properties = { active: { type: Boolean, reflect: true } };
-Card.shadowRootOptions = { mode: "open", delegatesFocus: true };
+StatusCard.styles = css`:host { display: block; }`;
+StatusCard.properties = { active: { type: Boolean, reflect: true } };
+StatusCard.shadowRootOptions = { mode: "open", delegatesFocus: true };
 ```
 
 Continue with [Component Metadata](./component-metadata.md), or see [Migrating to 1.0](./migrating-to-1.md) for the complete syntax map.

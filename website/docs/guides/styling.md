@@ -152,10 +152,11 @@ Authored `Component.styles` remain active. Shadow DOM styles always remain compo
 
 No utility-CSS engine is required. The built-in path is Lit's `css` tagged template through `Component.styles`, including arrays of reusable `CSSResult` values, and it is sufficient for component-owned Shadow DOM or Light DOM styles.
 
-Projects can also use another CSS pipeline through the compiler's generic authoring and output integration points. [`@litsx/unocss`](./unocss.md) is one optional integration for teams that already want UnoCSS; it is not part of the core authoring contract or the default styling requirement.
+Projects can also use an official utility-CSS integration built on the compiler's generic authoring and output extension points. [`@litsx/tailwind`](./tailwind.md) integrates Tailwind CSS v4 through its official Vite plugin; [`@litsx/unocss`](./unocss.md) provides the corresponding UnoCSS pipeline. Neither is part of the core authoring contract or a default styling requirement.
 
 ## Related
 
 - [Component metadata](./component-metadata.md)
 - [Property and binding inference](./property-inference.md)
+- [Optional Tailwind CSS integration](./tailwind.md)
 - [Optional UnoCSS integration](./unocss.md)

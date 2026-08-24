@@ -30,7 +30,7 @@ type CounterProps = {
   initialCount?: number;
 };
 
-export function Counter({ initialCount = 0 }: CounterProps) {
+export function CounterCard({ initialCount = 0 }: CounterProps) {
   const [count, setCount] = useState(initialCount);
 
   return (
@@ -40,7 +40,7 @@ export function Counter({ initialCount = 0 }: CounterProps) {
   );
 }
 
-Counter.styles = css`
+CounterCard.styles = css`
   button {
     padding: 0.65rem 1rem;
     border-radius: 999px;
@@ -53,15 +53,18 @@ The important 1.0 conventions are visible here:
 - source files are normal `.tsx` or `.jsx`
 - DOM and custom-element listeners use `on:event`
 - ordinary JSX prop names are mapped to the right Lit binding by the compiler
-- component metadata uses top-level assignments such as `Counter.styles = ...`; styles may be one `CSSResult` or an ordered array of reusable `CSSResult` values
+- component names must produce a valid custom-element tag, so `CounterCard` becomes `counter-card`; single-word names such as `Counter` are rejected
+- component metadata uses top-level assignments such as `CounterCard.styles = ...`; styles may be one `CSSResult` or an ordered array of reusable `CSSResult` values
 - `css` is Lit's real tagged template, re-exported by `@litsx/core`
 
 ## Add Lit<sup>sx</sup> to an existing Vite project
 
 ```sh
-npm install @litsx/core lit
-npm install -D @litsx/vite-plugin @litsx/eslint-plugin
+npm install @litsx/core@next lit
+npm install -D @litsx/vite-plugin@next @litsx/eslint-plugin@next
 ```
+
+Until Lit<sup>sx</sup> 1.0 is promoted to `latest`, use the `next` tag when adding its packages to an existing project. The scaffolder already selects compatible versions for generated projects.
 
 ```js
 // vite.config.js
@@ -90,6 +93,6 @@ The Vite plugin compiles `.jsx` and `.tsx` by default. Standard TypeScript and P
 - [Component metadata](./guides/component-metadata.md)
 - [Property and binding inference](./guides/property-inference.md)
 - [Server rendering and hydration](./guides/ssr.md)
-- [Styling options](./guides/styling.md), including the optional [UnoCSS integration](./guides/unocss.md)
+- [Styling options](./guides/styling.md), including the optional [Tailwind CSS](./guides/tailwind.md) and [UnoCSS](./guides/unocss.md) integrations
 - [Tooling](./guides/tooling.md)
 - [Migrating pre-1.0 source](./guides/migrating-to-1.md)

@@ -10,6 +10,33 @@ npm create litsx-app@next my-ssr-app -- --template ssr
 
 The scaffold includes the server document renderer, a browser registration entry, and local development wiring.
 
+To add SSR to an existing Lit<sup>sx</sup> project on the 1.0 prerelease line:
+
+```sh
+npm install @litsx/ssr@next
+```
+
+## DOM initialization and `html`
+
+The main `@litsx/ssr` entry initializes Lit's server DOM environment before evaluating its Lit-dependent runtime. It also re-exports Lit's `html` tag, so lower-level framework code can obtain both from the same safe entry:
+
+```js
+import { html, renderToString } from "@litsx/ssr";
+
+const result = await renderToString(html`<app-root></app-root>`);
+```
+
+This is sufficient when `@litsx/ssr` loads before application components. A framework that may evaluate Lit, `LitElement`, or compiled components first must establish the DOM identity at its earliest server entry:
+
+```js
+import "@litsx/ssr/install-dom-shim";
+
+const { startServer } = await import("./server.js");
+await startServer();
+```
+
+The bootstrap import is synchronous and idempotent, preserves an existing DOM environment, and is a browser no-op. Keep component loading behind that import boundary: class hierarchies created against a different `HTMLElement` identity cannot be repaired afterwards. Do not import Lit's internal DOM-shim subpath directly.
+
 ## Render a document
 
 ```tsx
@@ -64,6 +91,8 @@ const result = await renderDocument(createEntry({
   },
 }));
 ```
+
+The `html` argument passed to `render(...)` is the same initialized tag exposed by the package entry; authored entries do not need a separate `lit` import.
 
 ## Request state and resource snapshots
 
