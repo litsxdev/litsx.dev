@@ -62,7 +62,7 @@ describe("@litsx/playground compiler", () => {
   it("reuses cached results for the same standard TSX source and options", async () => {
     const { mod, Babel } = await importCompilerWithMockedRuntime();
     const options = { filename: "/playground/Cached.tsx", outputPlugins: [() => ({ visitor: {} })] };
-    const source = "export function Demo() { return <p>Hello</p>; }";
+    const source = "export function TestDemo() { return <p>Hello</p>; }";
     const first = await mod.compileLitsxPlayground(source, options);
     const second = await mod.compileLitsxPlayground(source, options);
     assert.strictEqual(first, second);
@@ -76,7 +76,7 @@ describe("@litsx/playground compiler", () => {
     const { mod, Babel } = await importCompilerWithMockedRuntime({ transformFromAst });
     const outputPlugin = ["custom-output", { loose: true }];
     const result = await mod.compileLitsxPlayground(
-      "export function Demo() { return <p>Hello</p>; }",
+      "export function TestDemo() { return <p>Hello</p>; }",
       { filename: "/playground/Output.tsx", jsxTemplate: false, outputPlugins: [outputPlugin] },
     );
     expect(Babel.transformFromAst.mock.calls[1][2].plugins).toEqual([outputPlugin]);
@@ -93,13 +93,13 @@ describe("@litsx/playground compiler", () => {
   it("compiles typed props and module-level component metadata", async () => {
     const source = `
       import { css } from "@litsx/core";
-      type CardProps = { title: string; active: boolean };
-      export function Card(props: CardProps) { return <article>{props.title}</article>; }
-      Card.properties = { active: { reflect: true } };
-      Card.styles = css\`:host { display: block; }\`;
+      type InfoCardProps = { title: string; active: boolean };
+      export function InfoCard(props: InfoCardProps) { return <article>{props.title}</article>; }
+      InfoCard.properties = { active: { reflect: true } };
+      InfoCard.styles = css\`:host { display: block; }\`;
     `;
-    const { code } = await compileLitsxPlayground(source, { filename: "/playground/Card.tsx" });
-    assert.match(code, /export class Card extends LitElement/);
+    const { code } = await compileLitsxPlayground(source, { filename: "/playground/InfoCard.tsx" });
+    assert.match(code, /export class InfoCard extends LitElement/);
     assert.match(code, /title: \{\s*type: String\s*\}/);
     assert.match(code, /active: \{[\s\S]*type: Boolean[\s\S]*reflect: true/);
     assert.match(code, /static styles =/);
@@ -109,13 +109,13 @@ describe("@litsx/playground compiler", () => {
   it("lowers standard on:event listeners and native Lit refs", async () => {
     const source = `
       import { useRef, useState } from "@litsx/core";
-      export function Counter() {
+      export function ClickCounter() {
         const button = useRef<HTMLButtonElement>();
         const [count, setCount] = useState(0);
         return <button ref={button} on:click={() => setCount(count + 1)}>{count}</button>;
       }
     `;
-    const { code } = await compileLitsxPlayground(source, { filename: "/playground/Counter.tsx" });
+    const { code } = await compileLitsxPlayground(source, { filename: "/playground/ClickCounter.tsx" });
     assert.match(code, /const button = useRef\(\)/);
     assert.match(code, /const \[count, setCount\] = useState\(0\)/);
     assert.match(code, /@click=\$\{\(\) => setCount\(count \+ 1\)\}/);
@@ -124,22 +124,32 @@ describe("@litsx/playground compiler", () => {
 
   it("rejects the removed custom authoring syntax", async () => {
     await assert.rejects(
-      () => compileLitsxPlayground("export function Demo() { static styles = `:host {}`; return <p />; }", { filename: "/playground/Demo.tsx" }),
+      () => compileLitsxPlayground("export function TestDemo() { static styles = `:host {}`; return <p />; }", { filename: "/playground/TestDemo.tsx" }),
       /Unexpected reserved word 'static'/,
     );
     await assert.rejects(
-      () => compileLitsxPlayground("export function Demo() { return <button @click={save} />; }", { filename: "/playground/Demo.tsx" }),
+      () => compileLitsxPlayground("export function TestDemo() { return <button @click={save} />; }", { filename: "/playground/TestDemo.tsx" }),
       /Unexpected token/,
+    );
+  });
+
+  it("rejects component identifiers that cannot become custom-element names", async () => {
+    await assert.rejects(
+      () => compileLitsxPlayground(
+        "export function Counter() { return <button>Count</button>; }",
+        { filename: "/playground/Counter.tsx" },
+      ),
+      /LITSX_INVALID_COMPONENT_NAME.*Counter.*counter/,
     );
   });
 
   it("compiles every native documentation playground with the 1.0 pipeline", async () => {
     const examples = [
-      ["Counter", counterExampleSource],
+      ["CounterCard", counterExampleSource],
       ["ProfileCard", propertyInferenceExampleSource],
-      ["Composer", jsxAuthoringExampleSource],
+      ["MessageComposer", jsxAuthoringExampleSource],
       ["RuntimeCard", primitivesExampleSource],
-      ["Disclosure", controlledStateExampleSource],
+      ["DisclosurePanel", controlledStateExampleSource],
       ["BoundaryDemo", errorBoundaryExampleSource],
       ["AsyncShowcase", suspenseExampleSource],
       ["StyleCompositionDemo", stylingExampleSource],
@@ -198,8 +208,8 @@ describe("@litsx/playground compiler", () => {
 
   it("normalizes unknown modes and does not duplicate the JSX parser plugin", async () => {
     const { mod, parserPluginCalls } = await importCompilerWithMockedRuntime();
-    await mod.compileLitsxPlayground("export function Demo() { return <p />; }", {
-      filename: "/playground/Demo.tsx",
+    await mod.compileLitsxPlayground("export function TestDemo() { return <p />; }", {
+      filename: "/playground/TestDemo.tsx",
       mode: "unknown",
       parserPlugins: ["typescript", "jsx"],
     });

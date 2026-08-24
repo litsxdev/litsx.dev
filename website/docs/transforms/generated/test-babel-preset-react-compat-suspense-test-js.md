@@ -21,7 +21,7 @@ This case shows the authored JSX/API surface and the normalized output produced 
 ```jsx
 import { Suspense } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <Suspense fallback={<span>loading</span>}>
       <div>ready</div>
@@ -47,7 +47,7 @@ This case shows the authored JSX/API surface and the normalized output produced 
 ```jsx
 import React, { Suspense, SuspenseList } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <SuspenseList revealOrder='forwards'>
       <Suspense fallback={<span>One</span>}>
@@ -80,7 +80,7 @@ import { lazy, Suspense } from 'react';
 
 const FancyButton = lazy(() => import('./FancyButton.js'));
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <Suspense fallback={<span>loading</span>}>
       <FancyButton />
@@ -109,7 +109,7 @@ import { lazy, Suspense, SuspenseList } from 'react';
 const AlphaPanel = lazy(() => import('./AlphaPanel.js'));
 const BetaPanel = lazy(() => import('./BetaPanel.js'));
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <SuspenseList revealOrder='forwards'>
       <Suspense fallback={<span>One</span>}>
@@ -140,7 +140,7 @@ This case captures supported authored syntax and the emitted code path used to p
 ```jsx
 import * as React from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <React.SuspenseList revealOrder='forwards'>
       <React.Suspense fallback={<span>loading</span>}>
@@ -176,7 +176,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { Suspense } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return <Suspense />;
 };
 ```
@@ -198,7 +198,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { Suspense } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <Suspense fallback={<span>loading</span>}>
       <>
@@ -227,7 +227,7 @@ This case captures supported authored syntax and the emitted code path used to p
 ```jsx
 import { Suspense as Wait } from 'react';
 
-export const Screen = ({ readyView }) => {
+export const TestScreen = ({ readyView }) => {
   return <Wait fallback>{readyView}</Wait>;
 };
 ```
@@ -249,7 +249,7 @@ This case captures supported authored syntax and the emitted code path used to p
 ```jsx
 import { Suspense } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return <Suspense fallback="loading">ready</Suspense>;
 };
 ```
@@ -271,7 +271,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { Suspense } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return <Suspense fallback={true}><div>ready</div></Suspense>;
 };
 ```
@@ -293,7 +293,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import * as UI from 'ui-kit';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return <UI.Suspense fallback="loading"><div>ready</div></UI.Suspense>;
 };
 ```
@@ -315,7 +315,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { Suspense as Wait, SuspenseList as Queue } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <Queue key="outer" revealOrder="forwards">
       <Wait fallback={<span>One</span>}>
@@ -343,7 +343,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { Suspense } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return <Suspense fallback={404}>{/* empty */}</Suspense>;
 };
 ```
@@ -369,7 +369,7 @@ import { Suspense } from 'react';
 const AlphaPanel = () => null;
 const BetaPanel = () => null;
 
-export const Screen = () => {
+export const TestScreen = () => {
   ensureLazyElement(this, 'alpha-panel', AlphaPanel);
   ensureLazyElement(this, 'beta-panel', BetaPanel);
   return (
@@ -399,7 +399,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { Suspense, SuspenseList } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <SuspenseList revealOrder='forwards'>
       <Suspense fallback={<span>One</span>}>
@@ -427,7 +427,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { Suspense } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <Suspense fallback={<span>loading</span>}>
       <div>ready</div>
@@ -453,7 +453,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { Suspense } from 'react';
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <Suspense fallback={<span>loading</span>}>
       <div>ready</div>
@@ -482,7 +482,7 @@ import { lazy, Suspense, SuspenseList } from 'react';
 
 const AlphaPanel = lazy(() => import('./AlphaPanel.js'));
 
-export const Screen = () => {
+export const TestScreen = () => {
   return (
     <ErrorBoundary fallback={<p>outer-fallback</p>}>
       <section>

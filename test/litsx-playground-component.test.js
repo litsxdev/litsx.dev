@@ -191,7 +191,7 @@ describe("LitsxPlayground docs component", () => {
     assert.match(code, /return null;/);
     assert.match(
       code,
-      /if \(resolvedPanelMaxHeight != null\) \{\s*useStyle\("--litsx-playground-editor-max-height", resolvedPanelMaxHeight\);\s*\}/s
+      /useStyle\("--litsx-playground-editor-max-height", resolvedPanelMaxHeight\);/
     );
   });
 

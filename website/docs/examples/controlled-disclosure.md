@@ -12,9 +12,9 @@ import { controlledStateExampleSource } from "../.vitepress/theme/components/pla
 
 <ClientOnly>
   <litsx-playground
-    exportname="Disclosure"
+    exportname="DisclosurePanel"
     previewtagname="docs-example-controlled-disclosure"
-    filename="/playground/Disclosure.tsx"
+    filename="/playground/DisclosurePanel.tsx"
     panelmaxheight="30rem"
   >{{ controlledStateExampleSource }}</litsx-playground>
 </ClientOnly>

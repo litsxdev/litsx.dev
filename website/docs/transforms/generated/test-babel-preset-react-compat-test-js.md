@@ -106,14 +106,14 @@ This case highlights syntax that should survive the transform unchanged or be pr
 #### Authored Input
 
 ```jsx
-const Child = ({ onAction }) => <button onClick={onAction}>Run</button>;
-      export const Parent = ({ onAction }) => <Child onAction={onAction} />;
+const TestChild = ({ onAction }) => <button onClick={onAction}>Run</button>;
+      export const TestParent = ({ onAction }) => <TestChild onAction={onAction} />;
 ```
 
 #### Generated Error
 
 ```txt
-Unexpected token, expected "," (1:40)
+Unexpected token, expected "," (1:44)
 ```
 
 ### Lowers JSX spreads with surrounding React props in source order
@@ -125,7 +125,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-export const Action = ({ props, active, onClick }) => (
+export const TestAction = ({ props, active, onClick }) => (
         <button {...props} className="action" disabled={active} onClick={onClick} />
       );
 ```
@@ -145,16 +145,16 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-const Row = ({ item }) => <li>{item.label}</li>;
-      export const List = ({ items }) => (
-        <ul>{items.map((item, index) => <Row key={item.id} item={item} index={index} />)}</ul>
+const TestRow = ({ item }) => <li>{item.label}</li>;
+      export const TestList = ({ items }) => (
+        <ul>{items.map((item, index) => <TestRow key={item.id} item={item} index={index} />)}</ul>
       );
 ```
 
 #### Generated Error
 
 ```txt
-Unexpected token, expected "," (1:35)
+Unexpected token, expected "," (1:39)
 ```
 
 ### Lowers standalone React keys through Lit keyed and can disable key compatibility
@@ -166,16 +166,16 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-const Panel = ({ label }) => <section>{label}</section>;
-      export const Screen = ({ selectedId, label }) => (
-        <main><Panel key={selectedId} label={label} /></main>
+const TestPanel = ({ label }) => <section>{label}</section>;
+      export const TestScreen = ({ selectedId, label }) => (
+        <main><TestPanel key={selectedId} label={label} /></main>
       );
 ```
 
 #### Generated Error
 
 ```txt
-Unterminated regular expression. (1:47)
+Unterminated regular expression. (1:51)
 ```
 
 ### Keeps typed object rest bindings in a compact reactive bag
@@ -187,7 +187,7 @@ This case highlights syntax that should survive the transform unchanged or be pr
 #### Authored Input
 
 ```jsx
-export function Action(
+export function TestAction(
         { disabled, ...props }: { disabled: boolean; title?: string }
       ) {
         return <button {...props} disabled={disabled} />;
@@ -209,12 +209,12 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-function Action({ disabled, ...props }) {
+function TestAction({ disabled, ...props }) {
         return <button {...props} disabled={disabled} />;
       }
 
-      export function App() {
-        return <Action disabled aria-label="Save" data-track="primary" />;
+      export function TestApp() {
+        return <TestAction disabled aria-label="Save" data-track="primary" />;
       }
 ```
 
@@ -604,15 +604,15 @@ import React, { createContext, useContext } from "react";
 
       const ThemeContext = createContext("light");
 
-      export function Toolbar() {
+      export function TestToolbar() {
         const theme = useContext(ThemeContext);
         return <button className={theme}>{theme}</button>;
       }
 
-      export function App() {
+      export function TestApp() {
         return (
           <ThemeContext.Provider value="dark">
-            <Toolbar />
+            <TestToolbar />
           </ThemeContext.Provider>
         );
       }
@@ -637,7 +637,7 @@ import { createContext } from "react";
 
       const ThemeContext = createContext("light");
 
-      export function App() {
+      export function TestApp() {
         return (
           <ThemeContext.Provider value="dark">
             <ThemeContext.Consumer>
@@ -672,7 +672,7 @@ import { createContext, useContext } from "react";
         return prefix + ":" + theme;
       }
 
-      export function Toolbar() {
+      export function TestToolbar() {
         const label = useThemeLabel("theme");
         return <span>{label}</span>;
       }
@@ -776,7 +776,7 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { useState } from "react";
 
-      export function Counter() {
+      export function TestCounter() {
         const [count, setCount] = useState(0);
         return <button onClick={() => setCount(count + 1)}>{count}</button>;
       }
@@ -793,7 +793,7 @@ Unexpected token, expected "," (5:23)
 ```jsx
 import React, { useState } from "react";
 
-      export function Counter() {
+      export function TestCounter() {
         const [count, setCount] = useState(0);
         return <button title={React.version} onClick={() => setCount(count + 1)}>{count}</button>;
       }

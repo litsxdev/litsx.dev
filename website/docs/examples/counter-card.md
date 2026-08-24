@@ -3,7 +3,7 @@
 This example is a compact support demo, not the main sales pitch.
 
 - local state with `useState(...)`
-- component-owned styling with `Counter.styles = css` after the declaration
+- component-owned styling with `CounterCard.styles = css` after the declaration
 - dynamic CSS values with `useStyle(...)`
 - explicit `on:event` listeners in standard JSX
 
@@ -13,9 +13,9 @@ import { counterExampleSource } from "../.vitepress/theme/components/playground-
 
 <ClientOnly>
   <litsx-playground
-    exportname="Counter"
+    exportname="CounterCard"
     previewtagname="docs-example-counter-card"
-    filename="/playground/Counter.tsx"
+    filename="/playground/CounterCard.tsx"
     panelmaxheight="32rem"
   >{{ counterExampleSource }}</litsx-playground>
 </ClientOnly>

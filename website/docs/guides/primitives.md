@@ -169,9 +169,9 @@ The playground above focuses on render-time and post-render hooks. `useEvent(...
 
 <ClientOnly>
   <litsx-playground
-    exportname="Disclosure"
+    exportname="DisclosurePanel"
     previewtagname="docs-controlled-state-preview"
-    filename="/playground/Disclosure.tsx"
+    filename="/playground/DisclosurePanel.tsx"
     panelmaxheight="30rem"
   >{{ controlledStateExampleSource }}</litsx-playground>
 </ClientOnly>

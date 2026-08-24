@@ -19,7 +19,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-export const Greeting = ({ label }) => {
+export const TestGreeting = ({ label }) => {
   return <button>{label}</button>;
 };
 ```
@@ -39,14 +39,14 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-const Action = ({ label, ...props }) => { return <button {...props}>{label}</button>; };
-export const Screen = () => { return <Action label="Save" aria-label="Save action" />; };
+const TestAction = ({ label, ...props }) => { return <button {...props}>{label}</button>; };
+export const TestScreen = () => { return <TestAction label="Save" aria-label="Save action" />; };
 ```
 
 #### Generated Error
 
 ```txt
-Unexpected token, expected "," (1:57)
+Unexpected token, expected "," (1:61)
 ```
 
 ### Matches the direct preset plugin factory
@@ -59,7 +59,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import FancyButton from './FancyButton.js';
-export const Greeting = ({ label = 'Save' }) => {
+export const TestGreeting = ({ label = 'Save' }) => {
   return <FancyButton .label={label} @click={save} />;
 };
 ```
@@ -134,7 +134,7 @@ const useCapability = defineHook({
   mixin: CapabilityMixin,
   use(suffix = '') { return useHost().capability + suffix; },
 });
-export function Panel() {
+export function TestPanel() {
   const first = useCapability(':first');
   const second = useCapability(':second');
   return <div>{first}{second}</div>;
@@ -159,7 +159,7 @@ This case records the authored input and the generated output as a living transf
 import { defineHook } from "@litsx/core";
 const FocusMixin = Base => class extends Base { static delegatesFocus = true; };
 const useFocusCapability = defineHook({ mixin: FocusMixin });
-export function Panel() {
+export function TestPanel() {
   useFocusCapability();
   return <div>Ready</div>;
 }
@@ -189,7 +189,7 @@ export function useTranslatedLabel(key) {
 export function useToolbarLabel(key) {
   return useTranslatedLabel(key);
 }
-export function Button() {
+export function TestButton() {
   return <button>{useToolbarLabel('save')}</button>;
 }
 ```
@@ -238,7 +238,7 @@ This case records the authored input and the generated output as a living transf
 #### Plain Source
 
 ```jsx
-export const Greeting = ({ label }) => {
+export const TestGreeting = ({ label }) => {
   return <button>{label}</button>;
 };
 ```
@@ -254,7 +254,7 @@ Unterminated regular expression. (2:26)
 ```jsx
 import FancyButton from './FancyButton.js';
 import { useRef, useState } from '@litsx/core';
-export function Greeting({ label }) {
+export function TestGreeting({ label }) {
   const ref = useRef(null);
   const [count] = useState(0);
   return <FancyButton ref={ref}>{label}{count}</FancyButton>;
@@ -284,7 +284,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-export const Greeting = ({ label }) => {
+export const TestGreeting = ({ label }) => {
   return <button @click={save}>{label}</button>;
 };
 ```
@@ -307,7 +307,7 @@ This case highlights syntax that should survive the transform unchanged or be pr
 function renderHelperWithArgs(alpha, beta, gamma) {
   return <p>{alpha}{beta}{gamma}</p>;
 }
-export const Demo = () => {
+export const TestDemo = () => {
   return <section>{renderHelperWithArgs('a', 'b', 'c')}</section>;
 };
 ```
@@ -347,7 +347,7 @@ This case records the authored input and the generated output as a living transf
 #### Authored Input
 
 ```jsx
-export const Greeting = ({ label }) => {
+export const TestGreeting = ({ label }) => {
   return <button @click={save}>{label}</button>;
 };
 ```
@@ -625,12 +625,12 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import ProductCard from './ProductCard.js';
-const Card = ProductCard;
+const TestCard = ProductCard;
 export default async function ProductPage({ product }) {
   return html`<main><product-card .product=${product}></product-card></main>`;
 }
 ProductPage.elements = {
-  'product-card': Card,
+  'product-card': TestCard,
 };
 ```
 
@@ -639,7 +639,7 @@ ProductPage.elements = {
 ```js
 import { __litsxScopedTemplate, annotateHydratableCustomElement, LITSX_SERVER_COMPONENT } from "@litsx/core/elements";
 import ProductCard from './ProductCard.js';
-const Card = ProductCard;
+const TestCard = ProductCard;
 export default async function ProductPage({
   product
 }) {
@@ -651,7 +651,7 @@ export default async function ProductPage({
   });
 }
 ProductPage.elements = {
-  'product-card': Card
+  'product-card': TestCard
 };
 ProductPage[LITSX_SERVER_COMPONENT] = true;
 ```
@@ -998,7 +998,7 @@ export function LightChild() {
   return <span>child</span>;
 }
 LightChild.lightDom = true;
-export function Parent() {
+export function TestParent() {
   return <LightChild />;
 }
 ```
@@ -1019,7 +1019,7 @@ This case documents code that is synthesized by the transform, not written direc
 
 ```jsx
 import { LightChild } from "./LightChild.tsx";
-export function Parent() {
+export function TestParent() {
   return <LightChild />;
 }
 ```
@@ -1040,7 +1040,7 @@ This case documents code that is synthesized by the transform, not written direc
 
 ```jsx
 import { SuspenseBoundary } from "@litsx/core";
-export function Parent() {
+export function TestParent() {
   return <SuspenseBoundary fallback={<span>loading</span>}><article>ready</article></SuspenseBoundary>;
 }
 ```
@@ -1061,8 +1061,8 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { forwardRef, memo } from 'react';
-export const Card = memo(
-  forwardRef(function Card({ title }, ref) {
+export const TestCard = memo(
+  forwardRef(function TestCard({ title }, ref) {
     return <label ref={ref}>{title}</label>;
   })
 );
@@ -1084,10 +1084,10 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import PropTypes from 'prop-types';
-export function Card(props) {
+export function TestCard(props) {
   return <article>{props.title}</article>;
 }
-Card.propTypes = {
+TestCard.propTypes = {
   title: PropTypes.string,
 };
 ```
@@ -1144,7 +1144,7 @@ type BaseProps = {
         payload: BaseProps["payload"];
       };
 
-      function Card(props: CardProps) {
+      function TestCard(props: CardProps) {
         return <article>{props.title}</article>;
       }
 ```
@@ -1165,7 +1165,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { useState } from '@litsx/core';
-export function Counter() {
+export function TestCounter() {
   const [count, setCount] = useState(1);
   return <button @click={() => setCount(count + 1)}>{count}</button>;
 }
@@ -1187,7 +1187,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { useState } from '@litsx/core';
-export function Counter() {
+export function TestCounter() {
   const label = 'ok', [count, setCount] = useState(0);
   setCount(count + 1);
   return <div>{label}: {count}</div>;
@@ -1214,7 +1214,7 @@ function useCounter(initial) {
   const [value, setValue] = useState(initial);
   return [value, setValue];
 }
-export function Counter() {
+export function TestCounter() {
   const [value, setValue] = useCounter(0);
   return <button @click={() => setValue(value + 1)}>{value}</button>;
 }
@@ -1236,7 +1236,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { useAfterUpdate } from '@litsx/core';
-export function Counter() {
+export function TestCounter() {
   useAfterUpdate(() => {
     this.flag = true;
   }, []);
@@ -1265,7 +1265,7 @@ function useCustom(flag) {
   useAfterUpdate(() => flag && callback(), [flag, callback]);
   return callback;
 }
-export function Counter() {
+export function TestCounter() {
   const value = useCustom(this.flag);
   return <button>{String(value && value())}</button>;
 }
@@ -1287,7 +1287,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { useEmit } from '@litsx/core';
-export function Counter() {
+export function TestCounter() {
   const emit = useEmit();
   emit('change', this.value, { cancelable: true });
   return <div>{this.value}</div>;
@@ -1311,12 +1311,12 @@ This case records the authored input and the generated output as a living transf
 ```jsx
 import { useEmit as createEmitter } from '@litsx/core';
 import * as core from '@litsx/core';
-export function Aliased() {
+export function TestAliased() {
   const emit = createEmitter();
   emit('primary-action');
   return <button />;
 }
-export function Namespaced() {
+export function TestNamespaced() {
   const emit = core.useEmit();
   emit('url-change');
   return <button />;
@@ -1339,12 +1339,12 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { useEmit } from '@litsx/core';
-export function Counter() {
+export function TestCounter() {
   const emit = useEmit();
   emit(this.eventName);
   return <button />;
 }
-Counter.events = { events: ['primary-action'], complete: true };
+TestCounter.events = { events: ['primary-action'], complete: true };
 ```
 
 #### Generated Error
@@ -1363,7 +1363,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import { useRef } from '@litsx/core';
-export function Counter() {
+export function TestCounter() {
   const buttonRef = useRef(null);
   return <button ref={buttonRef}>Click</button>;
 }
@@ -1385,7 +1385,7 @@ This case highlights syntax that should survive the transform unchanged or be pr
 
 ```jsx
 import { useRef } from '@litsx/core';
-export function Counter() {
+export function TestCounter() {
   const workerRef = useRef(null);
   workerRef.value = 'ok';
   return <div>{workerRef.value}</div>;
@@ -1408,7 +1408,7 @@ This case records the authored input and the generated output as a living transf
 
 ```jsx
 import type { CardProps } from './types';
-function Card({ title, active }: CardProps) {
+function TestCard({ title, active }: CardProps) {
   return <article>{title} {active ? 'on' : 'off'}</article>;
 }
 ```

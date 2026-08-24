@@ -144,9 +144,7 @@ export function LitsxPlayground({
   // useStyle() updates host-level values that vary at runtime.
   useStyle("--litsx-playground-preview-height", `${Math.max(previewHeight, 1)}px`);
   useStyle("--litsx-playground-preview-width", `${Math.max(previewWidth, 320)}px`);
-  if (resolvedPanelMaxHeight != null) {
-    useStyle("--litsx-playground-editor-max-height", resolvedPanelMaxHeight);
-  }
+  useStyle("--litsx-playground-editor-max-height", resolvedPanelMaxHeight);
 
   useOnConnect(() => {
     if (typeof document === "undefined") {

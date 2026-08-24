@@ -379,7 +379,7 @@ const frameworkLines = [
   "",
   "- authors write ordinary prop and attribute names; the compiler selects Lit binding kinds from the destination contract",
   "- event listeners use the explicit `on:event` channel",
-  "- component metadata uses top-level assignments such as `Button.styles = css` and `Button.properties = {...}`",
+  "- component metadata uses top-level assignments such as `ActionButton.styles = css` and `ActionButton.properties = {...}`",
   "- `.jsx` and `.tsx` work with the standard TypeScript, editor, lint, and formatting ecosystem",
   "",
 ];

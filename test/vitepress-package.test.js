@@ -155,7 +155,7 @@ describe("@litsx/vitepress", () => {
     assert.equal(resolverPlugin.resolveId("lit", null, { ssr: true }), null);
     assert.equal(transformPlugin.name, "litsx-docs-compiler");
 
-    const source = "export const Counter = () => <button on:click={save}>Hi</button>;";
+    const source = "export const CounterCard = () => <button on:click={save}>Hi</button>;";
     const transformed = await transformPlugin.transform(
       source,
       id
@@ -177,7 +177,7 @@ describe("@litsx/vitepress", () => {
     });
 
     const transformed = await transformPlugin.transform(
-      "export function Counter() { return <button>Save</button>; }",
+      "export function CounterCard() { return <button>Save</button>; }",
       "/repo/website/docs/.vitepress/theme/components/counter.tsx"
     );
 
@@ -186,7 +186,7 @@ describe("@litsx/vitepress", () => {
   }, 20000);
 
   it("supports regexp and function-based include filters for the docs compiler plugin", async () => {
-    const source = "export const Counter = () => <button>Save</button>;";
+    const source = "export const CounterCard = () => <button>Save</button>;";
 
     const [, , regexTransformPlugin] = litsxVitePress({
       workspaceRoot: "/repo",

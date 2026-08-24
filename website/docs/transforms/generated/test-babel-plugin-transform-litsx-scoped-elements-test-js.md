@@ -66,7 +66,7 @@ import { useRef, useEffect } from 'react';
         label: PropTypes.string,
       };
 
-      export const Alert = (message) => {
+      export const TestAlert = (message) => {
         const lower = message.toLowerCase();
         return <p>{lower}</p>;
       };
@@ -477,7 +477,7 @@ This case shows the authored JSX/API surface and the normalized output produced 
 ```jsx
 import { SuspenseBoundary } from '@litsx\/core';
 
-      export function Screen() {
+      export function TestScreen() {
         return (
           <section>
             <SuspenseBoundary fallback={<span>loading</span>}>
@@ -506,7 +506,7 @@ This case shows the authored JSX/API surface and the normalized output produced 
 import { keyed } from 'lit/directives/keyed.js';
       import { SuspenseBoundary } from '@litsx\/core';
 
-      export function Screen({ cycle }) {
+      export function TestScreen({ cycle }) {
         return (
           <section>
             {keyed(cycle, (
@@ -538,7 +538,7 @@ import { LitElement, html } from 'lit';
       import { keyed } from 'lit/directives/keyed.js';
       import { SuspenseBoundary, SuspenseList } from '@litsx\/core';
 
-      class Screen extends LitElement {
+      class TestScreen extends LitElement {
         render() {
           return html\`
             <SuspenseList reveal-order="forwards">

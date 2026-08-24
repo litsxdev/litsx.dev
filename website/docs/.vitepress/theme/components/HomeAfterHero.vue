@@ -15,7 +15,7 @@ import { jsxAuthoringExampleSource } from "./playground-example-source.js";
               element without leaving this page.
             </p>
             <litsx-playground
-              exportname="Composer"
+              exportname="MessageComposer"
               previewtagname="docs-home-composer-preview"
               filename="/playground/HomeComposer.tsx"
               panelmaxheight="32rem"

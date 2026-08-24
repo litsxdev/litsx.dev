@@ -3,7 +3,7 @@ import { css, useState, useStyle } from "@litsx/core";
 
 type CounterProps = { title?: string; count?: number };
 
-export function Counter({ title = "Counter", count: initial = 3 }: CounterProps) {
+export function CounterCard({ title = "Counter", count: initial = 3 }: CounterProps) {
   const [count, setCount] = useState(initial);
   const accent = count >= 8 ? "#0f766e" : count >= 4 ? "#b45309" : "#c2410c";
   useStyle("--accent", accent);
@@ -17,7 +17,7 @@ export function Counter({ title = "Counter", count: initial = 3 }: CounterProps)
   );
 }
 
-Counter.styles = css\`
+CounterCard.styles = css\`
   :host { display: block; color: #e5e7eb; font-family: "IBM Plex Sans", "Segoe UI", sans-serif; }
   * { box-sizing: border-box; }
   .card {
@@ -91,7 +91,7 @@ ProfileCard.styles = css\`
 export const jsxAuthoringExampleSource = `
 import { css, useState } from "@litsx/core";
 
-export function Composer() {
+export function MessageComposer() {
   const [count, setCount] = useState(1);
   return (
     <article class="composer">
@@ -102,7 +102,7 @@ export function Composer() {
   );
 }
 
-Composer.styles = css\`
+MessageComposer.styles = css\`
   :host { display: block; color: white; font-family: "IBM Plex Sans", "Segoe UI", sans-serif; }
   .composer { width: min(100%, 24rem); padding: 1.25rem; border-radius: 1.15rem; background: radial-gradient(circle at top left, rgba(255,255,255,.12), transparent 42%), linear-gradient(145deg, #111827, #312e81); box-shadow: 0 18px 42px rgba(49, 46, 129, .25); }
   span { color: #c4b5fd; font-size: .72rem; text-transform: uppercase; letter-spacing: .11em; }
@@ -138,7 +138,7 @@ export const controlledStateExampleSource = `
 import { css, useControlledState } from "@litsx/core";
 
 type DisclosureProps = { open?: boolean; defaultOpen?: boolean; onChange?: (open: boolean) => void };
-export function Disclosure({ open, defaultOpen = false, onChange }: DisclosureProps) {
+export function DisclosurePanel({ open, defaultOpen = false, onChange }: DisclosureProps) {
   const [isOpen, setIsOpen] = useControlledState({ value: open, defaultValue: defaultOpen, onChange });
   return (
     <section>
@@ -147,7 +147,7 @@ export function Disclosure({ open, defaultOpen = false, onChange }: DisclosurePr
     </section>
   );
 }
-Disclosure.styles = css\`
+DisclosurePanel.styles = css\`
   :host { display: block; color: #e2e8f0; font-family: "IBM Plex Sans", "Segoe UI", sans-serif; }
   section { display: grid; gap: .8rem; width: min(100%, 25rem); padding: 1rem; border: 1px solid #1d4ed8; border-radius: 1rem; background: linear-gradient(155deg, #102033, #0f172a); box-shadow: 0 18px 38px rgba(15,23,42,.22); }
   button { justify-self: start; border: 0; border-radius: 999px; padding: .58rem .92rem; background: #38bdf8; color: #082f49; cursor: pointer; font-weight: 700; }
@@ -360,7 +360,7 @@ UseEmitDemo.styles = css\`
 `.trim();
 
 export const reactMigrationExampleSource = `
-import React, { Suspense, lazy, useState } from "react";
+import React, { lazy, useState } from "react";
 import { css } from "@litsx/core";
 
 const resultsPanelModuleSource = [
@@ -381,7 +381,7 @@ export function ReactMigrationDemo() {
   return (
     <main className="card">
       <label>Search <input value={query} onChange={(event) => setQuery(event.target.value)} /></label>
-      <Suspense fallback={<p className="status">Loading…</p>}><ResultsPanel query={query} /></Suspense>
+      <React.Suspense fallback={<p className="status">Loading…</p>}><ResultsPanel query={query} /></React.Suspense>
     </main>
   );
 }
@@ -399,7 +399,7 @@ export const reactForwardRefExampleSource = `
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import { css } from "@litsx/core";
 
-const SearchInput = forwardRef((_props, ref) => {
+const SearchInput = forwardRef(function SearchInputComponent(_props, ref) {
   const input = useRef(null);
   useImperativeHandle(ref, () => ({ focus: () => input.current?.focus() }), []);
   return <input ref={input} placeholder="Search" />;

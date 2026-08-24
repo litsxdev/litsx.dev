@@ -38,7 +38,7 @@
     "vue": ">=3"
   },
   "dependencies": {
-    "@litsx/compiler": "1.0.0-next.3",
+    "@litsx/compiler": "1.0.0-next.5",
     "shiki": "^2.5.0",
     "typescript": "^6.0.0"
   },
