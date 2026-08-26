@@ -97,12 +97,12 @@ describe("@litsx/vitepress", () => {
       versions.defaultDocsVersions,
       defineDocsVersions([
         {
-          id: "next",
-          label: "Next",
+          id: "v1",
+          label: "v1",
           prefix: "/",
           snapshot: false,
-          published: false,
-          current: false,
+          published: true,
+          current: true,
         },
       ])
     );
@@ -110,7 +110,7 @@ describe("@litsx/vitepress", () => {
 
   it("computes version-aware paths", () => {
     const versions = [
-      { id: "next", label: "Next", prefix: "/" },
+      { id: "v2", label: "v2", prefix: "/" },
       { id: "v1", label: "v1", prefix: "/v1/" },
     ];
 
@@ -227,7 +227,7 @@ describe("@litsx/vitepress", () => {
     routePath = "/v1/guides/intro";
     const { default: DocsVersionSelect } = await import("../packages/vitepress/src/theme/DocsVersionSelect.js");
     const versions = [
-      { id: "next", label: "Next", prefix: "/" },
+      { id: "v2", label: "v2", prefix: "/" },
       { id: "v1", label: "v1", prefix: "/v1/" },
     ];
     const render = DocsVersionSelect.setup({ versions });
@@ -240,7 +240,7 @@ describe("@litsx/vitepress", () => {
 
       assert.equal(selectNode.type, "select");
       assert.equal(selectNode.props.value, "v1");
-      selectNode.props.onChange({ target: { value: "next" } });
+      selectNode.props.onChange({ target: { value: "v2" } });
       assert.equal(globalThis.window.location.href, "/base/guides/intro");
     } finally {
       globalThis.window = originalWindow;
@@ -250,7 +250,7 @@ describe("@litsx/vitepress", () => {
   it("shows the older-version banner only for non-current docs routes", async () => {
     const { default: DocsVersionBanner } = await import("../packages/vitepress/src/theme/DocsVersionBanner.js");
     const versions = [
-      { id: "next", label: "Next", prefix: "/" },
+      { id: "v2", label: "v2", prefix: "/" },
       { id: "v1", label: "v1", prefix: "/v1/" },
     ];
 
@@ -270,7 +270,7 @@ describe("@litsx/vitepress", () => {
 
   it("creates the VitePress theme wrapper with the version components wired into the layout", () => {
     const versions = [
-      { id: "next", label: "Next", prefix: "/" },
+      { id: "v2", label: "v2", prefix: "/" },
       { id: "v1", label: "v1", prefix: "/v1/" },
     ];
     const originalEnhanceApp = mockDefaultTheme.enhanceApp;

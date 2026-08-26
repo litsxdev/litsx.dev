@@ -7,7 +7,7 @@ UnoCSS is optional. Lit<sup>sx</sup> does not require a utility-CSS engine: the 
 Use this package when UnoCSS matches the project's styling strategy. Otherwise, continue with [`Component.styles = css\`...\``](./styling.md) or another compiler/build integration.
 
 ```sh
-npm install -D @litsx/unocss@next unocss
+npm install -D @litsx/unocss unocss
 ```
 
 ```js

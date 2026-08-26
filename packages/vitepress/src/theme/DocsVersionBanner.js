@@ -2,10 +2,8 @@ import { defineComponent, h } from "vue";
 import { useRoute, withBase } from "vitepress";
 import {
   buildVersionPath,
-  findVersionById,
   findVersionByPath,
   getPathWithinVersion,
-  getVersionIdFromPath,
 } from "../shared.js";
 
 export default defineComponent({
@@ -27,13 +25,8 @@ export default defineComponent({
         return null;
       }
 
-      const currentVersionId = getVersionIdFromPath(route.path);
-      if (currentVersionId === "next" || currentVersionId === latestVersion.id) {
-        return null;
-      }
-
-      const currentVersion = findVersionById(versions, currentVersionId);
-      if (!currentVersion) {
+      const currentVersion = findVersionByPath(versions, route.path);
+      if (!currentVersion || currentVersion.id === latestVersion.id) {
         return null;
       }
 

@@ -30,11 +30,11 @@ export function buildVersionPath(pathWithinVersion, version, withBase) {
 
 export const defaultDocsVersions = defineDocsVersions([
   {
-    id: "next",
-    label: "Next",
+    id: "v1",
+    label: "v1",
     prefix: "/",
     snapshot: false,
-    published: false,
-    current: false,
+    published: true,
+    current: true,
   },
 ]);

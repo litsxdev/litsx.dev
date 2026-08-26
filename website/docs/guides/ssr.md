@@ -5,15 +5,15 @@
 ## Start with the SSR template
 
 ```sh
-npm create litsx-app@next my-ssr-app -- --template ssr
+npm create litsx-app my-ssr-app -- --template ssr
 ```
 
 The scaffold includes the server document renderer, a browser registration entry, and local development wiring.
 
-To add SSR to an existing Lit<sup>sx</sup> project on the 1.0 prerelease line:
+To add SSR to an existing Lit<sup>sx</sup> 1.x project:
 
 ```sh
-npm install @litsx/ssr@next
+npm install @litsx/ssr
 ```
 
 ## DOM initialization and `html`

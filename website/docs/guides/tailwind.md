@@ -7,11 +7,11 @@ The root package is bundler-neutral. Its supported Vite adapter uses the officia
 ## Install
 
 ```sh
-npm install -D @litsx/tailwind@next @litsx/vite-plugin@next \
+npm install -D @litsx/tailwind @litsx/vite-plugin \
   @tailwindcss/vite tailwindcss vite
 ```
 
-The Vite integration supports Tailwind CSS 4.3+, Vite 7.3 or 8, and the Lit<sup>sx</sup> 1.0 prerelease line.
+The Vite integration supports Tailwind CSS 4.3+, Vite 7.3 or 8, and Lit<sup>sx</sup> 1.x.
 
 ## Configure Vite
 
