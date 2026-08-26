@@ -50,6 +50,12 @@ Local constants, finite maps, static template literals, constant composition, fi
 
 This is the recommended form for variants: keep the runtime lookup and its finite utility inventory together. Do not repeat a resolvable map in `Component.styles`.
 
+## Free Light DOM templates
+
+A module can contain compiled Lit<sup>sx</sup> components and free Light DOM JSX, including Storybook `render` functions. The compiler records free-template candidates as a separate global contribution: their utilities reach `virtual:uno.css`, while utilities used only by a Shadow DOM component remain in that component's `CSSResult`.
+
+Pure Lit class bodies remain opaque. Their Lit templates and static styles are not scanned as Lit<sup>sx</sup> components or reclassified as free document output.
+
 ## Light-DOM routing
 
 ```js

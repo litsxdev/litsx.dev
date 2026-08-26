@@ -115,9 +115,7 @@ A Lit-native ref. Assignment uses `.value`; cleanup publishes `undefined`.
 
 ```ts
 /** A Lit-native ref. Assignment uses `.value`; cleanup publishes `undefined`. */
-export type LitsxRef<T> = {
-    value: T | undefined;
-} | {
+export type LitsxRef<T> = Ref<T> | {
     bivarianceHack(value: T | undefined): void;
 }["bivarianceHack"];
 ```
@@ -441,6 +439,123 @@ export type LitsxNativeAttributeAliases<TElement> = TElement extends HTMLLabelEl
 export type LitsxElementProps<TElement = HTMLElement> = LitsxBaseAttributes & LitsxDomAttributes<TElement> & LitsxNativeAttributeAliases<TElement> & LitsxHostElementProps<TElement>;
 ```
 
+### `LitsxSvgLength`
+
+```ts
+export type LitsxSvgLength = string | number;
+```
+
+### `LitsxSvgPresentationAttributes`
+
+JSX-friendly SVG presentation attributes serialized with native SVG names.
+
+```ts
+/** JSX-friendly SVG presentation attributes serialized with native SVG names. */
+export interface LitsxSvgPresentationAttributes {
+    clipPath?: string;
+    clipRule?: "nonzero" | "evenodd" | "inherit";
+    color?: string;
+    colorInterpolation?: string;
+    colorInterpolationFilters?: string;
+    cursor?: string;
+    display?: string;
+    dominantBaseline?: string;
+    fill?: string;
+    fillOpacity?: string | number;
+    fillRule?: "nonzero" | "evenodd" | "inherit";
+    filter?: string;
+    floodColor?: string;
+    floodOpacity?: string | number;
+    fontFamily?: string;
+    fontSize?: LitsxSvgLength;
+    fontWeight?: string | number;
+    markerEnd?: string;
+    markerMid?: string;
+    markerStart?: string;
+    mask?: string;
+    opacity?: string | number;
+    pointerEvents?: string;
+    shapeRendering?: string;
+    stopColor?: string;
+    stopOpacity?: string | number;
+    stroke?: string;
+    strokeDasharray?: string | number;
+    strokeDashoffset?: LitsxSvgLength;
+    strokeLinecap?: "butt" | "round" | "square" | "inherit";
+    strokeLinejoin?: "arcs" | "bevel" | "miter" | "miter-clip" | "round" | "inherit";
+    strokeMiterlimit?: string | number;
+    strokeOpacity?: string | number;
+    strokeWidth?: LitsxSvgLength;
+    textAnchor?: "start" | "middle" | "end" | "inherit";
+    transform?: string;
+    vectorEffect?: string;
+    visibility?: string;
+}
+```
+
+### `LitsxSvgViewportAttributes`
+
+```ts
+export interface LitsxSvgViewportAttributes {
+    x?: LitsxSvgLength;
+    y?: LitsxSvgLength;
+    width?: LitsxSvgLength;
+    height?: LitsxSvgLength;
+}
+```
+
+### `LitsxSvgSpecificAttributes`
+
+```ts
+export type LitsxSvgSpecificAttributes<TagName extends keyof SVGElementTagNameMap> = TagName extends "svg" ? LitsxSvgViewportAttributes & {
+    viewBox?: string;
+    preserveAspectRatio?: string;
+    xmlns?: string;
+} : TagName extends "path" ? {
+    d?: string;
+    pathLength?: string | number;
+} : TagName extends "circle" ? {
+    cx?: LitsxSvgLength;
+    cy?: LitsxSvgLength;
+    r?: LitsxSvgLength;
+    pathLength?: string | number;
+} : TagName extends "ellipse" ? {
+    cx?: LitsxSvgLength;
+    cy?: LitsxSvgLength;
+    rx?: LitsxSvgLength;
+    ry?: LitsxSvgLength;
+    pathLength?: string | number;
+} : TagName extends "line" ? {
+    x1?: LitsxSvgLength;
+    x2?: LitsxSvgLength;
+    y1?: LitsxSvgLength;
+    y2?: LitsxSvgLength;
+    pathLength?: string | number;
+} : TagName extends "polygon" | "polyline" ? {
+    points?: string;
+    pathLength?: string | number;
+} : TagName extends "rect" ? LitsxSvgViewportAttributes & {
+    rx?: LitsxSvgLength;
+    ry?: LitsxSvgLength;
+    pathLength?: string | number;
+} : TagName extends "use" ? LitsxSvgViewportAttributes & {
+    href?: string;
+} : TagName extends "foreignObject" ? LitsxSvgViewportAttributes : TagName extends "clipPath" ? {
+    clipPathUnits?: "userSpaceOnUse" | "objectBoundingBox";
+} : TagName extends "mask" ? LitsxSvgViewportAttributes & {
+    maskUnits?: "userSpaceOnUse" | "objectBoundingBox";
+    maskContentUnits?: "userSpaceOnUse" | "objectBoundingBox";
+} : {};
+```
+
+### `LitsxSvgElementProps`
+
+```ts
+export type LitsxSvgElementProps<TagName extends keyof SVGElementTagNameMap, TElement extends SVGElement = SVGElementTagNameMap[TagName]> = Omit<LitsxBaseAttributes, "ref"> & LitsxDomAttributes<TElement> & LitsxSvgPresentationAttributes & LitsxSvgSpecificAttributes<TagName> & {
+    ref?: LitsxRef<TElement>;
+};
+```
+
 ### `LitsxErrorBoundaryElementProps`
 
 ```ts
@@ -457,7 +572,7 @@ export type LitsxSuspenseBoundaryElementProps = LitsxBaseAttributes & LitsxDomAt
 
 ```ts
 export type LitsxIntrinsicElements = {
-    [TagName in keyof HTMLElementTagNameMap]: LitsxElementProps<HTMLElementTagNameMap[TagName]>;
+    [TagName in keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap]: TagName extends keyof HTMLElementTagNameMap ? TagName extends keyof SVGElementTagNameMap ? LitsxOverlappingIntrinsicElementProps<TagName> : LitsxElementProps<HTMLElementTagNameMap[TagName]> : TagName extends keyof SVGElementTagNameMap ? LitsxSvgElementProps<TagName> : never;
 } & LitsxCustomIntrinsicElements;
 ```
 
@@ -1367,15 +1482,27 @@ export namespace JSX {
     type LitsxComponentEventMap<Component> = Component extends {
         readonly events: LitsxEventDeclaration<infer Events, infer Complete>;
     } ? Complete extends true ? Events : {} : {};
-    type LitsxComponentAuthoredAttributes<TProps, TEvents extends Record<string, unknown>> = LitsxBaseAttributes & (keyof TEvents extends never ? LitsxExplicitCustomEventAttributes : Omit<LitsxDomAttributes<EventTarget>, `on:${Extract<keyof TEvents, string>}`> & LitsxTypedCustomEventAttributes<TEvents>);
+    type LitsxComponentAuthoredAttributes<TProps, TEvents extends Record<string, unknown>, TBaseAttributes = LitsxBaseAttributes> = TBaseAttributes & (keyof TEvents extends never ? LitsxExplicitCustomEventAttributes : Omit<LitsxDomAttributes<EventTarget>, `on:${Extract<keyof TEvents, string>}`> & LitsxTypedCustomEventAttributes<TEvents>);
     type LitsxNormalizeManagedProps<TProps> = 0 extends (1 & TProps) ? {} : TProps;
-    type LitsxComponentElementProps<TProps, TEvents extends Record<string, unknown> = {}> = LitsxNormalizeManagedProps<TProps> & LitsxComponentAuthoredAttributes<LitsxNormalizeManagedProps<TProps>, TEvents>;
-    type LibraryManagedAttributes<Component, Props> = Component extends typeof ErrorBoundary ? LitsxErrorBoundaryElementProps : Component extends typeof SuspenseBoundary ? LitsxSuspenseBoundaryElementProps : Component extends typeof SuspenseList ? LitsxBoundaryElementProps<SuspenseList, SuspenseListProps> : LitsxComponentElementProps<Props, LitsxComponentEventMap<Component>>;
+    type LitsxExactStaticPropertyKeys<Component> = Component extends {
+        readonly properties: infer Declarations;
+    } ? string extends keyof Declarations ? never : Extract<keyof Declarations, string> : never;
+    type LitsxOwnDataPropertyKeys<Instance> = {
+        [Key in Exclude<Extract<keyof Instance, string>, keyof LitElement>]: Instance[Key] extends (...args: any[]) => unknown ? never : Key;
+    }[Exclude<Extract<keyof Instance, string>, keyof LitElement>];
+    type LitsxPureLitElementProps<Component> = Component extends abstract new (...args: any[]) => infer Instance ? Instance extends LitElement ? Partial<Pick<Instance, Extract<LitsxExactStaticPropertyKeys<Component> | LitsxOwnDataPropertyKeys<Instance>, keyof Instance>>> : {} : {};
+    type LitsxManagedComponentProps<Component, Props> = LitsxNormalizeManagedProps<Props> & LitsxPureLitElementProps<Component>;
+    type LitsxManagedBaseAttributes<Component> = Component extends abstract new (...args: any[]) => LitElement ? Omit<LitsxBaseAttributes, "ref"> : LitsxBaseAttributes;
+    type LitsxPureLitRefAttributes<Component> = Component extends abstract new (...args: any[]) => infer Instance ? {
+        ref?: LitsxRef<Instance>;
+    } : {};
+    type LitsxComponentElementProps<TProps, TEvents extends Record<string, unknown> = {}, TBaseAttributes = LitsxBaseAttributes> = LitsxNormalizeManagedProps<TProps> & LitsxComponentAuthoredAttributes<LitsxNormalizeManagedProps<TProps>, TEvents, TBaseAttributes>;
+    type LibraryManagedAttributes<Component, Props> = Component extends typeof ErrorBoundary ? LitsxErrorBoundaryElementProps : Component extends typeof SuspenseBoundary ? LitsxSuspenseBoundaryElementProps : Component extends typeof SuspenseList ? LitsxBoundaryElementProps<SuspenseList, SuspenseListProps> : LitsxComponentElementProps<LitsxManagedComponentProps<Component, Props>, LitsxComponentEventMap<Component>, LitsxManagedBaseAttributes<Component>>;
 }
 ```
 
 ### `LitsxComponentProps`
 
 ```ts
-export type LitsxComponentProps<T> = T extends typeof ErrorBoundary ? LitsxErrorBoundaryElementProps : T extends typeof SuspenseBoundary ? LitsxSuspenseBoundaryElementProps : T extends typeof SuspenseList ? JSX.LitsxBoundaryElementProps<SuspenseList, SuspenseListProps> : Record<string, unknown>;
+export type LitsxComponentProps<T> = T extends typeof ErrorBoundary ? LitsxErrorBoundaryElementProps : T extends typeof SuspenseBoundary ? LitsxSuspenseBoundaryElementProps : T extends typeof SuspenseList ? JSX.LitsxBoundaryElementProps<SuspenseList, SuspenseListProps> : T extends abstract new (...args: any[]) => LitElement ? JSX.LitsxComponentElementProps<JSX.LitsxPureLitElementProps<T>, JSX.LitsxComponentEventMap<T>, Omit<LitsxBaseAttributes, "ref"> & JSX.LitsxPureLitRefAttributes<T>> : Record<string, unknown>;
 ```

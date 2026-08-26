@@ -35,6 +35,33 @@ import { LitElement, html } from 'lit';
 Missing semicolon. (6:35)
 ```
 
+### Merges detected tags after inherited and before authored elements
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { LitElement } from 'lit';
+      import FancyButton from './FancyButton.js';
+      class OwnButton extends HTMLElement {}
+
+      class MyElement extends LitElement {
+        static elements = { "own-button": OwnButton };
+        render() {
+          return <FancyButton />;
+        }
+      }
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (8:30)
+```
+
 ### Handles React-style function components with useRef
 
 #### Interpretation
@@ -99,6 +126,76 @@ import { LitElement, html } from 'lit';
 
 ```txt
 Expecting Unicode escape sequence \uXXXX. (6:22)
+```
+
+### Emits symmetric light-DOM boundaries for server and client templates
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { PlainLitContextBridge } from "./matrix-lit-elements.ts";
+
+      export function LightBoundaryParent() {
+        return <PlainLitContextBridge />;
+      }
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (4:38)
+```
+
+### Infers a light-DOM boundary from an independently compiled LitSX class
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { LitElement, html } from "lit";
+      import { CompiledLightChild } from "./compiled-light-child.js";
+
+      export class CompiledLightParent extends LitElement {
+        static elements = { "compiled-light-child": CompiledLightChild };
+        render() {
+          return html\`<compiled-light-child></compiled-light-child>\
+```
+
+#### Generated Error
+
+```txt
+Expecting Unicode escape sequence \uXXXX. (7:22)
+```
+
+### Leaves react-compat light-DOM ownership to its compatibility runtime
+
+#### Interpretation
+
+This case highlights syntax that should survive the transform unchanged or be preserved semantically.
+
+#### Authored Input
+
+```jsx
+function NestedValue() {
+        return <span>value</span>;
+      }
+
+      export function CompatRoot() {
+        return <NestedValue />;
+      }
+```
+
+#### Generated Error
+
+```txt
+Unterminated regular expression. (2:28)
 ```
 
 ### Registers scoped element aliases created from namespace imports cast as any

@@ -273,6 +273,28 @@ const view = (
 Unexpected token, expected "," (2:17)
 ```
 
+### Uses the normalized opening name for PascalCase component closing tags
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const view = (
+        <QuartzCard heading="Preset">
+          <span>Demo</span>
+        </QuartzCard>
+      );
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (2:20)
+```
+
 ### Keeps Lit-style prefixed attributes on kebab-case custom elements
 
 #### Interpretation
@@ -407,6 +429,29 @@ const x = <svg><circle {...shape} /><foreignObject><div {...htmlProps} /></forei
 
 ```txt
 Unexpected token, expected "</>/<=/>=" (1:23)
+```
+
+### Uses svg templates for JSX nested in SVG expressions and html inside foreignObject
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+const x = <main>
+        <svg viewBox={viewBox}>
+          {shapes.map((shape) => <path d={shape.d} />)}
+          <foreignObject>{htmlNodes.map((node) => <div>{node.label}</div>)}</foreignObject>
+        </svg>
+      </main>;
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "</>/<=/>=" (2:13)
 ```
 
 ### Passes an authored component constructor for spread prop inference

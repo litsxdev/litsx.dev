@@ -71,6 +71,31 @@ return (
 
 Lit directives remain first-class because the compiler ultimately emits Lit templates.
 
+## Inline SVG
+
+SVG is part of the native JSX contract. It can be nested directly inside HTML without importing Lit's `svg` template tag or augmenting `JSX.IntrinsicElements`:
+
+```tsx
+export function StatusIcon({ paths }) {
+  return (
+    <span class="status-icon">
+      <svg viewBox="0 0 24 24" strokeWidth={2} aria-hidden="true">
+        {paths.map((path) => <path d={path.d} />)}
+        <foreignObject x={0} y={0} width={24} height={8}>
+          <div>HTML fallback</div>
+        </foreignObject>
+      </svg>
+    </span>
+  );
+}
+```
+
+The compiler enters the SVG namespace at `<svg>` and returns to HTML for descendants of `<foreignObject>`. Dynamic children, conditional branches, spreads, SSR, and hydration preserve the same namespace transitions.
+
+JSX-friendly presentation names such as `strokeWidth`, `strokeLinecap`, and `fillOpacity` are serialized as native dashed SVG attributes. SVG element names and their relevant attributes are typed without a permissive global index, so unknown attributes still produce TypeScript errors.
+
+The low-level `jsxTemplateOptions.tag: "svg"` option is only for a source whose root template is deliberately an SVG fragment. Ordinary inline SVG does not need it.
+
 ## Components and metadata
 
 Top-level PascalCase functions and function-valued declarations are component candidates. Attach static class metadata with normal assignments after the declaration:

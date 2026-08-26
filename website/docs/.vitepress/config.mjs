@@ -126,6 +126,7 @@ export default defineConfig({
           { text: "Why Lit<sup>sx</sup>", link: "/guides/why-litsx" },
           { text: "Getting Started", link: "/getting-started" },
           { text: "Standard JSX Authoring", link: "/guides/jsx-authoring" },
+          { text: "Lit Interoperability", link: "/guides/lit-interoperability" },
           { text: "Component Metadata", link: "/guides/component-metadata" },
           {
             text: "Styling",

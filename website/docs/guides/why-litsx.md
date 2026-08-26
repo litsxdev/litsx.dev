@@ -23,6 +23,7 @@ Lit already gives you an excellent base for web components. Lit<sup>sx</sup> add
 - a framework-level runtime surface for state, suspense, and authoring patterns
 - server rendering and hydration for scoped component trees
 - compiler-driven property, attribute, event, spread, and ref lowering
+- typed inline SVG and direct composition with pure Lit components
 - a compatibility layer for bringing React code into a web-component architecture progressively
 
 The point is not to reimplement React. The point is to make Lit-based component authoring feel more expressive and more familiar for teams that prefer JSX.
@@ -83,6 +84,7 @@ That separation is intentional. It keeps the framework's identity clear.
 
 - [Getting Started](../getting-started.md)
 - [How to write Lit<sup>sx</sup>](./jsx-authoring.md)
+- [Lit interoperability](./lit-interoperability.md)
 - [Primitives](./primitives.md)
 - [Refs](./refs.md)
 - [Server Rendering and Hydration](./ssr.md)

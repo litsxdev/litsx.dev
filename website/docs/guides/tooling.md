@@ -13,7 +13,9 @@ export default defineConfig({
 });
 ```
 
-The plugin transforms `.jsx` and `.tsx`, runs the supported Lit<sup>sx</sup> pipeline, and preserves authored sourcemaps. Important options include:
+The plugin transforms project-local `.js`, `.jsx`, `.ts`, and `.tsx`, runs the supported Lit<sup>sx</sup> pipeline, and preserves authored sourcemaps. Processing ordinary Lit modules allows it to emit hydration boundaries when a Lit template consumes a Lit<sup>sx</sup> Light DOM component; it does not turn pure Lit classes into Lit<sup>sx</sup> components. Modules outside the Vite root remain untouched unless selected through `include` or `reactCompat.transformDependencies`.
+
+Important options include:
 
 - `defaultDomMode: "shadow" | "light"`
 - `lightDomStyles: "scoped" | "global" | "none"`
@@ -80,6 +82,8 @@ The official Vite adapters compose Lit<sup>sx</sup> compilation with their CSS e
 
 - [`@litsx/tailwind/vite`](./tailwind.md) for Tailwind CSS v4
 - [`@litsx/unocss/vite`](./unocss.md) for UnoCSS
+
+Both adapters isolate utility ownership during concurrent component generation and multi-entry builds while keeping shared project-level infrastructure stable.
 
 Integration authors can use the shared finite-class analysis exposed by `@litsx/compiler/utility-css`. Applications should use one of the adapters instead of calling those low-level helpers directly.
 

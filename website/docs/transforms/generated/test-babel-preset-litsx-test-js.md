@@ -10,6 +10,32 @@ Generated from transform tests.
 
 ## Covered Cases
 
+### Lowers mixed HTML and SVG with canonical attributes and SVG dynamic fragments
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+type Shape = { d: string };
+type Props = { viewBox: string; strokeWidth: number; d: string; shapes: Shape[] };
+export const TestSvg = ({ viewBox, strokeWidth, d, shapes }: Props) => (
+  <section><svg viewBox={viewBox} strokeWidth={strokeWidth}>
+    <path d={d} strokeLinecap="round" />
+    {shapes.map((shape) => <path d={shape.d} />)}
+    <foreignObject width={20}><div>HTML</div></foreignObject>
+  </svg></section>
+);
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "</>/<=/>=" (4:16)
+```
+
 ### Defaults to final html template lowering
 
 #### Interpretation

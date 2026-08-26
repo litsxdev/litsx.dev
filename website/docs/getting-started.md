@@ -85,11 +85,12 @@ export default defineConfig({
 }
 ```
 
-The Vite plugin compiles `.jsx` and `.tsx` by default. Standard TypeScript and Prettier handle the source; there is no custom file extension or formatter to install.
+The Vite plugin processes project-local `.js`, `.jsx`, `.ts`, and `.tsx` modules. JSX/TSX files receive the normal Lit<sup>sx</sup> compilation pipeline; ordinary Lit modules are inspected only for integration boundaries such as a Lit template rendering an imported Lit<sup>sx</sup> Light DOM child. Standard TypeScript and Prettier handle authored JSX; there is no custom file extension or formatter to install.
 
 ## Where to go next
 
 - [Standard JSX authoring](./guides/jsx-authoring.md)
+- [Lit interoperability](./guides/lit-interoperability.md)
 - [Component metadata](./guides/component-metadata.md)
 - [Property and binding inference](./guides/property-inference.md)
 - [Server rendering and hydration](./guides/ssr.md)

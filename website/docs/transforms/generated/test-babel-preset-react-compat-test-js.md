@@ -97,6 +97,40 @@ export const FilterForm = ({ query, enabled, onQueryChange, onEnabledChange }) =
 Unexpected token, expected "," (3:17)
 ```
 
+### Normalizes the React SVG attribute and event surface
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+export const ReactIcon = ({ box, width, href, lang, onClick, props }) => (
+        <svg
+          className="icon"
+          viewBox={box}
+          strokeWidth={width}
+          strokeLinecap="round"
+          glyphOrientationHorizontal="90"
+          tabIndex={0}
+          spellCheck={false}
+          xmlLang={lang}
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+          onClick={onClick}
+        >
+          <use xlinkHref={href} {...props} />
+          <path fillRule="evenodd" d="M0 0" />
+        </svg>
+      );
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (3:10)
+```
+
 ### Keeps onX component props distinct from React DOM events
 
 #### Interpretation

@@ -94,6 +94,27 @@ const result = await renderDocument(createEntry({
 
 The `html` argument passed to `render(...)` is the same initialized tag exposed by the package entry; authored entries do not need a separate `lit` import.
 
+## Light DOM ownership and hydration
+
+An empty registered Light DOM host in an authored entry is rendered automatically on the server:
+
+```js
+elements(loader) {
+  return {
+    "app-root": async () => (await loader("./src/App.tsx")).AppRoot,
+  };
+},
+render({ html }) {
+  return html`<app-root></app-root>`;
+}
+```
+
+This gives hydration existing child nodes to adopt instead of creating the Light DOM tree during the first browser update. An explicit `renderLight()` remains valid and is not duplicated. A host with authored children is left alone because those nodes may be intentional projected content.
+
+The Vite plugin also infers nested Light DOM boundaries when a project-local pure Lit template consumes an imported Lit<sup>sx</sup> child. Server and browser output share the same child-owned Lit part, preserving descendant node identity, event bindings, and later updates through hydration.
+
+There is one context boundary to keep explicit: a context provider authored inside an uncompiled pure Lit `LightDomMixin` template does not enter the Lit<sup>sx</sup> SSR provider stack for its initial value. Provider updates after hydration use the normal composed `@lit/context` protocol.
+
 ## Request state and resource snapshots
 
 `createExecutionContextKey(...)` and `getCurrentExecutionContext()` provide request-local state shared by nested server components and stable across suspense retries.
@@ -102,4 +123,4 @@ Library runtimes with a global resource cache can use `useSsrResourceSnapshot({ 
 
 ## Scope
 
-The documented 1.0 guarantees cover Lit<sup>sx</sup>-authored component trees. Arbitrary third-party Lit components with unrelated light/shadow DOM and hydration behavior are outside that guarantee.
+The supported interoperability path covers registered pure Lit and Lit<sup>sx</sup> trees whose constructors and boundaries are visible to the compiler or SSR `elements` map. Arbitrary opaque third-party Lit components with unrelated light/shadow DOM and hydration behavior do not automatically acquire Lit<sup>sx</sup> SSR semantics.

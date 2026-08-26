@@ -61,6 +61,10 @@ export function ActionButton({ size = "sm" }) {
 
 Constants, maps, finite branches, and exact imported values are resolved statically. A Shadow DOM component receives only its exact utilities as a component-owned `CSSResult`; a sibling component in the same module does not receive them.
 
+JSX outside a Lit<sup>sx</sup> component class belongs to the document. This includes Storybook `render` functions and other free Light DOM templates. In a mixed module, their utilities enter the global sheet while component-only utilities remain attached to their owning Shadow or Light DOM component. A utility used by both destinations is generated in both so each output remains independently usable.
+
+Pure Lit class bodies are opaque to the integration: their templates and static styles remain owned by Lit and are not treated as free document JSX.
+
 `Component.styles` remains available as an explicit local guard for finite utilities that cannot be reached from markup. The integration consumes strings, arrays, objects, and imported constants at build time without passing them to Lit as invalid runtime styles:
 
 ```tsx
@@ -121,10 +125,16 @@ litsxTailwind({
 
 - `litsx` forwards options to `@litsx/vite-plugin`.
 - `tailwind` forwards options to the official `@tailwindcss/vite` plugin.
-- `sources` contributes only shared infrastructure required before lazy modules load; it does not leak component utility selectors globally.
+- `sources` contributes only shared infrastructure required before lazy modules load; it is not a fallback global utility scanner and does not leak component utility selectors globally.
 - `safelist` provides finite candidates for non-finite component patterns.
 
 The same routing covers development updates, production builds, SSR, hydration, and lazily imported components.
+
+## Parallel and multi-entry builds
+
+A single project context safely supports parallel component transforms. Each component and Vite entry retains only its own utility candidates, while client and SSR transforms of the same module reuse stable style metadata. Concurrently generated sheets therefore do not leak sibling classes between shadow roots or entry chunks.
+
+The Vite adapter also preserves query suffixes on its virtual CSS modules, including `?inline` requests made during real builds. Create one context per project, rather than one per module, and reuse it across development, production, client, and SSR transforms.
 
 ## Custom build integrations
 
