@@ -39,6 +39,7 @@ export interface LitsxHook {
 ```ts
 export interface LitsxComponentStatic<Events extends Record<string, unknown> = Record<string, unknown>> {
     readonly [LITSX_COMPONENT]: true;
+    readonly [LITSX_LIGHT_DOM]?: true;
     readonly [LITSX_EVENTS]?: LitsxEventDeclaration<Events, boolean>;
     readonly events?: LitsxEventDeclaration<Events, boolean>;
 }
@@ -109,13 +110,37 @@ export interface LitsxJsxNode {
 export type LitsxRenderable = LitsxJsxNode | TemplateResult | DirectiveResult | string | number | boolean | null | undefined | Iterable<unknown>;
 ```
 
+### `LitsxRefObject`
+
+A Lit ref object whose public value is updated by the JSX ref directive.
+
+```ts
+/** A Lit ref object whose public value is updated by the JSX ref directive. */
+export interface LitsxRefObject<T> extends LitsxRefTarget<T> {
+    readonly value?: T;
+}
+```
+
+### `LitsxMutableRef`
+
+A mutable ref object returned by `useRef`.
+
+```ts
+/** A mutable ref object returned by `useRef`. */
+export interface LitsxMutableRef<T> extends LitsxRefTarget<T> {
+    value: T | undefined;
+}
+```
+
 ### `LitsxRef`
 
 A Lit-native ref. Assignment uses `.value`; cleanup publishes `undefined`.
 
 ```ts
 /** A Lit-native ref. Assignment uses `.value`; cleanup publishes `undefined`. */
-export type LitsxRef<T> = Ref<T> | {
+export type LitsxRef<T> = (Ref<T> & {
+    readonly [LITSX_REF_TARGET]?: never;
+}) | LitsxRefTarget<T> | {
     bivarianceHack(value: T | undefined): void;
 }["bivarianceHack"];
 ```
@@ -436,7 +461,9 @@ export type LitsxNativeAttributeAliases<TElement> = TElement extends HTMLLabelEl
 ### `LitsxElementProps`
 
 ```ts
-export type LitsxElementProps<TElement = HTMLElement> = LitsxBaseAttributes & LitsxDomAttributes<TElement> & LitsxNativeAttributeAliases<TElement> & LitsxHostElementProps<TElement>;
+export type LitsxElementProps<TElement = HTMLElement> = Omit<LitsxBaseAttributes, "ref"> & LitsxDomAttributes<TElement> & LitsxNativeAttributeAliases<TElement> & LitsxHostElementProps<TElement> & {
+    ref?: LitsxRef<TElement>;
+};
 ```
 
 ### `LitsxSvgLength`
@@ -668,6 +695,7 @@ Detailed reference: [`ErrorBoundary`](../../reference/generated/errorboundary.md
  */
 export declare class ErrorBoundary extends LitElement {
     static readonly [LITSX_COMPONENT]: true;
+    static readonly [LITSX_LIGHT_DOM]: true;
     failed: boolean;
     error: unknown;
     onError: ((error: unknown) => void) | null;
@@ -694,6 +722,7 @@ Detailed reference: [`SuspenseBoundary`](../../reference/generated/suspensebound
  */
 export declare class SuspenseBoundary extends LitElement {
     static readonly [LITSX_COMPONENT]: true;
+    static readonly [LITSX_LIGHT_DOM]: true;
     pending: boolean;
     resolved: boolean;
     showing: string;
@@ -721,6 +750,7 @@ Detailed reference: [`SuspenseList`](../../reference/generated/suspenselist.md)
  */
 export declare class SuspenseList extends ReactiveElement {
     static readonly [LITSX_COMPONENT]: true;
+    static readonly [LITSX_LIGHT_DOM]: true;
     revealOrder: "forwards" | "backwards" | "together";
     tail: "collapsed" | "hidden";
 }
@@ -1130,6 +1160,15 @@ Detailed reference: [`useSlot`](../../reference/generated/useslot.md)
 export declare function useSlot(slotName?: string): Node[];
 ```
 
+### `createRef`
+
+Create a Lit-native object ref with a target-aware JSX write contract.
+
+```ts
+/** Create a Lit-native object ref with a target-aware JSX write contract. */
+export declare function createRef<T = Element>(): LitsxRefObject<T>;
+```
+
 ### `useRef`
 
 Store a Lit-native mutable value across renders without causing updates.
@@ -1144,9 +1183,7 @@ Detailed reference: [`useRef`](../../reference/generated/useref.md)
  * The returned object exposes `.value`; an attached JSX ref is cleared with
  * `undefined` when its target disconnects.
  */
-export declare function useRef<T>(initialValue?: T): {
-    value: T | undefined;
-};
+export declare function useRef<T>(initialValue?: T): LitsxMutableRef<T>;
 ```
 
 ### `useId`
@@ -1482,7 +1519,7 @@ export namespace JSX {
     type LitsxComponentEventMap<Component> = Component extends {
         readonly events: LitsxEventDeclaration<infer Events, infer Complete>;
     } ? Complete extends true ? Events : {} : {};
-    type LitsxComponentAuthoredAttributes<TProps, TEvents extends Record<string, unknown>, TBaseAttributes = LitsxBaseAttributes> = TBaseAttributes & (keyof TEvents extends never ? LitsxExplicitCustomEventAttributes : Omit<LitsxDomAttributes<EventTarget>, `on:${Extract<keyof TEvents, string>}`> & LitsxTypedCustomEventAttributes<TEvents>);
+    type LitsxComponentAuthoredAttributes<TProps, TEvents extends Record<string, unknown>, TBaseAttributes = LitsxBaseAttributes> = Omit<TBaseAttributes, Extract<keyof TProps, "ref">> & (keyof TEvents extends never ? LitsxExplicitCustomEventAttributes : Omit<LitsxDomAttributes<EventTarget>, `on:${Extract<keyof TEvents, string>}`> & LitsxTypedCustomEventAttributes<TEvents>);
     type LitsxNormalizeManagedProps<TProps> = 0 extends (1 & TProps) ? {} : TProps;
     type LitsxExactStaticPropertyKeys<Component> = Component extends {
         readonly properties: infer Declarations;

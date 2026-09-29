@@ -11,7 +11,7 @@ import { useRef } from "@litsx/core";
 ```
 
 ```ts
-useRef<T>(initialValue?: T): { value: T | undefined; }
+useRef<T>(initialValue?: T): LitsxMutableRef<T>
 ```
 
 ## Usage
@@ -55,7 +55,7 @@ Type: `T`
 
 ## Returns
 
-Type: `{ value: T | undefined }`
+Type: `LitsxMutableRef<T>`
 
 ## Related
 

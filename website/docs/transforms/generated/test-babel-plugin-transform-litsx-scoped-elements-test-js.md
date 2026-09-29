@@ -319,6 +319,31 @@ function LightCard() {
 Unterminated regular expression. (2:27)
 ```
 
+### Reads light DOM metadata from an imported component through a barrel
+
+#### Interpretation
+
+This case records the authored input and the generated output as a living transform contract.
+
+#### Authored Input
+
+```jsx
+import { LitElement } from "lit";
+        import { LightChild } from "light-dom-package";
+
+        class HostElement extends LitElement {
+          render() {
+            return <LightChild />;
+          }
+        }
+```
+
+#### Generated Error
+
+```txt
+Unexpected token, expected "," (6:31)
+```
+
 ### Reuses an existing ShadowDomMixin import
 
 #### Interpretation
