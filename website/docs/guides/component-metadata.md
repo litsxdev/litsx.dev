@@ -29,7 +29,7 @@ Namespace members are also explicit: `Controls.Switch` maps to `controls-switch`
 - `Component.lightDom = true` renders the component into its host.
 - other ordinary static assignments are retained when the generated class or an integration consumes them.
 
-Assignments must be at module scope after the component is declared. Because this is standard JavaScript/TypeScript, editor navigation, formatting, and static analysis need no custom parser.
+Assignments must be at module scope after the component is declared. They are standard JavaScript/TypeScript, so normal editor navigation, formatting, and static analysis apply.
 
 ## Light DOM
 

@@ -51,4 +51,3 @@ This smaller example isolates the `forwardRef`-style path handled inside the Rea
 ## Next
 
 - [Migrating from React](../guides/migrating-from-react.md)
-- [Transform Recipes](../transforms/)

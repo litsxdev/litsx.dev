@@ -37,7 +37,6 @@ This section is intentionally not the place for:
 
 Those live elsewhere:
 
-- [Transform Recipes](../transforms/)
 - [Migrating from React](../guides/migrating-from-react.md)
 - [Framework Reference](../framework/generated/)
 
@@ -73,7 +72,7 @@ Start here for that layer:
 
 - [JSX Authoring](../guides/jsx-authoring.md)
 - [Styling and CSSResult composition](../guides/styling.md#composing-styles)
-- [Static Hoists](../guides/static-hoists.md)
+- [Component Metadata](../guides/component-metadata.md)
 - [Property Inference](../guides/property-inference.md)
 - [Structural Hooks](../guides/structural-hooks.md)
 

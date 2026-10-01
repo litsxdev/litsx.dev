@@ -1,6 +1,6 @@
 # Getting Started
 
-Lit<sup>sx</sup> 1.0 uses ordinary `.tsx` and `.jsx`. The Lit<sup>sx</sup> compiler turns standard JSX into Lit templates and custom elements; TypeScript, ESLint, Prettier, and editors can work with the source directly.
+Lit<sup>sx</sup> uses ordinary `.tsx` and `.jsx`. The compiler turns standard JSX into Lit templates and custom elements; TypeScript, ESLint, Prettier, and editors work with the source directly.
 
 ## Create a project
 
@@ -48,7 +48,7 @@ CounterCard.styles = css`
 `;
 ```
 
-The important 1.0 conventions are visible here:
+The core authoring conventions are visible here:
 
 - source files are normal `.tsx` or `.jsx`
 - DOM and custom-element listeners use `on:event`
@@ -85,7 +85,7 @@ export default defineConfig({
 }
 ```
 
-The Vite plugin processes project-local `.js`, `.jsx`, `.ts`, and `.tsx` modules. JSX/TSX files receive the normal Lit<sup>sx</sup> compilation pipeline; ordinary Lit modules are inspected only for integration boundaries such as a Lit template rendering an imported Lit<sup>sx</sup> Light DOM child. Standard TypeScript and Prettier handle authored JSX; there is no custom file extension or formatter to install.
+The Vite plugin processes project-local `.js`, `.jsx`, `.ts`, and `.tsx` modules. JSX/TSX files receive the normal Lit<sup>sx</sup> compilation pipeline; ordinary Lit modules are inspected only for integration boundaries such as a Lit template rendering an imported Lit<sup>sx</sup> Light DOM child. Standard TypeScript and Prettier handle authored JSX.
 
 ## Where to go next
 
@@ -96,4 +96,3 @@ The Vite plugin processes project-local `.js`, `.jsx`, `.ts`, and `.tsx` modules
 - [Server rendering and hydration](./guides/ssr.md)
 - [Styling options](./guides/styling.md), including the optional [Tailwind CSS](./guides/tailwind.md) and [UnoCSS](./guides/unocss.md) integrations
 - [Tooling](./guides/tooling.md)
-- [Migrating pre-1.0 source](./guides/migrating-to-1.md)

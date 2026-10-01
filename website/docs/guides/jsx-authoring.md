@@ -1,6 +1,6 @@
 # Standard JSX Authoring
 
-Lit<sup>sx</sup> 1.0 source is ordinary JSX or TSX. You write familiar element and prop names; the compiler inspects the destination API and emits the correct Lit attribute, boolean-attribute, property, event, or ref part.
+Lit<sup>sx</sup> source is ordinary JSX or TSX. You write familiar element and prop names; the compiler inspects the destination API and emits the correct Lit attribute, boolean-attribute, property, event, or ref part.
 
 ```tsx
 export function CheckoutForm({ order, disabled = false }) {
@@ -125,7 +125,3 @@ return <input ref={input} />;
 ```
 
 Keys preserve identity in lists, including through SSR and hydration. Use `useId()` for per-instance DOM relationships, `useStableId()` for a compile-time callsite identity, and `useHostTypeId()` for component-type identity.
-
-## Removed pre-1.0 syntax
-
-The unreleased `.litsx` extension, `@click`, `.value`, `?disabled`, in-function `static ...`, `staticProps(...)`, and `staticStyles(...)` experiments are not part of 1.0. See the [migration guide](./migrating-to-1.md).

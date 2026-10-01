@@ -30,4 +30,4 @@ import { propertyInferenceExampleSource } from "../.vitepress/theme/components/p
 - [Controlled Disclosure](./controlled-disclosure.md)
 - [Async Action Form](./async-action-form.md)
 - [Property Inference Guide](../guides/property-inference.md)
-- [Static Hoists](../guides/static-hoists.md)
+- [Component Metadata](../guides/component-metadata.md)

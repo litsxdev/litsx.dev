@@ -27,4 +27,3 @@ Use this section when you want to see authored Lit<sup>sx</sup> code that is act
 - [JSX Authoring](../guides/jsx-authoring.md)
 - [Primitives](../guides/primitives.md)
 - [Migrating from React](../guides/migrating-from-react.md)
-- [Transform Recipes](../transforms/)
