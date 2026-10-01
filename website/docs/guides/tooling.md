@@ -1,6 +1,6 @@
 # Tooling
 
-Lit<sup>sx</sup> 1.0 is designed around the standard JSX/TSX toolchain. The compiler remains required, but editors, TypeScript, ESLint, Prettier, and Storybook no longer need to parse a custom source language.
+Lit<sup>sx</sup> uses the standard JSX/TSX toolchain and compiles authored source into Lit templates and custom elements. Editors, TypeScript, ESLint, Prettier, and Storybook use their normal JSX/TSX support.
 
 ## Vite
 
@@ -62,7 +62,7 @@ export default [litsx.configs["recommended-flat"]];
 
 The recommended preset enables `no-native-classname`, `valid-component-name`, and `rules-of-hooks`. Component names must derive directly to valid custom-element tags, and hooks must keep a stable order: conditions, early-return tails, loops, `try` blocks, handlers, deferred actions, async render functions, and nested hook declarations are rejected with stable `LITSX_*` diagnostic codes.
 
-The plugin uses normal JSX/TypeScript parsing and does not ship a custom processor. React migration semantics remain owned by the optional compatibility compiler. Format source with standard Prettier TSX support.
+The plugin uses normal JSX/TypeScript parsing. React-shaped source is handled by the optional compatibility compiler. Format source with standard Prettier TSX support.
 
 ## Storybook
 

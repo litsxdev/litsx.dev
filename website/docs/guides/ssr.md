@@ -69,7 +69,7 @@ When `clientEntry` is present, `renderDocument(...)` emits the standard hydratio
 
 Use `renderToString(...)` when your framework owns the document shell. Use `renderToStream(...)` when the response must be exposed as a Web `ReadableStream<string>`.
 
-Streaming in 1.0 is a transport shape over the stabilized SSR result: Lit<sup>sx</sup> waits for suspense retries to settle before emitting chunks. It is not progressive Suspense streaming.
+Streaming is a transport shape over the completed SSR result: Lit<sup>sx</sup> waits for suspense retries to settle before emitting chunks. It is not progressive Suspense streaming.
 
 ## Authored entries
 

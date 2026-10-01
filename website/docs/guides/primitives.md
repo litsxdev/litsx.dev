@@ -127,7 +127,7 @@ Use this pattern when the UI should briefly show an expected outcome before the 
 
 ## Authoring Model
 
-Lit<sup>sx</sup> 1.0 uses standard JSX and TSX:
+Lit<sup>sx</sup> uses standard JSX and TSX:
 
 - event listeners use `on:event`
 - ordinary prop names are lowered to Lit bindings from the destination contract

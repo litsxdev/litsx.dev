@@ -145,7 +145,6 @@ export default defineConfig({
           { text: "Async UI", link: "/guides/suspense" },
           { text: "SSR and Hydration", link: "/guides/ssr" },
           { text: "Tooling", link: "/guides/tooling" },
-          { text: "Migrating to 1.0", link: "/guides/migrating-to-1" },
           { text: "Migrating from React", link: "/guides/migrating-from-react" },
           {
             text: "Example Walkthroughs",
@@ -227,13 +226,6 @@ export default defineConfig({
               { text: "Examples", link: "/examples/" },
             ],
           },
-        ],
-      },
-      {
-        text: "Internals",
-        collapsed: true,
-        items: [
-          { text: "Transform Recipes", link: "/transforms/" },
         ],
       },
     ],

@@ -69,13 +69,13 @@ const FormAssociatedMixin = (Base) =>
 
 Lifecycle overrides should delegate to `super` so distinct capabilities compose correctly.
 
-## The 1.0 contract
+## API contract
 
 `defineHook(...)` accepts only:
 
 - `mixin`, optional, to install one host capability
 - `use(host, ...args)`, required, to read it
 
-The earlier experimental `static`, `setup`, `props`, `accessors`, and `middlewares` fields have been removed. Move that work into the mixin class. Runtime helpers such as `readStructuralHook(...)` and `applyStructuralHooks(...)` are public for compiler and framework integration, but normal component authors do not call them.
+Define host properties, accessors, controllers, static fields, and lifecycle behavior in the mixin class. Runtime helpers such as `readStructuralHook(...)` and `applyStructuralHooks(...)` are public for compiler and framework integration, but normal component authors do not call them.
 
 For ordinary state, effects, refs, events, and derived values, use the regular [primitives](./primitives.md).

@@ -57,7 +57,6 @@ import { jsxAuthoringExampleSource } from "./playground-example-source.js";
               <li><a href="/guides/jsx-authoring">Learn standard JSX authoring</a></li>
               <li><a href="/guides/ssr">Render and hydrate on the server</a></li>
               <li><a href="/guides/styling">Choose a styling approach</a></li>
-              <li><a href="/guides/migrating-to-1">Migrate pre-1.0 source</a></li>
               <li><a href="/reference/">Browse the API reference</a></li>
             </ul>
           </section>
